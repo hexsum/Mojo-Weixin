@@ -50,4 +50,9 @@ sub group{
     return if $s->type ne "group_message";
     return $s->client->search_group(id=>$s->group_id,_check_remote=>0) || _defaut_group(id=>$s->group_id);
 }
+
+sub  reply{
+    my $s = shift;
+    $s->client->reply_message($s,@_);
+}
 1;
