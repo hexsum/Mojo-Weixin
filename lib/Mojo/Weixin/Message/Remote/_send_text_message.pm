@@ -4,13 +4,12 @@ sub Mojo::Weixin::_send_text_message {
     my $msg = shift;
     my $api = "https://wx.qq.com/cgi-bin/mmwebwx-bin/webwxsendmsg";
     my @query_string =(
-        sid             =>  $self->wxsid,
-        skey            =>  url_escape($self->skey),
-        r               =>  $self->now(),
-        skey            =>  url_escape($self->skey),
-        pass_ticket     => $self->pass_ticket,
-    );  
-    my $t = $self->now();
+        lang            => 'zh_CN',
+    );
+    push @query_string,(pass_ticket     => url_escape($self->pass_ticket)) if $self->pass_ticket;
+    my $r = sprintf "%.3f", rand();
+    $r=~s/\.//g;
+    my $t = $self->now() . $r; 
     my $post = {
         BaseRequest =>  {
             DeviceID    => $self->deviceid,
@@ -47,6 +46,6 @@ sub Mojo::Weixin::_send_text_message {
             $self->emit(send_message => $msg,$status);
         }
     };         
-    $self->http_post($self->gen_url($api,@query_string),{json=>1},json=>$post_data,$callback);
+    $self->http_post($self->gen_url($api,@query_string),{json=>1},json=>$post,$callback);
 }
 1;
