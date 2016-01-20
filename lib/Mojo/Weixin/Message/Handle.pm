@@ -1,17 +1,18 @@
 package Mojo::Weixin;
+use strict;
+use Mojo::Weixin::Const qw(%KEY_MAP_USER %KEY_MAP_GROUP %KEY_MAP_GROUP_MEMBER %KEY_MAP_FRIEND);
 use List::Util qw(first);
 use Mojo::Util qw(encode);
 use Mojo::Weixin::Message;
+use Mojo::Weixin::Message::SendStatus;
 use Mojo::Weixin::Const;
 use Mojo::Weixin::Message::SendStatus;
 use Mojo::Weixin::Message::Queue;
+use Mojo::Weixin::Message::Remote::_send_text_message;
 $Mojo::Weixin::Message::LAST_DISPATCH_TIME  = undef;
 $Mojo::Weixin::Message::SEND_INTERVAL  = 3;
 
 my @logout_code = qw(1100 1101 1102 1205);
-sub send_message{
-    my $self = shift;
-}
 sub gen_message_queue{
     my $self = shift;
     Mojo::Weixin::Message::Queue->new(callback_for_get=>sub{
@@ -65,7 +66,7 @@ sub gen_message_queue{
             }
             $self->timer($delay,sub{
                 $msg->time(time);
-                $self->send_message($msg);
+                $self->_send_text_message($msg);
             });
             $Mojo::Weixin::Message::LAST_DISPATCH_TIME = $now+$delay;
         }
@@ -84,13 +85,15 @@ sub _parse_synccheck_data{
             $self->_synccheck();
         }
         elsif(first {$retcode == $_} @logout_code){
-            $self->logout($retcode);
-            $self->stop();
+            $self->relogin($retcode);
         }
-        elsif($self->_synccheck_error_count < 3){
+        elsif($self->_synccheck_error_count <= 3){
             my $c = $self->_synccheck_error_count; 
             $self->_synccheck_error_count(++$c);
             $self->timer(5,sub{$self->_sync();});
+        }
+        else{
+            $self->timer(2,sub{$self->_synccheck();}); 
         }
     }
     else{
@@ -106,12 +109,12 @@ sub _parse_sync_data {
         return;
     }
     if(first {$json->{BaseResponse}{Ret} == $_} @logout_code  ){
-        $self->logout($d->{BaseResponse}{Ret});
-        $self->stop();
+        $self->relogin($json->{BaseResponse}{Ret});
     }
 
     elsif($json->{BaseResponse}{Ret} !=0){
         $self->warn("收到无法识别消息，已将其忽略");
+        $self->_synccheck();
         return;
     }
     $self->sync_key($json->{SyncKey}) if $json->{SyncKey}{Count}!=0;
@@ -221,9 +224,72 @@ sub _parse_sync_data {
 
     if($json->{ContinueFlag}!=0){
         $self->_sync();
+        return;
+    }
+    $self->_synccheck();
+}
+
+sub _parse_send_status_data {
+    my $self = shift;
+    my $json = shift;
+    if(defined $json){
+        if($json->{BaseResponse}{Ret}!=0){
+            return Mojo::Weixin::Message::SendStatus->new(
+                        code=>$json->{BaseResponse}{Ret},
+                        msg=>"发送失败",
+                        info=>encode("utf8",$json->{BaseResponse}{ErrMsg}||"")
+                    ); 
+        }
+        else{
+            return Mojo::Weixin::Message::SendStatus->new(code=>0,msg=>"发送成功",info=>"");
+        }
     }
     else{
-        $self->_synccheck();
+        return Mojo::Weixin::Message::SendStatus->new(code=>-1,msg=>"发送失败",info=>"数据格式错误");
+    }
+}
+sub send_message{
+    my $self = shift;
+    my $object = shift;
+    my $content = shift;
+    if( ref($object) ne "Mojo::Weixin::Friend" and ref($object) ne "Mojo::Weixin::Group") { 
+        $self->error("无效的发送消息对象");
+        return;
+    }
+    my $msg = Mojo::Weixin::Message->new(
+        id => $self->now(),
+        content => $content,
+        sender_id => $self->user->id,
+        receiver_id => (ref $object eq "Mojo::Weixin::Friend"?$object->id : undef),
+        group_id =>(ref $object eq "Mojo::Weixin::Group"?$object->id : undef),
+        type => (ref $object eq "Mojo::Weixin::Group"?"group_message":"friend_message"),
+        class => "send",
+        format => "text", 
+    );
+
+    $self->message_queue->put($msg);
+
+}
+sub reply_message{
+    my $self = shift;
+    my $msg = shift;
+    my $content = shift;
+    if($msg->class eq "recv"){
+        if($msg->type eq "group_message"){
+            $self->send_message($msg->group,$content);
+        }
+        elsif($msg->type eq "friend_message"){
+            $self->send_message($msg->sender,$content);
+        }
+    }
+    elsif($msg->class eq "send"){
+        if($msg->type eq "group_message"){
+            $self->send_message($msg->group,$content);
+        }
+        elsif($msg->type eq "friend_message"){
+            $self->send_message($msg->receiver,$content);
+        }
+
     }
 }
 

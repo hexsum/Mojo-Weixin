@@ -1,6 +1,8 @@
 use Mojo::Util qw(url_escape);
 sub Mojo::Weixin::_sync {
     my $self = shift;
+    return if ($self->_synccheck_running or $self->_sync_running);
+    $self->_sync_running(1);
     my $api = 'https://wx.qq.com/cgi-bin/mmwebwx-bin/webwxsync';
     my @query_string = (
         sid     => $self->wxsid,
@@ -14,10 +16,9 @@ sub Mojo::Weixin::_sync {
     };
     my $callback = sub{
         my $json = shift;
-        $self->_parse_sync_data($json);
+        $self->_sync_running(0);
+        $self->emit("sync_over",$json);
     };
-    $self->timer(1,sub{
-        $self->http_post($self->gen_url($api,@query_string),{json=>1},json=>$post,$callback);
-    });
+    $self->http_post($self->gen_url($api,@query_string),{json=>1},json=>$post,$callback);
 }
 1;

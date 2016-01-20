@@ -16,7 +16,7 @@ sub model_init{
         $self->error("获取联系人信息失败");
         return; 
     }
-    my($user,undef,$groups_id) = @$initinfo;
+    my($user,undef,$init_groups) = @$initinfo;
     if(defined $user){
         $self->info("更新个人信息成功");
         $self->user(Mojo::Weixin::User->new($user));
@@ -27,7 +27,7 @@ sub model_init{
         $self->error("获取通讯录联系人信息失败");
         return;
     }
-    my($friends,$incomplete_groups) = @$contactinfo;
+    my($friends,$contact_groups) = @$contactinfo;
     if(ref $friends eq "ARRAY" and @$friends>0){
         for(@$friends){
             if($_->{id} eq $user->{id}){
@@ -39,34 +39,31 @@ sub model_init{
         $self->info("更新好友信息成功");
     }
 
-    if(ref $groups_id eq "ARRAY" and @$groups_id >0){
-        my $info = $self->_webwxbatchgetcontact(@$groups_id,);
+    my %groups_id;
+    if(ref $init_groups eq "ARRAY" and @$init_groups >0){
+        for(@$init_groups){
+            $groups_id{$_->{id}} = 1;
+        }
+    }
+    if(ref $contact_groups eq "ARRAY" and @$contact_groups>0){
+        for(@$contact_groups){
+            $groups_id{$_->{id}} = 1;
+        }
+    }
+    if(keys %groups_id){
+        my $info = $self->_webwxbatchgetcontact(keys %groups_id);
         if(defined $info){
             my(undef,$groups) = @$info;
             if(ref $groups eq "ARRAY" and @$groups >0){
                 for(@$groups){
-                    $self->add_group(Mojo::Weixin::Group->new($_));
-                    $self->info("更新普通群组[ @{[$_->{name}]} ]信息成功");
+                    my $group = Mojo::Weixin::Group->new($_);
+                    $self->add_group($group);
+                    $self->info("更新群组[ @{[$group->displayname]} ]信息成功");
                 }
             }
         }
         else{
-            $self->error("更新普通群组信息失败");
-        }
-    }
-    if(ref $incomplete_groups eq "ARRAY" and @$incomplete_groups>0){
-        my $info = $self->_webwxbatchgetcontact(map{ $_->{id}} @$incomplete_groups);
-        if(defined $info){
-            my(undef,$groups) = @$info;
-            if(ref $groups eq "ARRAY" and @$groups>0){
-                for (@$groups){
-                    $self->add_group(Mojo::Weixin::Group->new($_));
-                    $self->info("更新通讯录群组[ @{[$_->{name}]} ]信息成功");
-                }
-            }
-        }
-        else{
-            $self->error("更新通讯录群组信息失败");
+            $self->error("更新群组信息失败");
         }
     }
 }

@@ -1,4 +1,6 @@
 use Mojo::Util qw(url_escape encode);
+use strict;
+use Mojo::Weixin::Const qw(%KEY_MAP_USER %KEY_MAP_GROUP %KEY_MAP_GROUP_MEMBER %KEY_MAP_FRIEND);
 use Mojo::Weixin::Const;
 sub Mojo::Weixin::_webwxgetcontact {
     my $self = shift;
@@ -20,7 +22,7 @@ sub Mojo::Weixin::_webwxgetcontact {
     for my $e ( @{ $json->{MemberList} } ){
         if($self->is_group($e->{UserName})){
             my $group = {};
-            for(keys %KEYP_MAP_GROUP){
+            for(keys %KEY_MAP_GROUP){
                 $group->{$_} = defined $e->{$KEY_MAP_GROUP{$_}}?encode("utf8",$e->{$KEY_MAP_GROUP{$_}}):"";
             }
             for my $m (@{$e->{MemberList}}){

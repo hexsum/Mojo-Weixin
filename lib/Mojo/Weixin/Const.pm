@@ -1,6 +1,6 @@
 package Mojo::Weixin::Const;
 use Exporter 'import';
-our @EXPORT = qw(%KEY_MAP_USER %KEY_MAP_FRIEND %KEY_MAP_GROUP %KEY_MAP_MESSAGE);
+our @EXPORT = qw(%KEY_MAP_USER %KEY_MAP_FRIEND %KEY_MAP_GROUP %KEY_MAP_MESSAGE %KEY_MAP_GROUP_MEMBER);
 our %KEY_MAP_MESSAGE = qw(
     time        CreateTime
     content     Content

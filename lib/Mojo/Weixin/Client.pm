@@ -47,6 +47,16 @@ sub ready {
     $self->emit("after_load_plugin");
     #接收消息
     $self->info("开始接收消息...\n");
+    $self->on(synccheck_over=>sub{ 
+        my $self = shift;
+        my ($retcode,$selector) = @_;
+        $self->_parse_synccheck_data($retcode,$selector);
+    });
+    $self->on(sync_over=>sub{
+        my $self = shift;
+        my $json = shift;
+        $self->_parse_sync_data($json);
+    });
     $self->_synccheck();
     $self->is_ready(1);
     $self->emit("ready");
@@ -187,8 +197,7 @@ sub exit{
 sub stop{
     my $self = shift;
     $self->is_stop(1);
-    exit;
+    CORE::exit();
 }
-
 
 1;

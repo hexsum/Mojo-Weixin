@@ -1,10 +1,11 @@
 use Mojo::Util qw(encode url_escape);
-use Mojo::Weixin::Const;
+use strict;
+use Mojo::Weixin::Const qw(%KEY_MAP_USER %KEY_MAP_GROUP %KEY_MAP_GROUP_MEMBER %KEY_MAP_FRIEND);
 sub Mojo::Weixin::_webwxinit{
     my $self = shift;
     my $api = "https://wx.qq.com/cgi-bin/mmwebwx-bin/webwxinit";
     my @query_string = (
-        r           =>  $self->now(),
+        r           =>  sub{use integer;~time}->(),
         lang        =>  'zh_CN',
     );
     push @query_string,(pass_ticket =>  url_escape($self->pass_ticket)) if $self->pass_ticket;
@@ -27,17 +28,34 @@ sub Mojo::Weixin::_webwxinit{
         $user->{$_} = defined $json->{User}{$KEY_MAP_USER{$_}}?encode("utf8",$json->{User}{$KEY_MAP_USER{$_}} ) : "";
     }
 
-    my @friend_id;
-    my @group_id;
+    my @friends;
+    my @groups;
     for my $e (@{ $json->{ContactList} }){
         if($self->is_group($e->{UserName})){
-            push @group_id,$e->{UserName}; 
+            my $group = {};
+            for(keys %KEY_MAP_GROUP){
+                $group->{$_} = defined $e->{$KEY_MAP_GROUP{$_}}?encode("utf8",$e->{$KEY_MAP_GROUP{$_}}):"";
+            }
+            for my $m (@{$e->{MemberList}}){
+                my $member = {};
+                for(keys %KEY_MAP_GROUP_MEMBER){
+                    $member->{$_} = defined $m->{$KEY_MAP_GROUP_MEMBER{$_}}?encode("utf8", $m->{$KEY_MAP_GROUP_MEMBER{$_}} ):"";
+                }
+                $member->{sex} = $self->code2sex($member->{sex});
+                push @{$group->{member}},$member;
+            }
+            push @groups,$group;
         }
         else{
-            push @friend_id,$e->{UserName};
+            my $friend = {};
+            for(keys %KEY_MAP_FRIEND){
+                $friend->{$_} = defined $e->{$KEY_MAP_FRIEND{$_}}?encode("utf8",$e->{$KEY_MAP_FRIEND{$_}}):"" ;
+            }
+            $friend->{sex} = $self->code2sex($friend->{sex});
+            push @friends,$friend;
         }
     }
 
-    return [$user,\@friend_id,\@group_id];
+    return [$user,\@friends,\@groups];
 }
 1

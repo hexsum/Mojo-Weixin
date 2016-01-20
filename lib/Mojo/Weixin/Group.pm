@@ -8,8 +8,7 @@ has member => sub{[]};
 sub displayname { 
     my $self = shift;
     return $self->name if $self->name;
-    use DDP; p $self->member;
-    my $default_name = join "、", map { $_->displayname } @{$self->member}[0..2];
+    my $default_name = join "、", map { $_->displayname } grep {defined $_} (grep {$_->id ne $self->client->user->id} @{$self->member})[0..2];
     return $default_name?$default_name:"群名未知";
 }
 sub new {

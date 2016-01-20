@@ -21,8 +21,10 @@ sub Mojo::Weixin::_login {
     $self->info("等待手机微信扫描二维码...");
     while(1){
         my @query_string = (
+            loginicon => 'true',
             uuid    =>  $qrcode_uuid,
             tip     =>  $show_tip ,
+            r       =>  sub{use integer;~time}->(),
             _       =>  $self->now(),
         );
         my $r = $self->http_get($self->gen_url($api,@query_string));
