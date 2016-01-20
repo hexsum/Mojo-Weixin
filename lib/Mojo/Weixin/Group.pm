@@ -117,5 +117,9 @@ sub me {
     my $self = shift;
     return $self->search_group_member(id=>$self->client->user->id);
 }
+sub send{
+    my $self = shift;
+    $self->client->send_message($self,@_);
+}
 
 1;

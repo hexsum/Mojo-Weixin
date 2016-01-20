@@ -39,4 +39,5 @@ sub update{
     }
     $self;
 }
+
 1;

@@ -41,4 +41,9 @@ sub update{
     $self;
 
 }
+
+sub send{
+    my $self = shift;
+    $self->client->send_message($self,@_);
+}
 1;
