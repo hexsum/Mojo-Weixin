@@ -80,41 +80,34 @@ sub _parse_synccheck_data{
             $self->_synccheck_error_count(0);
             $self->_sync();
         }
-        elsif($retcode == 0 and $selector = 0){
+        elsif($retcode == 0 and $selector == 0){
             $self->_synccheck_error_count(0);
-            $self->_synccheck();
         }
         elsif(first {$retcode == $_} @logout_code){
             $self->relogin($retcode);
+            return;
         }
         elsif($self->_synccheck_error_count <= 3){
             my $c = $self->_synccheck_error_count; 
             $self->_synccheck_error_count(++$c);
-            $self->timer(5,sub{$self->_sync();});
         }
         else{
-            $self->timer(2,sub{$self->_synccheck();}); 
+            $self->relogin();
+            return;
         }
     }
-    else{
-        $self->timer(2,sub{$self->_synccheck();});
-    }
-    
 }
 sub _parse_sync_data {
     my $self = shift;
     my $json = shift;
-    if(not defined $json){
-        $self->_synccheck();
-        return;
-    }
+    return if not defined $json;
     if(first {$json->{BaseResponse}{Ret} == $_} @logout_code  ){
         $self->relogin($json->{BaseResponse}{Ret});
+        return;
     }
 
     elsif($json->{BaseResponse}{Ret} !=0){
         $self->warn("收到无法识别消息，已将其忽略");
-        $self->_synccheck();
         return;
     }
     $self->sync_key($json->{SyncKey}) if $json->{SyncKey}{Count}!=0;
@@ -226,7 +219,6 @@ sub _parse_sync_data {
         $self->_sync();
         return;
     }
-    $self->_synccheck();
 }
 
 sub _parse_send_status_data {
@@ -252,6 +244,7 @@ sub send_message{
     my $self = shift;
     my $object = shift;
     my $content = shift;
+    my $callback = shift;
     if( ref($object) ne "Mojo::Weixin::Friend" and ref($object) ne "Mojo::Weixin::Group") { 
         $self->error("无效的发送消息对象");
         return;
@@ -267,6 +260,7 @@ sub send_message{
         format => "text", 
     );
 
+    $callback->($self,$msg) if ref $callback eq "CODE"; 
     $self->message_queue->put($msg);
 
 }
@@ -274,12 +268,13 @@ sub reply_message{
     my $self = shift;
     my $msg = shift;
     my $content = shift;
+    my $callback = shift;
     if($msg->class eq "recv"){
         if($msg->type eq "group_message"){
-            $self->send_message($msg->group,$content);
+            $self->send_message($msg->group,$content,$callback);
         }
         elsif($msg->type eq "friend_message"){
-            $self->send_message($msg->sender,$content);
+            $self->send_message($msg->sender,$content,$callback);
         }
     }
     elsif($msg->class eq "send"){

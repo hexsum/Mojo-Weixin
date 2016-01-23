@@ -1,12 +1,16 @@
 sub Mojo::Weixin::_synccheck{
     my $self = shift;
-    return if($self->_sync_running or $self->_synccheck_running);
+    if($self->_sync_running or $self->_synccheck_running){
+        $self->_synccheck_running(0);
+        $self->emit("synccheck_over");
+        return;
+    }
     $self->_synccheck_running(1);
     my $api = "https://webpush.weixin.qq.com/cgi-bin/mmwebwx-bin/synccheck";
     my $callback = sub {
         my $data = shift;
         #window.synccheck={retcode:"0",selector:"0"}
-        my($retcode,$selector) = $data=~/window\.synccheck={retcode:"([^"]+)",selector:"([^"]+)"}/g;
+        my($retcode,$selector) = $data=~/window\.synccheck=\{retcode:"([^"]+)",selector:"([^"]+)"\}/g;
         $self->_synccheck_running(0);
         $self->emit("synccheck_over",$retcode,$selector); 
     };
