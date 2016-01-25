@@ -2,7 +2,7 @@ package Mojo::Weixin::Friend;
 use Mojo::Weixin::Base 'Mojo::Weixin::Model::Base';
 has name => '昵称未知';
 has [qw( 
-    alias
+    account
     province
     city
     sex

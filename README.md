@@ -103,7 +103,7 @@ Mojo-Weixin v1.0.0 [![Build Status](https://travis-ci.org/sjdy521/Mojo-Weixin.sv
         
         $qq = 12345678;    #修改为你自己的实际QQ号码
         $host = "0.0.0.0"; #发送消息接口监听地址，修改为自己希望监听的地址
-        $port = 5000;      #发送消息接口监听端口，修改为自己希望监听的端口
+        $port = 3000;      #发送消息接口监听端口，修改为自己希望监听的端口
         $post_api = 'http://xxxx';  #接收到的消息上报接口，如果不需要接收消息上报，可以删除此行
         
         my $client = Mojo::Weixin->new(qq=>$qq);
@@ -118,14 +118,14 @@ Mojo-Weixin v1.0.0 [![Build Status](https://travis-ci.org/sjdy521/Mojo-Weixin.sv
     
     发送好友消息的接口调用示例
     
-        http://127.0.0.1:5000/openwx/send_message?id=xxxxcontent=hello
+        http://127.0.0.1:3000/openwx/send_message?id=xxxxcontent=hello
         
-        * About to connect() to 127.0.0.1 port 5000 (#0)
+        * About to connect() to 127.0.0.1 port 3000 (#0)
         *   Trying 127.0.0.1...
-        * Connected to 127.0.0.1 (127.0.0.1) port 5000 (#0)
+        * Connected to 127.0.0.1 (127.0.0.1) port 3000 (#0)
         > GET /openqq/send_message?id=>xxxxx&content=hello HTTP/1.1
         > User-Agent: curl/7.29.0
-        > Host: 127.0.0.1:5000
+        > Host: 127.0.0.1:3000
         > Accept: */*
         > 
         < HTTP/1.1 200 OK

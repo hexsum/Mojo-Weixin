@@ -2,7 +2,7 @@ package Mojo::Weixin::Group::Member;
 use Mojo::Weixin::Base 'Mojo::Weixin::Model::Base';
 has [qw(
     name
-    alias
+    account
     province
     city
     sex
@@ -38,6 +38,11 @@ sub update{
         }
     }
     $self;
+}
+
+sub group {
+    my $self = shift;
+    return scalar $self->client->search_group(id=>$self->_group_id);
 }
 
 1;

@@ -2,7 +2,7 @@ package Mojo::Weixin::User;
 use Mojo::Weixin::Base 'Mojo::Weixin::Model::Base';
 has [qw(    
     name
-    alias
+    account
     province
     city
     sex

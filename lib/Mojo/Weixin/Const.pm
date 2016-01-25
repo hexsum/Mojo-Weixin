@@ -9,7 +9,7 @@ our %KEY_MAP_MESSAGE = qw(
 our %KEY_MAP_USER = qw(
     id          UserName
     name        NickName
-    alias       Alias
+    account     Alias
     province    Province
     city        City
     signature   Signature
@@ -20,7 +20,7 @@ our %KEY_MAP_USER = qw(
 our %KEY_MAP_FRIEND = qw(
     id          UserName
     name        NickName
-    alias       Alias
+    account       Alias
     province    Province
     city        City
     signature   Signature
@@ -36,7 +36,7 @@ our %KEY_MAP_GROUP = qw(
 our %KEY_MAP_GROUP_MEMBER = qw(
     id          UserName
     name        NickName
-    alias       Alias
+    account       Alias
     province    Province
     city        City
     signature   Signature

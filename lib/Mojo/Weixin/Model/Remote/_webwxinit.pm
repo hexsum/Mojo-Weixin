@@ -37,7 +37,7 @@ sub Mojo::Weixin::_webwxinit{
                 $group->{$_} = defined $e->{$KEY_MAP_GROUP{$_}}?encode("utf8",$e->{$KEY_MAP_GROUP{$_}}):"";
             }
             for my $m (@{$e->{MemberList}}){
-                my $member = {};
+                my $member = {_group_id=>$group->{id}};
                 for(keys %KEY_MAP_GROUP_MEMBER){
                     $member->{$_} = defined $m->{$KEY_MAP_GROUP_MEMBER{$_}}?encode("utf8", $m->{$KEY_MAP_GROUP_MEMBER{$_}} ):"";
                 }

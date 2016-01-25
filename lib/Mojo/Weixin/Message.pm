@@ -8,6 +8,8 @@ has time => sub{time};
 has ttl => 5;
 has source => 'local';
 has 'cb';
+has from => 'none';
+has allow_plugin => 1;
 has [qw(sender_id receiver_id group_id content type id class format)];
 
 sub _default_friend{Mojo::Weixin::Friend->new(@_);}

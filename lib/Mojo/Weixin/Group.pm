@@ -18,6 +18,7 @@ sub new {
     if(exists $self->{member} and ref $self->{member} eq "ARRAY"){
         for( @{ $self->{member} } ){
             $_ = Mojo::Weixin::Group::Member->new($_) if ref $_ ne "Mojo::Weixin::Group::Member";
+            $_->_group_id($self->id);
         }
     }
     $self;
@@ -33,6 +34,7 @@ sub update {
         if($_ eq "member" and ref $hash->{member} eq "ARRAY"){
             next if not @{$hash->{member}};
             my @member = 
+            map {$_->_group_id($self->id);$_} 
             map {ref $_ eq "Mojo::Weixin::Group::Member"?$_:Mojo::Weixin::Group::Member->new($_)} 
             @{$hash->{member}};
 

@@ -10,7 +10,7 @@ sub client {
 sub to_json_hash{
     my $self = shift;
     my $json = {};
-    for my $key (keys %$self){
+    for my $key ( ( (keys %$self),qw(sender receiver group) ) ){
         next if substr($key,0,1) eq "_";
         if($key eq "sender"){
             $json->{sender} = decode_utf8($self->sender->displayname);
@@ -26,6 +26,27 @@ sub to_json_hash{
         }
     }
     return $json;
+}
+
+sub is_at{
+    my $self = shift;
+    my $object;
+    my $displayname;
+    if($self->class eq "recv"){
+        $object = shift || $self->receiver;
+        $displayname = $object->displayname;
+    }
+    elsif($self->class eq "send"){
+        if($self->type eq "group_message"){
+            $object = shift || $self->group->me;
+            $displayname = $object->displayname;
+        }
+        elsif($self->type=~/^friend_message$/){
+            $object = shift || $self->receiver;
+            $displayname = $object->displayname;
+        }
+    }
+    return $self->content =~/\@\Q$displayname\E(|"\xe2\x80\x85")/;
 }
 
 sub dump{

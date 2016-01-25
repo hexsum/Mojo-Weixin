@@ -15,6 +15,7 @@ sub to_json_hash{
         next if substr($_,0,1) eq "_";
         next if $_ eq "member";
         $hash->{$_} = decode_utf8($self->{$_});
+        $hash->{displayname} = decode_utf8 $self->displayname;
     }
     if(exists $self->{member}){
         $hash->{member} = [];
