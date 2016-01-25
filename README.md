@@ -12,7 +12,7 @@ Mojo-Weixin v1.0.0 [![Build Status](https://travis-ci.org/sjdy521/Mojo-Weixin.sv
   Perlcode             97       已发布      sjdy521       通过微信消息执行perl代码
   Perldoc              96       已发布      sjdy521       通过微信消息查询perl文档
   Translation          93       已发布      sjdy521       多国语言翻译功能
-  KnowledgeBase        2        已发布      sjdy521       通过qq消息自定义问答知识库
+  KnowledgeBase        2        已发布      sjdy521       通过微信消息自定义问答知识库
   FuckDaShen           1        已发布      sjdy521       对消息中的"大神"关键词进行鄙视
   PostQRcode           0        已发布      sjdy521       登录二维码发送到邮箱实现远程扫码
   SmartReply           0        已发布      sjdy521       智能聊天回复
