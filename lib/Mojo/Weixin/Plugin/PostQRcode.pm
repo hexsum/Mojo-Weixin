@@ -22,7 +22,7 @@ sub call{
             $client->stop();
             return 
         }
-        $data->{subject} = "QQ帐号 " . $client->user->displayname . " 扫描二维码" if not defined $data->{subject};
+        $data->{subject} = "微信帐号 " . $client->user->displayname . " 扫描二维码" if not defined $data->{subject};
         my $mime = MIME::Lite->new(
             Type    => 'multipart/mixed',
             From    => $data->{from},
@@ -31,7 +31,7 @@ sub call{
         $mime->add("Subject"=>"=?UTF-8?B?" . MIME::Base64::encode_base64($data->{subject},"") . "?=");
         $mime->attach(
             Type     =>"text/plain; charset=UTF-8",
-            Data     =>"请使用手机QQ扫描附件中的二维码",
+            Data     =>"请使用手机微信扫描附件中的二维码",
         );
         $mime->attach(
             Path        => $filename,

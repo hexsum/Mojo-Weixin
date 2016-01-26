@@ -35,6 +35,10 @@ Mojo-Weixin v1.0.0 [![Build Status](https://travis-ci.org/sjdy521/Mojo-Weixin.sv
 [16/01/19 23:15:00] [群消息] 小灰|Perl语言交流 : Mojo::Weixin不错哦
 [16/01/19 23:15:58] [群消息] 我->Perl语言交流 : 多谢多谢
 ```
+###通过irc客户端在linux终端上使用QQ
+
+![IRCShell](screenshot/IRCShell.jpg)
+
 ###安装方法
 
 推荐使用[cpanm](https://metacpan.org/pod/distribution/App-cpanminus/bin/cpanm)在线安装[Mojo::Weixin](https://metacpan.org/pod/distribution/Mojo-Weixin/doc/Weixin.pod)模块 
@@ -132,7 +136,7 @@ Mojo-Weixin v1.0.0 [![Build Status](https://travis-ci.org/sjdy521/Mojo-Weixin.sv
         * About to connect() to 127.0.0.1 port 3000 (#0)
         *   Trying 127.0.0.1...
         * Connected to 127.0.0.1 (127.0.0.1) port 3000 (#0)
-        > GET /openqq/send_message?id=>xxxxx&content=hello HTTP/1.1
+        > GET /openwx/send_message?id=>xxxxx&content=hello HTTP/1.1
         > User-Agent: curl/7.29.0
         > Host: 127.0.0.1:3000
         > Accept: */*
