@@ -630,9 +630,17 @@ Mojo::Weixin - A Weixin Client Framework base on Mojolicious
     翻译 你好
     翻译 こんにちは
 
+=head2 Mojo::Weixin::Plugin::SmartReply
+
+实现机器人的智能回复，支持好友消息、群消息
+
+为避免对群内成员产生影响，群内需要使用 @帐号昵称 来触发
+
+    $client->load("SmartReply");
+
 =head2 Mojo::Weixin::Plugin::Openwx
 
-提供HTTP API接口，方便获取客户端帐号、好友、群、讨论组信息，以及通过接口发送和接收好友消息、群消息、群临时消息和讨论组临时消息
+提供HTTP API接口，方便获取客户端帐号、好友、群信息，以及通过接口发送和接收好友消息、群消息
 
     #ata是一个HASH引用
     $client->load("Openqq",data=>{
