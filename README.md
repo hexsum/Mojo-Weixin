@@ -35,7 +35,7 @@ Mojo-Weixin v1.0.0 [![Build Status](https://travis-ci.org/sjdy521/Mojo-Weixin.sv
 [16/01/19 23:15:00] [群消息] 小灰|Perl语言交流 : Mojo::Weixin不错哦
 [16/01/19 23:15:58] [群消息] 我->Perl语言交流 : 多谢多谢
 ```
-###通过irc客户端在linux终端上使用QQ
+###通过irc客户端在linux终端上使用微信
 
 ![IRCShell](screenshot/IRCShell.jpg)
 
