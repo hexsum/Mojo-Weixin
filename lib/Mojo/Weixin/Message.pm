@@ -3,6 +3,7 @@ use Mojo::Weixin::Base 'Mojo::Weixin::Message::Base';
 use Mojo::Weixin::Friend;
 use Mojo::Weixin::Group;
 use Mojo::Weixin::Group::Member;
+use Mojo::Weixin::Const qw(%FACE_MAP_QQ %FACE_MAP_EMOJI);
 
 has time => sub{time};
 has ttl => 5;
@@ -11,6 +12,18 @@ has 'cb';
 has from => 'none';
 has allow_plugin => 1;
 has [qw(sender_id receiver_id group_id content type id class format)];
+
+sub new {
+    my $s = shift;
+    $s = $s->Mojo::Weixin::Base::new(@_);
+    if( my @code = $s->{content}=~/<span class="emoji emoji([a-zA-Z0-9]+)"><\/span>/g){
+        my %map = reverse %FACE_MAP_EMOJI;
+        for(@code){
+            $s->{content}=~s/<span class="emoji emoji$_"><\/span>/exists $map{$_}?"[$map{$_}]":"[未知表情]"/eg
+        }
+    }
+    $s;
+}
 
 sub _default_friend{Mojo::Weixin::Friend->new(@_);}
 sub _defaut_group{Mojo::Weixin::Group->new(@_)}

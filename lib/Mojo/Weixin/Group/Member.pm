@@ -1,5 +1,7 @@
 package Mojo::Weixin::Group::Member;
 use Mojo::Weixin::Base 'Mojo::Weixin::Model::Base';
+use Mojo::Weixin::Const qw(%FACE_MAP_QQ %FACE_MAP_EMOJI);
+
 has [qw(
     name
     account
@@ -12,6 +14,18 @@ has [qw(
     markname
     _group_id
 )];
+
+sub new {
+    my $self = shift;
+    $self = $self->Mojo::Weixin::Base::new(@_);
+    if( my @code = $self->{name}=~/<span class="emoji emoji([a-zA-Z0-9]+)"><\/span>/g){
+        my %map = reverse %FACE_MAP_EMOJI;
+        for(@code){
+            $self->{name}=~s/<span class="emoji emoji$_"><\/span>/exists $map{$_}?"[$map{$_}]":"[未知表情]"/eg
+        }
+    }
+    $self;
+}
 sub displayname{
     my $self = shift;
     return $self->display || $self->markname || $self->name;
