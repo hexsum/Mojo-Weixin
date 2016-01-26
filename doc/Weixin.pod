@@ -57,6 +57,78 @@ Mojo::Weixin - A Weixin Client Framework base on Mojolicious
 
 推荐你在使用本模块的同时也更多的了解L<Mojolicious>
 
+=head1 源码导读
+
+    ├── Changes #更新记录
+    ├── demo    #存放演示程序
+    │   ├── echo-reply.pl     
+    │   └── openqq-client.pl
+    ├── doc     #模块文档
+    │   └── Weixin.pod
+    ├── lib
+    │   └── Mojo
+    │       ├── Weixin
+    │       │   ├── Base.pm       #所有对象基类
+    │       │   ├── Cache.pm      #缓存任意信息
+    │       │   ├── Client
+    │       │   │   ├── Cron.pm   #定时执行任务
+    │       │   │   └── Remote
+    │       │   │       ├── _get_qrcode_image.pm  #微信底层接口，获取登录二维码图片
+    │       │   │       ├── _get_qrcode_uuid.pm   #微信底层接口，获取登录二维码uuid
+    │       │   │       ├── _is_need_login.pm     #微信底层接口，判断是否需要扫描登录
+    │       │   │       ├── _login.pm             #微信底层接口，登录
+    │       │   │       ├── _logout.pm            #微信底层接口，注销
+    │       │   │       ├── _synccheck.pm         #微信底层接口，检查是否有消息
+    │       │   │       └── _sync.pm              #微信底层接口，接收消息
+    │       │   ├── Client.pm  #负责客户的登录、运行、退出等基本控制功能
+    │       │   ├── Const.pm   #保存常量
+    │       │   ├── Friend.pm  #好友对象
+    │       │   ├── Group     
+    │       │   │   └── Member.pm  #群成员对象
+    │       │   ├── Group.pm   #群对象
+    │       │   ├── Log.pm     #日志类，提供日志记录相关功能
+    │       │   ├── Message
+    │       │   │   ├── Base.pm    #消息基类
+    │       │   │   ├── Handle.pm  #接收消息、发送消息的处理
+    │       │   │   ├── Queue.pm   #消息队列
+    │       │   │   ├── Remote 
+    │       │   │   │   └── _send_text_message.pm  #微信底层接口，发送好友和群文本消息
+    │       │   │   └── SendStatus.pm  #发送状态对象
+    │       │   ├── Message.pm #消息对象
+    │       │   ├── Model
+    │       │   │   ├── Base.pm  #个人、好友、群对象基类
+    │       │   │   └── Remote
+    │       │   │       ├── _webwxbatchgetcontact.pm #微信底层接口，批量获取群组信息
+    │       │   │       ├── _webwxgetcontact.pm      #微信底层接口，获取通讯录信息
+    │       │   │       └── _webwxinit.pm            #微信底层接口，获取首屏近期会话信息
+    │       │   ├── Model.pm  #模型，负责更新、删除、搜索好友、群组等对象
+    │       │   ├── Plugin       #插件集合
+    │       │   │   ├── FuckDaShen.pm
+    │       │   │   ├── IRCShell.pm
+    │       │   │   ├── KnowledgeBase.pm
+    │       │   │   ├── Openwx.pm
+    │       │   │   ├── Perlcode.pm
+    │       │   │   ├── Perldoc.pm
+    │       │   │   ├── PostQRcode.pm
+    │       │   │   ├── ShowMsg.pm
+    │       │   │   ├── SmartReply.pm
+    │       │   │   └── Translation.pm
+    │       │   ├── Plugin.pm #插件类，提供基本的插件加载，执行框架
+    │       │   ├── Request.pm #HTTP请求类，提供基本的HTTP GET POST请求，支持阻塞和非阻塞
+    │       │   ├── Run.pm  #提供异步执行外部程序的功能
+    │       │   ├── Server.pm #产生HTTP服务器
+    │       │   ├── User.pm #登录帐号个人对象
+    │       │   └── Util.pm #使用函数集合
+    │       ├── Weixin.pm #模块主文件
+    │       └── Weixin.pod #模块文档，同doc/Weixin.pod相同
+    ├── Makefile.PL  #模块安装所需Makefile文本
+    ├── README.md    #README文档，markdown格式
+    ├── screenshot   #运行效果截图
+    │   └── IRCShell.jpg
+    └── t  #测试程序
+        ├── https.t
+        └── load_module.t
+
 =head1 对象和方法
 
 =head2 客户端对象
