@@ -163,4 +163,30 @@ sub code2sex{
     return $h{$c} || "none";
 }
 
+sub each_friend{
+    my $self = shift;
+    my $callback = shift;
+    $self->die("参数必须是函数引用") if ref $callback ne "CODE";
+    for (@{$self->friend}){
+        $callback->($self,$_);
+    }
+}
+sub each_group{
+    my $self = shift;
+    my $callback = shift;
+    $self->die("参数必须是函数引用") if ref $callback ne "CODE";
+    for (@{$self->group}){
+        $callback->($self,$_);
+    }
+}
+
+sub friends{
+    my $self = shift;
+    return @{$self->friend};
+}
+sub groups{
+    my $self = shift;
+    return @{$self->group};
+}
+
 1;

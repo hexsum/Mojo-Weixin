@@ -6,7 +6,10 @@ sub Mojo::Weixin::_login {
         $self->info("检测到近期登录活动，尝试直接恢复登录");
         $self->wxuin($self->search_cookie("wxuin"));
         $self->wxsid($self->search_cookie("wxsid"));
-        return 1;
+        if(defined $self->wxuin and defined $self->wxsid){
+            $self->login_state("success");
+            return 1;
+        }
     }
     my $qrcode_uuid = $self->_get_qrcode_uuid(); 
     if(not defined $qrcode_uuid){
@@ -59,6 +62,7 @@ sub Mojo::Weixin::_login {
             $self->wxuin($d{wxuin});
             $self->pass_ticket($d{pass_ticket});
             $self->info("微信登录成功");
+            $self->login_state("success");
             return 1;
         }
         elsif($data{code} == 400){

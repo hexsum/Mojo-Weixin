@@ -15,7 +15,7 @@ sub call{
     my $client = shift;
     my $data = shift;
     $client->die("请先安装模块 Mojo::IRC::Server::Chinese") if not $Mojo::Weixin::Plugin::IRCShell::has_mojo_irc_server;
-    my $master_irc_user = $data->{master_irc_user} || $client->account;
+    my $master_irc_user = $data->{master_irc_user} || $client->user->account;
     my $image_api = $data->{image_api}; # ||  'http://img.vim-cn.com/';
     my $is_load_friend = defined $data->{load_friend}?$data->{load_friend}:1;
     my @groups = ref($data->{group}) eq "ARRAY"?@{$data->{group}}:();

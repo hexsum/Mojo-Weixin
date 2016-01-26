@@ -22,13 +22,19 @@ sub login{
         $self->load_cookie();
     }
 
-    if( $self->_login() ){
+    $self->_login();
+    if($self->login_state eq "success"){
         $self->model_init();
+    }
+    else{
+        $self->error("登录失败");
+        $self->stop();
     }
 }
 sub relogin{
     my $self = shift;
     my $retcode = shift;
+    $self->login_state("relogin");
     $self->user(+{});
     $self->friend([]);
     $self->group([]);
@@ -197,11 +203,13 @@ sub interval{
 sub exit{
     my $self = shift;
     my $code = shift;
+    $self->info("客户端已退出");
     exit(defined $code?$code+0:0);
 }
 sub stop{
     my $self = shift;
     $self->is_stop(1);
+    $self->info("客户端停止运行");
     CORE::exit();
 }
 

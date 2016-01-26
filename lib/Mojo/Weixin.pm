@@ -53,6 +53,7 @@ has is_ready                => 0;
 has is_stop                 => 0;
 has ua_retry_times          => 5;
 has is_first_login          => -1;
+has login_state             => 'init';
 has ua                      => sub {
     #local $ENV{MOJO_USERAGENT_DEBUG} = $_[0]->ua_debug;
     require Mojo::UserAgent;

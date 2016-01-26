@@ -87,4 +87,17 @@ sub _search{
         return first {my $g = $_;(first {$p{$_} ne $g->$_} grep {defined $p{$_}} keys %p) ? 0 : 1;} @$array_ref;
     }
 }
+
+sub is_friend{
+    my $self = shift;
+    ref $self eq "Mojo::Weixin::Friend"?1:0;
+}
+sub is_group{
+    my $self = shift;
+    ref $self eq "Mojo::Weixin::Group"?1:0;
+}
+sub is_group_member{
+    my $self = shift;
+    ref $self eq "Mojo::Weixin::Group::Member"?1:0;
+}
 1;
