@@ -131,12 +131,12 @@ Mojo-Weixin v1.0.1 [![Build Status](https://travis-ci.org/sjdy521/Mojo-Weixin.sv
     
     发送好友消息的接口调用示例
     
-        http://127.0.0.1:3000/openwx/send_message?id=xxxxcontent=hello
+        http://127.0.0.1:3000/openwx/send_message?id=xxxx&content=hello
         
         * About to connect() to 127.0.0.1 port 3000 (#0)
         *   Trying 127.0.0.1...
         * Connected to 127.0.0.1 (127.0.0.1) port 3000 (#0)
-        > GET /openwx/send_message?id=>xxxxx&content=hello HTTP/1.1
+        > GET /openwx/send_message?id=xxxxx&content=hello HTTP/1.1
         > User-Agent: curl/7.29.0
         > Host: 127.0.0.1:3000
         > Accept: */*
