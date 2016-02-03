@@ -34,11 +34,21 @@ sub login{
 sub relogin{
     my $self = shift;
     my $retcode = shift;
+    $self->info("正在重新登录...\n");
+    $self->logout($retcode);
     $self->login_state("relogin");
+    $self->ua->cookie_jar->empty;
+
+    $self->sync_key(+{});
+    $self->pass_ticket('');
+    $self->skey('');
+    $self->wxsid('');
+    $self->wxuin('');
+    $self->deviceid($self->gen_deviceid());
+
     $self->user(+{});
     $self->friend([]);
     $self->group([]);
-    $self->logout($retcode);
     $self->login();
 }
 sub logout{
