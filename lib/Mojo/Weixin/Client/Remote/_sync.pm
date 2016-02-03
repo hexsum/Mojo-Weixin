@@ -3,7 +3,7 @@ sub Mojo::Weixin::_sync {
     my $self = shift;
     return if ($self->_synccheck_running or $self->_sync_running);
     $self->_sync_running(1);
-    my $api = 'https://wx.qq.com/cgi-bin/mmwebwx-bin/webwxsync';
+    my $api = 'https://'. $self->domain . '/cgi-bin/mmwebwx-bin/webwxsync';
     my @query_string = (
         sid     => $self->wxsid,
         skey    => url_escape($self->skey),

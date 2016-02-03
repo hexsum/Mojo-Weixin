@@ -76,6 +76,7 @@ has skey => '';
 has wxsid => '';
 has wxuin => '';
 has deviceid => sub{$_[0]->gen_deviceid()};
+has domain => 'wx.qq.com';
 
 has _sync_running => 0;
 has _synccheck_running => 0;

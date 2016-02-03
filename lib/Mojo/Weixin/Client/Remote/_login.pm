@@ -53,14 +53,21 @@ sub Mojo::Weixin::_login {
         }
         elsif($data{code} == 200){
             $self->info("正在进行登录...");
-            my $data = $self->http_get($data{redirect_uri} . "&fun=new");
+            if($data{redirect_uri}=~m#https?://([^/]+)#m){
+                $self->domain($1) if ($1 and $1 ne $self->domain);
+            }   
+            my $data = $self->http_get($data{redirect_uri} . '&fun=new&version=v2&lang=zh_CN');
             #<error><ret>0</ret><message>OK</message><skey>@crypt_859d8a8a_3f3db5290570080d1db29da9507e35de</skey><wxsid>rsuMHe7xmA0aHW1D</wxsid><wxuin>138122335</wxuin><pass_ticket>hWdpMVCMqXIVfhXLcsJxYrC6bv785tVDLZAres096ZE%3D</pass_ticket></error
+            if($data !~ m#^<error>.*</error>#){
+                $self->error("登录返回数据格式异常");
+                return 0;
+            }
             my %d = $data=~/<([^<>]+?)>([^<>]+?)<\/\1>/g;
             return 0 if $d{ret} != 0;
-            $self->skey($d{skey});
-            $self->wxsid($d{wxsid});
-            $self->wxuin($d{wxuin});
-            $self->pass_ticket($d{pass_ticket});
+            $self->skey($d{skey} || '');
+            $self->wxsid($d{wxsid} || $self->search_cookie("wxsid"));
+            $self->wxuin($d{wxuin} || $self->search_cookie("wxuin"));
+            $self->pass_ticket($d{pass_ticket} || '');
             $self->info("微信登录成功");
             $self->login_state("success");
             return 1;

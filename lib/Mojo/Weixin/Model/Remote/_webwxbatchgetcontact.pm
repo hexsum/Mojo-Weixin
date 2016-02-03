@@ -15,14 +15,14 @@ sub Mojo::Weixin::_webwxbatchgetcontact{
         Count       =>  @id+0,
         List        =>  [ map { {UserName=>$_,ChatRoomId=>""} } @id ],
     };
-    my $api = "https://wx.qq.com/cgi-bin/mmwebwx-bin/webwxbatchgetcontact";
+    my $api = "https://".$self->domain . "/cgi-bin/mmwebwx-bin/webwxbatchgetcontact";
     my @query_string = (
         type        =>  "ex",
         r           =>  $self->now(),
         lang        =>  'zh_CN',
         pass_ticket =>  $self->pass_ticket,
     );
-    my $json = $self->http_post($self->gen_url($api,@query_string),{Referer=>'https://wx.qq.com/?&lang=zh_CN',json=>1},json=>$post);
+    my $json = $self->http_post($self->gen_url($api,@query_string),{Referer=>'https://'.$self->domain . '/?&lang=zh_CN',json=>1},json=>$post);
     return unless defined $json;
     return if $json->{BaseResponse}{Ret}!=0;
     my @friends;

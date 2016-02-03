@@ -49,6 +49,7 @@ sub relogin{
     $self->user(+{});
     $self->friend([]);
     $self->group([]);
+
     $self->login();
 }
 sub logout{

@@ -3,7 +3,7 @@ use strict;
 use Mojo::Weixin::Const qw(%KEY_MAP_USER %KEY_MAP_GROUP %KEY_MAP_GROUP_MEMBER %KEY_MAP_FRIEND);
 sub Mojo::Weixin::_webwxinit{
     my $self = shift;
-    my $api = "https://wx.qq.com/cgi-bin/mmwebwx-bin/webwxinit";
+    my $api = "https://". $self->domain . "/cgi-bin/mmwebwx-bin/webwxinit";
     my @query_string = (
         r           =>  sub{use integer;~time}->(),
         lang        =>  'zh_CN',
@@ -18,7 +18,7 @@ sub Mojo::Weixin::_webwxinit{
         },
     };
     
-    my $json = $self->http_post($self->gen_url($api,@query_string),{json=>1,Referer=>'https://wx.qq.com/?&lang=zh_CN'},json=>$post);
+    my $json = $self->http_post($self->gen_url($api,@query_string),{json=>1,Referer=>'https://'.$self->domain .'/?&lang=zh_CN'},json=>$post);
     return if not defined $json;
     return if $json->{BaseResponse}{Ret}!=0;
     $self->sync_key($json->{SyncKey}) if $json->{SyncKey}{Count} !=0;

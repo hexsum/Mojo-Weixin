@@ -4,7 +4,7 @@ use Mojo::Weixin::Const qw(%KEY_MAP_USER %KEY_MAP_GROUP %KEY_MAP_GROUP_MEMBER %K
 use Mojo::Weixin::Const;
 sub Mojo::Weixin::_webwxgetcontact {
     my $self = shift;
-    my $api = "https://wx.qq.com/cgi-bin/mmwebwx-bin/webwxgetcontact";
+    my $api = "https://".$self->domain . "/cgi-bin/mmwebwx-bin/webwxgetcontact";
     my @query_string = (
         lang        =>  'zh_CN',
         pass_ticket =>  $self->pass_ticket,
@@ -13,7 +13,7 @@ sub Mojo::Weixin::_webwxgetcontact {
         skey        =>  $self->skey,
     );
 
-    my $json = $self->http_post($self->gen_url($api,@query_string),{Referer=>'https://wx.qq.com/?&lang=zh_CN',json=>1},json=>{});
+    my $json = $self->http_post($self->gen_url($api,@query_string),{Referer=>'https://'.$self->domain . '/?&lang=zh_CN',json=>1},json=>{});
     return unless defined $json;
     return if $json->{BaseResponse}{Ret}!=0;
     return if $json->{MemberCount} == 0;

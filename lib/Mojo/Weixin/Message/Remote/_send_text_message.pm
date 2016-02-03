@@ -2,7 +2,7 @@ use Mojo::Util qw(url_escape decode);
 sub Mojo::Weixin::_send_text_message {
     my $self = shift;
     my $msg = shift;
-    my $api = "https://wx.qq.com/cgi-bin/mmwebwx-bin/webwxsendmsg";
+    my $api = "https://".$self->domain . "/cgi-bin/mmwebwx-bin/webwxsendmsg";
     my @query_string =(
         lang            => 'zh_CN',
     );

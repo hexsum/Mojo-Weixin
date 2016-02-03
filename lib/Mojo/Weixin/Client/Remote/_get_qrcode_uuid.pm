@@ -3,7 +3,7 @@ sub Mojo::Weixin::_get_qrcode_uuid {
     my $api = 'https://login.weixin.qq.com/jslogin';
     my @query_string = (
         appid           =>  'wx782c26e4c19acffb',
-        redirect_uri    =>  'https://wx.qq.com/cgi-bin/mmwebwx-bin/webwxnewloginpage',
+        redirect_uri    =>  'https://'.$self->domain . '/cgi-bin/mmwebwx-bin/webwxnewloginpage',
         fun             =>  'new',
         lang            =>  'zh_CN',
         _               =>  $self->now(),

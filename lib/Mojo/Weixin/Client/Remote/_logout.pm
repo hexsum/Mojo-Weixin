@@ -7,7 +7,7 @@ my %type = qw(
 );
 sub Mojo::Weixin::_logout {
     my $self = shift;
-    my $api = "https://wx.qq.com/cgi-bin/mmwebwx-bin/webwxlogout";
+    my $api = "https://". $self->domain ."/cgi-bin/mmwebwx-bin/webwxlogout";
     my $retcode = shift;
     my $type = exists $type{$retcode}?$type{$retcode}:0;
     my @query_string = (
@@ -20,6 +20,6 @@ sub Mojo::Weixin::_logout {
         uin => $self->wxuin,
     };
     $self->info("客户端正在注销...");
-    $self->http_post($self->gen_url($api,@query_string),{Referer=>"https://wx.qq.com/?&lang=zh_CN"},form=>$post,);
+    $self->http_post($self->gen_url($api,@query_string),{Referer=>"https://". $self->domain . "/?&lang=zh_CN"},form=>$post,);
 }
 1;
