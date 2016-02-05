@@ -22,7 +22,7 @@ sub call{
             $client->stop();
             return 
         }
-        $data->{subject} = "微信帐号 " . $client->user->displayname . " 扫描二维码" if not defined $data->{subject};
+        $data->{subject} = "微信扫描二维码" if not defined $data->{subject};
         my $mime = MIME::Lite->new(
             Type    => 'multipart/mixed',
             From    => $data->{from},
