@@ -15,7 +15,8 @@ sub Mojo::Weixin::_sync {
         rr          =>  $self->now(),
     };
     my $callback = sub{
-        my $json = shift;
+        my ($json,$ua,$tx) = @_;
+        $self->emit(receive_raw_message=>$tx->res->body,$json);
         $self->_sync_running(0);
         $self->emit("sync_over",$json);
     };

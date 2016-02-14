@@ -22,9 +22,10 @@ sub call{
             my($q,$a) = ($1,$2);
             return unless defined $q;
             return unless defined $a;
+            my $space = $msg->type eq "friend_message"?"__我的好友__":$msg->group->displayname;
             $q=~s/^\s+|\s+$//g;
             $a=~s/^\s+|\s+$//g;
-            push @{ $base->{$q} }, $a;
+            push @{ $base->{$space}{$q} }, $a;
             nstore($base,$file);
             $client->reply_message($msg,"知识库[ $q -> $a ]添加成功",sub{$_[1]->from("bot")}); 
 
@@ -38,18 +39,18 @@ sub call{
             my($q) = ($1);
             $q=~s/^\s+|\s+$//g;
             return unless defined $q;
-            delete $base->{$q}; 
+            my $space = $msg->type eq "friend_message"?"__我的好友__":$msg->group->displayname;
+            delete $base->{$space}{$q}; 
             nstore($base,$file);
             $client->reply_message($msg,"知识库[ $q ]删除成功"),sub{$_[1]->from("bot")};
         }
         else{
-            return if $msg->class eq "send" and $msg->from ne "api" and $msg->from ne "irc";
             my $content = $msg->content;
-            $content =~s/^[a-zA-Z0-9_]+: ?// if $msg->from eq "irc";
-            return unless exists $base->{$content};
+            my $space = $msg->type eq "friend_message"?"__我的好友__":$msg->group->displayname;
+            return unless exists $base->{$space}{$content};
             $msg->allow_plugin(0);
-            my $len = @{$base->{$content}};
-            $client->reply_message($msg,$base->{$content}->[int rand $len],sub{$_[1]->from("bot")});
+            my $len = @{$base->{$space}{$content}};
+            $client->reply_message($msg,$base->{$space}{$content}->[int rand $len],sub{$_[1]->from("bot")});
         }
     };
     $client->on(receive_message=>$callback);
