@@ -45,6 +45,7 @@ sub call{
             $client->reply_message($msg,"知识库[ $q ]删除成功"),sub{$_[1]->from("bot")};
         }
         else{
+            return if $msg->from eq "bot";
             my $content = $msg->content;
             my $space = $msg->type eq "friend_message"?"__我的好友__":$msg->group->displayname;
             return unless exists $base->{$space}{$content};
