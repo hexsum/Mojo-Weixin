@@ -55,7 +55,7 @@ Mojo-Weixin v1.0.2 [![Build Status](https://travis-ci.org/sjdy521/Mojo-Weixin.sv
     
     方法b： 直接在线安装cpanm
 
-        $ curl -L http://cpanmin.us | perl - App::cpanminus
+        $ curl -kL http://cpanmin.us | perl - App::cpanminus
 
 2. *使用cpanm在线安装 Mojo::Weixin 模块*
 
