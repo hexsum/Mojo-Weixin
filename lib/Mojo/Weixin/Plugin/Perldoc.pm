@@ -14,7 +14,7 @@ sub call{
         return if not $msg->allow_plugin;
         if($msg->content =~ /perldoc\s+-(v|f)\s+([^ ]+)/){
             $msg->allow_plugin(0);
-            return if $msg->class eq "send" and $msg->from ne "api" and $msg->from ne "irc";
+            return if $msg->from eq "bot";
             my($p,$v) = ("-$1",$2);
             $client->spawn(
                 cmd  =>sub{
@@ -37,7 +37,7 @@ sub call{
                         $reply .= "\n查看更多内容: http://perldoc.perl.org/perlvar.html" if $p eq "-v";
                     }
                     eval{$reply = Term::ANSIColor::colorstrip($reply);};
-                    $client->reply_message($msg,$reply) if $reply;
+                    $client->reply_message($msg,$reply,sub{$_[1]->from("bot")}) if $reply;
                 },
             );
         }
@@ -84,7 +84,7 @@ sub call{
                             $doc  = $client->truncate($doc,max_bytes=>1000,max_lines=>30);
                         }
                         $metacpan_cache->store($module,{code=>$code,doc=>$doc},604800);
-                        $client->reply_message($msg,$doc); 
+                        $client->reply_message($msg,$doc,sub{$_[1]->from("bot")}); 
                     });
                 }
             }); 

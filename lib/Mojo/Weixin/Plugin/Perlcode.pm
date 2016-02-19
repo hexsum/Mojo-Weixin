@@ -17,7 +17,7 @@ sub call{
         return if not $msg->allow_plugin;
         if($msg->content=~/^(?:>>>)(.*?)(?:__END__|$)/s or $msg->content =~/perl\s+-e\s+'([^']+)'/s){
             $msg->allow_plugin(0);
-            return if $msg->class eq "send" and $msg->from ne "api" and $msg->from ne "irc";
+            return if $msg->from eq "bot";
             my $doc = '';
             my $code = $1;
             $code=~s/^\s+|\s+$//g;
@@ -84,7 +84,7 @@ sub call{
                     elsif(defined $stdout_buf){$content=$stdout_buf}
                     elsif(defined $stderr_buf){$content=$stderr_buf}
                     $content = "代码打印内容为空" if ( !defined $content or $content eq "");
-                    $client->reply_message($msg,$content);
+                    $client->reply_message($msg,$content,sub{$_[1]->from("bot")});
                 },
             );  
         }    

@@ -45,7 +45,15 @@ sub Mojo::Weixin::_send_text_message {
 
             $self->emit(send_message => $msg,$status);
         }
-    };         
-    $self->http_post($self->gen_url($api,@query_string),{json=>1},json=>$post,$callback);
+    };
+    #Mojo::JSON::encode_json will escape the slash charactor '/' into '\/' 
+    #Weixin Server doesn't supported this feature
+    #So we do some dirty work there to disable this feature
+    $post->{Msg}{Content} =~ s#/#__SLASH__#g;
+    my $json = $self->encode_json($post);
+    $json =~ s#__SLASH__#/#g;
+    # dirty work done
+
+    $self->http_post($self->gen_url($api,@query_string),{json=>1,'Content-Type'=>'application/json'},$json,$callback);
 }
 1;
