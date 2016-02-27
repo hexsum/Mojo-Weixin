@@ -19,6 +19,7 @@ sub to_json_hash{
             $json->{receiver} = decode_utf8($self->receiver->displayname);
         }
         elsif($key eq "group"){
+            next if $self->type ne "group_message";
             $json->{group} = decode_utf8($self->group->displayname);
         }
         elsif(ref $self->{$key} eq ""){

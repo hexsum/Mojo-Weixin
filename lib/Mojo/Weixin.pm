@@ -4,7 +4,8 @@ use Mojo::Weixin::Base 'Mojo::EventEmitter';
 use Mojo::IOLoop;
 use Mojo::Weixin::Log;
 use File::Spec ();
-use POSIX;
+use POSIX ();
+use Carp ();
 use base qw(Mojo::Weixin::Util Mojo::Weixin::Model Mojo::Weixin::Client Mojo::Weixin::Plugin Mojo::Weixin::Request);
 
 has ua_debug            => 0;
@@ -98,6 +99,16 @@ sub new {
     my $class = shift;
     my $self  = $class->SUPER::new(@_);
     #$ENV{MOJO_USERAGENT_DEBUG} = $self->{ua_debug};
+    $self->info("当前正在使用 Mojo-Weixin v" . $self->version);
+    $self->ioloop->reactor->on(error=>sub{
+        my ($reactor, $err) = @_;
+        $self->error("reactor error: " . Carp::longmess($err));
+    });
+    $SIG{__WARN__} = sub{$self->warn(Carp::longmess @_);};
+    $self->on(error=>sub{
+        my ($self, $err) = @_;
+        $self->error(Carp::longmess($err));
+    });
     $Mojo::Weixin::_CLIENT = $self;
     $self;
 }

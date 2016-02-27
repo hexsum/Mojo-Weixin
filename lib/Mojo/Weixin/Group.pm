@@ -39,7 +39,7 @@ sub is_empty{
 sub update {
     my $self = shift;
     my $hash = shift;
-    for(grep {substr($_,0,1) ne "_"} keys %$self){
+    for(grep {substr($_,0,1) ne "_"} keys %$hash){
         if($_ eq "member" and ref $hash->{member} eq "ARRAY"){
             next if not @{$hash->{member}};
             my @member = 
