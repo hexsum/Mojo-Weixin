@@ -1,3 +1,10 @@
+2016-02-28 Mojo::Weixin v1.0.4
+1）修复 demo 下openwx-client.pl名称错误
+2）修复 发送消息中的斜杠'/'被转义为 '\/'的问题 感谢 @京 的反馈
+3）修复 Perlcode/Perldoc插件 自己发送的消息无法识别的bug
+4）修复Openwx插件设置post_api后，上报消息报错的问题
+5）完善错误输出信息，打印更多的函数堆栈信息方便定位问题
+
 2016-02-16 Mojo::Weixin v1.0.3
 1）修复PostQRcode bug
 2）新增receive_raw_message的事件，方便某些情况下直接处理接收到的原始消息数据
