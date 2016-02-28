@@ -22,6 +22,7 @@ sub new {
             $s->{content}=~s/<span class="emoji emoji$_"><\/span>/exists $map{$_}?"[$map{$_}]":"[未知表情]"/eg
         }
     }
+    $s->{content}=~s/<br\/>/\n/g;
     $s;
 }
 
