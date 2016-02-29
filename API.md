@@ -160,3 +160,54 @@
 ```
 {"status":"发送成功","msg_id":23910327,"code":0} #code为 0 表示发送成功
 ```
+### 6. 自定义接收消息上报地址
+|   API  |接收消息上报（支持好友消息、群消息）
+|--------|:------------------------------------------|
+|url     |自定义任意支持http协议的url|
+|请求方法|POST|
+|数据格式|application/json|
+
+需要加载Openwx插件时通过 `post_api` 参数来指定上报地址:
+```
+$client->load("Openwx",data=>{
+    listen => [{host=>xxx,port=>xxx}],
+    post_api=> 'http://127.0.0.1:4000/post_api',
+});
+```
+当接收到消息时，会把消息通过JSON格式数据POST到该接口
+
+```
+connect to 127.0.0.1 port 4000
+POST /post_api
+Accept: */*
+Content-Length: xxx
+Content-Type: application/json
+
+{   "receiver":"小灰",
+    "time":"1442542632",
+    "content":"测试一下",
+    "class":"recv",
+    "sender_id":"@2372835507",
+    "receiver_id":"@4072574066",
+    "group":"PERL学习交流",
+    "group_id":"@@2617047292",
+    "sender":"灰灰",
+    "id":"10856",
+    "type":"group_message"
+}
+
+```
+一般情况下，post_api接口返回的响应内容可以是随意，会被忽略，上报完不做其他操作
+如果post_api接口返回的数据类型是 text/json 或者 application/json，并且json格式形式如下:
+
+```
+HTTP/1.1 200 OK
+Connection: close
+Content-Type: application/json;charset=UTF-8
+Date: Mon, 29 Feb 2016 05:53:31 GMT
+Content-Length: 27
+Server: Mojolicious (Perl)
+
+{"reply":"你好","code":0} #要回复消息，必须包含reply的属性，其他属性有无并不重要
+```
+则表示希望通过post_api响应的内容来直接回复该消息，会直接对上报的该条消息进行回复，回复的内容为 "你好"
