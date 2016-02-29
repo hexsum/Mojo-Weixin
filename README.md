@@ -154,7 +154,7 @@ Mojo-Weixin v1.0.4 [![Build Status](https://travis-ci.org/sjdy521/Mojo-Weixin.sv
         
         {"status":"发送成功","msg_id":23910327,"code":0}
     
-    更多接口参数说明参加[Openwx插件使用文档](https://metacpan.org/pod/distribution/Mojo-Weixin/doc/Weixin.pod#Mojo::Weixin::Plugin::Openwx)
+    更多接口参数说明参加[Openwx插件API文档](API.md)
     
 ###核心依赖模块
 
@@ -165,6 +165,7 @@ Mojo-Weixin v1.0.4 [![Build Status](https://travis-ci.org/sjdy521/Mojo-Weixin.sv
 
 * [更新日志](https://github.com/sjdy521/Mojo-Weixin/blob/master/Changes)
 * [开发文档](https://metacpan.org/pod/distribution/Mojo-Weixin/doc/Weixin.pod)
+* [FAQ](FAQ.md)
 
 ###官方交流
 
