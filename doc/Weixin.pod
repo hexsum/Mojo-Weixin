@@ -770,10 +770,10 @@ Mojo::Weixin - A Weixin Client Framework base on Mojolicious
         "time":"1442542632",
         "content":"测试一下",
         "class":"recv",
-        "sender_id":"2372835507",
-        "receiver_id":"4072574066",
+        "sender_id":"@2372835507",
+        "receiver_id":"@4072574066",
         "group":"PERL学习交流",
-        "group_id":"2617047292",
+        "group_id":"@@2617047292",
         "sender":"灰灰",
         "id":"10856",
         "type":"group_message"
