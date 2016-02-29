@@ -12,7 +12,7 @@ github上的代码迭代比较频繁，定期打包发布一个稳定版本上�
 
 可以手动从github下载最新源码，然后在你的 `xxxx.pl` 文件的开头
 
-通过 `use lib 'github源码解压路径'` 来指定你要使用该路径下的`Mojo::Weixin`模块
+通过 `use lib 'github源码解压路径/lib/'` 来指定你要使用该路径下的`Mojo::Weixin`模块
 
 而不是之前通过cpanm安装到系统其他路径上的`Mojo::Weixin`模块，操作步骤演示：
 
