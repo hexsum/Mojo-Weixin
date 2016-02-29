@@ -1,6 +1,7 @@
 package Mojo::Weixin::Plugin::Openwx;
 our $PRIORITY = 98;
 use strict;
+use Encode;
 use Mojo::Weixin::Server;
 my $server;
 sub call{
@@ -16,6 +17,21 @@ sub call{
                 my($data,$ua,$tx) = @_;
                 if($tx->success){
                     $client->debug("插件[".__PACKAGE__ ."]接收消息[".$msg->id."]上报成功");
+                    if($tx->res->headers->content_type =~m#text/json|application/json#){
+                        #文本类的返回结果必须是json字符串
+                        my $json;
+                        eval{$json = $tx->res->json};
+                        if($@){$client->warn($@);return}
+                        if(defined $json){
+                            #{code=>0,reply=>"回复的消息",format=>"text"}
+                            if((!defined $json->{format}) or (defined $json->{format} and $json->{format} eq "text")){
+                                $msg->reply(Encode::encode("utf8",$json->{reply})) if defined $json->{reply};
+                            }
+                        }
+                    }
+                    #elsif($tx->res->headers->content_type =~ m#image/#){
+                    #   #发送图片，暂未实现
+                    #}
                 }
                 else{
                     $client->warn("插件[".__PACKAGE__ . "]接收消息[".$msg->id."]上报失败: ".$tx->error->{message}); 
@@ -47,11 +63,25 @@ sub call{
     get '/openwx/get_group_info'    => sub {$_[0]->render(json=>[map {$_->to_json_hash()} @{$client->group}]); };
     any [qw(GET POST)] => '/openwx/send_message'         => sub{
         my $c = shift;
-        my($id,$account,$displayname,$content)=($c->param("id"),$c->param("account"),$c->param("displayname"),$c->param("content"));
-        my $object = $client->is_group($id)?$client->search_group(id=>$id,displayname=>$displayname):$client->search_friend(id=>$id,account=>$account,displayname=>$displayname);
+        my($id,$account,$displayname,$markname,$type,$content)= map {defined $_?encode("utf8",$_):$_} ($c->param("id"),$c->param("account"),$c->param("displayname"),$c->param("markname"),$c->param("type"),$c->param("content"));
+        my $object;
+        if(defined $type){
+            if($type eq "group_message"){
+                $object = $client->search_group(id=>$id,displayname=>$displayname); 
+            }
+            else{
+                $object = $client->search_friend(id=>$id,account=>$account,displayname=>$displayname,markname=>$markname);
+            }
+        }
+        elsif(defined $id){
+            $object = $client->is_group($id)?$client->search_group(id=>$id,displayname=>$displayname):$client->search_friend(id=>$id,account=>$account,displayname=>$displayname,markname=>$markname);
+        }
+        else{
+            $object = $client->search_friend(id=>$id,account=>$account,displayname=>$displayname,markname=>$markname);
+        }
         if(defined $object){
             $c->render_later;
-            $client->send_message($object,encode("utf8",$content),sub{
+            $client->send_message($object,$content,sub{
                 my $msg= $_[1];
                 $msg->cb(sub{
                     my($client,$msg,$status)=@_;
@@ -62,6 +92,40 @@ sub call{
         }
         else{$c->render(json=>{msg_id=>undef,code=>100,status=>"object not found"});}
     };
+    any [qw(GET POST)] => '/openwx/send_friend_message'         => sub{
+        my $c = shift;
+        my($id,$account,$displayname,$markname,$content)= map {defined $_?encode("utf8",$_):$_} ($c->param("id"),$c->param("account"),$c->param("displayname"),$c->param("markname"),$c->param("content"));
+        my $object = $client->search_friend(id=>$id,account=>$account,displayname=>$displayname,markname=>$markname);
+        if(defined $object){
+            $c->render_later;
+            $client->send_message($object,$content,sub{
+                my $msg= $_[1];
+                $msg->cb(sub{
+                    my($client,$msg,$status)=@_;
+                    $c->render(json=>{msg_id=>$msg->id,code=>$status->code,status=>decode("utf8",$status->msg)});
+                });
+                $msg->from("api");
+            });
+        }
+        else{$c->render(json=>{msg_id=>undef,code=>100,status=>"object not found"});}
+    };
+    any [qw(GET POST)] => '/openwx/send_group_message'         => sub{
+        my $c = shift;
+        my($id,$account,$displayname,$markname,$content)= map {defined $_?encode("utf8",$_):$_} ($c->param("id"),$c->param("account"),$c->param("displayname"),$c->param("markname"),$c->param("content"));
+        my $object = $client->search_group(id=>$id,displayname=>$displayname);
+        if(defined $object){
+            $c->render_later;
+            $client->send_message($object,$content,sub{
+                my $msg= $_[1];
+                $msg->cb(sub{
+                    my($client,$msg,$status)=@_;
+                    $c->render(json=>{msg_id=>$msg->id,code=>$status->code,status=>decode("utf8",$status->msg)});
+                });
+                $msg->from("api");
+            });
+        }
+        else{$c->render(json=>{msg_id=>undef,code=>100,status=>"object not found"});}
+    }; 
     any '/*whatever'  => sub{whatever=>'',$_[0]->render(text=>"request error",status=>403)};
     package Mojo::Weixin::Plugin::Openwx;
     $server = Mojo::Weixin::Server->new();   

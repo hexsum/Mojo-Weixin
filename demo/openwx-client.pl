@@ -1,19 +1,4 @@
 #!/usr/bin/env perl
-=encoding utf8
-=head1 SYNOPSIS
-使用帮助
-
--h          打印帮助内容
--id         对象(好友、群成员、讨论组成员)的id
--account    对象(好友、群成员、讨论组成员)的帐号
-
-发送消息示例： 
-
-    perl ./openwx-client.pl -id @329be1b81d62b7c507e9329d2a47d4a0 你好
-
-    perl ./openwx-client.pl -account test 你好
-
-=cut
 use strict;
 use Getopt::Long;
 use Mojo::UserAgent;
@@ -41,9 +26,9 @@ elsif(@ARGV == 0 or $ARGV[0] eq "-h" or $ARGV[0] eq "--help"){
 
 使用帮助
 
--h          打印帮助内容
--id         对象(好友、群成员、讨论组成员)的id
--account    对象(好友、群成员、讨论组成员)的帐号
+-h              打印帮助内容
+-id             好友或群组的id
+-account        好友的帐号
 
 发送消息示例：
 

@@ -142,7 +142,7 @@ sub _parse_sync_data {
             else{#联系人
                 my $friend = {};
                 for(keys %KEY_MAP_FRIEND){
-                    $friend->{$_} = encode("utf8",$e->{$KEY_MAP_FRIEND{$_}});
+                    $friend->{$_} = encode("utf8",$e->{$KEY_MAP_FRIEND{$_}}) if defined $e->{$KEY_MAP_FRIEND{$_}};
                 }
                 my $f = $self->search_friend(id=>$friend->{id});
                 if(not defined $f){$self->add_friend(Mojo::Weixin::Friend->new($friend))}
