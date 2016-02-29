@@ -10,8 +10,8 @@
 
 ```
     {
-        "account": "wxzhifu",
-        "name": "微信支付",
+        "account": "xxx",
+        "name": "xxx",
         "markname": "",
         "sex": "none",
         "display": "",
@@ -19,7 +19,7 @@
         "signature": "帮助解决微信支付中遇到的困难，收集关于微信支付的建议反馈。",
         "province": "广东",
         "id": "@efc5f86c30df4b9c80e98ac428e0e257",
-        "displayname": "微信支付"
+        "displayname": "xxx"
     },
 ```
 
