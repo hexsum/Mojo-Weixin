@@ -2,9 +2,9 @@
 |   API  |获取用户数据
 |--------|:------------------------------------------|
 |url     |/openwx/get_user_info|
-|请求方法|GET|POST|
+|请求方法|GET\|POST|
 |请求参数|无|
-|调用示例|http://127.0.0.1:3000/openqq/get_user_info|
+|调用示例|http://127.0.0.1:3000/openwx/get_user_info|
 
 返回数据:
 
@@ -26,10 +26,10 @@
 ### 2. 获取好友数据
 |   API  |获取好友数据
 |--------|:------------------------------------------|
-|url     |/openqq/get_friend_info|
-|请求方法|GET|POST|
+|url     |/openwx/get_friend_info|
+|请求方法|GET\|POST|
 |请求参数|无|
-|调用示例|http://127.0.0.1:3000/openqq/get_user_info|
+|调用示例|http://127.0.0.1:3000/openwx/get_friend_info|
 返回JSON数组:
 ```
 [#好友数组
@@ -63,10 +63,10 @@
 ### 3. 获取群组数据
 |   API  |获取群组数据
 |--------|:------------------------------------------|
-|url     |/openqq/get_friend_info|
-|请求方法|GET|POST|
+|url     |/openwx/get_group_info|
+|请求方法|GET\|POST|
 |请求参数|无|
-|调用示例|http://127.0.0.1:3000/openqq/get_user_info|
+|调用示例|http://127.0.0.1:3000/openwx/get_group_info|
 返回JSON数组:
 ```
 [#群数组
@@ -136,11 +136,27 @@
     },
 ]
 ```
-### 4. 获取群组数据
-|   API  |获取群组数据
+### 4. 发送好友消息
+|   API  |发送好友消息
 |--------|:------------------------------------------|
-|url     |/openqq/get_friend_info|
-|请求方法|GET|POST|
-|请求参数|无|
-|调用示例|http://127.0.0.1:3000/openqq/get_user_info|
+|url     |/openwx/send_friend_message|
+|请求方法|GET\|POST|
+|请求参数|**id**: 好友的id<br>**account**: 好友的帐号<br>**displayname**: 好友显示名称<br>**markname**: 好友备注名称<br>|
+|数据格式|application/x-www-form-urlencoded|
+|调用示例|http://127.0.0.1:3000/openwx/send_friend_message?id=xxxx&content=hello<br>http://127.0.0.1:3000/openqq/send_friend_message?markname=xxx&content=%e4%bd%a0%e5%a5%bd|
 返回JSON数组:
+```
+{"status":"发送成功","msg_id":23910327,"code":0} #code为 0 表示发送成功
+```
+### 5. 发送群组消息
+|   API  |发送群组消息
+|--------|:------------------------------------------|
+|url     |/openwx/send_group_message|
+|请求方法|GET\|POST|
+|请求参数|**id**: 群组的id<br>**displayname**: 群组显示名称|
+|数据格式|application/x-www-form-urlencoded|
+|调用示例|http://127.0.0.1:3000/openwx/send_group_message?id=xxxx&content=hello<br>http://127.0.0.1:3000/openqq/send_group_message?markname=xxx&content=%e4%bd%a0%e5%a5%bd|
+返回JSON数组:
+```
+{"status":"发送成功","msg_id":23910327,"code":0} #code为 0 表示发送成功
+```
