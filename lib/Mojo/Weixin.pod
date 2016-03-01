@@ -823,6 +823,34 @@ Mojo::Weixin - A Weixin Client Framework base on Mojolicious
     id              #群组的id
     displayname     #群组的显示名称
 
+    #好友问答接口 /openwx/consult
+    
+    支持的参数：
+    id              #好友的id
+    account         #好友的微信帐号
+    displayname     #好友的显示名称（如果你设置了备注名称就是备注名称，否则就是好友的昵称）
+    markname        #好友的备注名称
+    timeout         #等待回复的时间，默认30秒
+
+    主要应用场景是把小冰(微信帐号ms-xiaoice)的智能回复封装成接口
+    GET /openwx/consult?account=ms-xiaoice&content=haha HTTP/1.1
+    User-Agent: curl/7.29.0
+    Host: 127.0.0.1:3000
+    Accept: */*
+
+    HTTP/1.1 200 OK
+    Content-Type: application/json;charset=UTF-8
+    Date: Tue, 01 Mar 2016 07:25:11 GMT
+    Content-Length: 94
+    Server: Mojolicious (Perl)
+
+    {"reply":"哈哈，有什么事情","status":"发送成功","msg_id":"2683625013724723712","code":0}
+
+    超时失败时的返回结果：
+
+    {"reply":null,"reply_status":"reply timeout","status":"发送成功","msg_id":1456817344504,"code":0}
+    
+
 调用示例
 
     http://127.0.0.1:3000/openwx/get_user_info
@@ -831,6 +859,7 @@ Mojo::Weixin - A Weixin Client Framework base on Mojolicious
     http://127.0.0.1:3000/openwx/send_friend_message?markname=test_friend&content=hello
     http://127.0.0.1:3000/openwx/send_group_message?displayname=test_group&content=hello
     http://127.0.0.1:3000/openqq/send_group_message?id=xxx&content=%e4%bd%a0%e5%a5%bd (中文需要utf8编码并进行urlencode)
+    http://127.0.0.1:3000/openwx/consult?account=ms-xiaoice&content=haha
 
 =head1 SEE ALSO
 

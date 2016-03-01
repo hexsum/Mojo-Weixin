@@ -42,6 +42,7 @@ sub call{
 
     package Mojo::Weixin::Plugin::Openwx::App;
     use Encode;
+    use Mojo::IOLoop;
     use Mojolicious::Lite;
     under sub {
         my $c = shift;
@@ -63,7 +64,7 @@ sub call{
     get '/openwx/get_group_info'    => sub {$_[0]->render(json=>[map {$_->to_json_hash()} @{$client->group}]); };
     any [qw(GET POST)] => '/openwx/send_message'         => sub{
         my $c = shift;
-        my($id,$account,$displayname,$markname,$type,$content)= map {defined $_?encode("utf8",$_):$_} ($c->param("id"),$c->param("account"),$c->param("displayname"),$c->param("markname"),$c->param("type"),$c->param("content"));
+        my($id,$account,$displayname,$markname,$type,$content)= map {defined $_?Encode::encode("utf8",$_):$_} ($c->param("id"),$c->param("account"),$c->param("displayname"),$c->param("markname"),$c->param("type"),$c->param("content"));
         my $object;
         if(defined $type){
             if($type eq "group_message"){
@@ -85,7 +86,7 @@ sub call{
                 my $msg= $_[1];
                 $msg->cb(sub{
                     my($client,$msg,$status)=@_;
-                    $c->render(json=>{msg_id=>$msg->id,code=>$status->code,status=>decode("utf8",$status->msg)});  
+                    $c->render(json=>{msg_id=>$msg->id,code=>$status->code,status=>Encode::decode("utf8",$status->msg)});  
                 });
                 $msg->from("api");
             });
@@ -94,7 +95,7 @@ sub call{
     };
     any [qw(GET POST)] => '/openwx/send_friend_message'         => sub{
         my $c = shift;
-        my($id,$account,$displayname,$markname,$content)= map {defined $_?encode("utf8",$_):$_} ($c->param("id"),$c->param("account"),$c->param("displayname"),$c->param("markname"),$c->param("content"));
+        my($id,$account,$displayname,$markname,$content)= map {defined $_?Encode::encode("utf8",$_):$_} ($c->param("id"),$c->param("account"),$c->param("displayname"),$c->param("markname"),$c->param("content"));
         my $object = $client->search_friend(id=>$id,account=>$account,displayname=>$displayname,markname=>$markname);
         if(defined $object){
             $c->render_later;
@@ -102,7 +103,7 @@ sub call{
                 my $msg= $_[1];
                 $msg->cb(sub{
                     my($client,$msg,$status)=@_;
-                    $c->render(json=>{msg_id=>$msg->id,code=>$status->code,status=>decode("utf8",$status->msg)});
+                    $c->render(json=>{msg_id=>$msg->id,code=>$status->code,status=>Encode::decode("utf8",$status->msg)});
                 });
                 $msg->from("api");
             });
@@ -111,7 +112,7 @@ sub call{
     };
     any [qw(GET POST)] => '/openwx/send_group_message'         => sub{
         my $c = shift;
-        my($id,$account,$displayname,$markname,$content)= map {defined $_?encode("utf8",$_):$_} ($c->param("id"),$c->param("account"),$c->param("displayname"),$c->param("markname"),$c->param("content"));
+        my($id,$account,$displayname,$markname,$content)= map {defined $_?Encode::encode("utf8",$_):$_} ($c->param("id"),$c->param("account"),$c->param("displayname"),$c->param("markname"),$c->param("content"));
         my $object = $client->search_group(id=>$id,displayname=>$displayname);
         if(defined $object){
             $c->render_later;
@@ -126,6 +127,32 @@ sub call{
         }
         else{$c->render(json=>{msg_id=>undef,code=>100,status=>"object not found"});}
     }; 
+    any [qw(GET POST)] => '/openwx/consult'         => sub{
+        my $c = shift;
+        my($id,$account,$displayname,$markname,$content,$timeout)= map {defined $_?Encode::encode("utf8",$_):$_} ($c->param("id"),$c->param("account"),$c->param("displayname"),$c->param("markname"),$c->param("content"),$c->param("timeout"));
+        my $object = $client->search_friend(id=>$id,account=>$account,displayname=>$displayname,markname=>$markname);
+        if(defined $object){
+            $c->render_later;
+            $client->send_message($object,$content,sub{
+                my $msg= $_[1];
+                $msg->cb(sub{
+                    my($client,$msg,$status)=@_;
+                    my ($timer,$cb);
+                    $timer = Mojo::IOLoop->timer($timeout || 30,sub{
+                        $client->unsubscribe(receive_message=>$cb);
+                        $c->render(json=>{msg_id=>$msg->id,code=>$status->code,status=>Encode::decode("utf8",$status->msg),reply_status=>"reply timeout",reply=>undef});
+                    });
+                    $cb = $client->once(receive_message=>sub{
+                        my($client,$msg) = @_;
+                        Mojo::IOLoop->remove($timer);
+                        $c->render(json=>{reply=>Encode::decode("utf8",$msg->content),msg_id=>$msg->id,code=>$status->code,status=>Encode::decode("utf8",$status->msg)}); 
+                    });
+                });
+                $msg->from("api");
+            });
+        }
+        else{$c->render(json=>{msg_id=>undef,code=>100,status=>"object not found"});}
+    };
     any '/*whatever'  => sub{whatever=>'',$_[0]->render(text=>"request error",status=>403)};
     package Mojo::Weixin::Plugin::Openwx;
     $server = Mojo::Weixin::Server->new();   
