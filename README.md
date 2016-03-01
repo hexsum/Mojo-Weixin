@@ -128,7 +128,7 @@ Mojo-Weixin v1.0.4 [![Build Status](https://travis-ci.org/sjdy521/Mojo-Weixin.sv
         $client->load("Openwx",data=>{listen=>[{host=>$host,port=>$port}], post_api=>$post_api});
         $client->run();
     
-    上述代码保存成 xxxx.pl 文件，然后使用 perl 来运行，就会完成 QQ 登录并在本机产生一个监听指定地址端口的 http server
+    上述代码保存成 xxxx.pl 文件，然后使用 perl 来运行，就会完成 微信 登录并在本机产生一个监听指定地址端口的 http server
     
         $ perl xxxx.pl
     
@@ -139,7 +139,7 @@ Mojo-Weixin v1.0.4 [![Build Status](https://travis-ci.org/sjdy521/Mojo-Weixin.sv
         * About to connect() to 127.0.0.1 port 3000 (#0)
         *   Trying 127.0.0.1...
         * Connected to 127.0.0.1 (127.0.0.1) port 3000 (#0)
-        > GET /openwx/send_message?id=xxxxx&content=hello HTTP/1.1
+        > GET /openwx/send_friend_message?id=xxxxx&content=hello HTTP/1.1
         > User-Agent: curl/7.29.0
         > Host: 127.0.0.1:3000
         > Accept: */*
@@ -154,7 +154,7 @@ Mojo-Weixin v1.0.4 [![Build Status](https://travis-ci.org/sjdy521/Mojo-Weixin.sv
         
         {"status":"发送成功","msg_id":23910327,"code":0}
     
-    更多接口参数说明参加[Openwx插件API文档](API.md)
+    更多接口参数说明参考[Openwx插件API文档](API.md)
     
 ###核心依赖模块
 
