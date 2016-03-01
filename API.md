@@ -211,3 +211,32 @@ Server: Mojolicious (Perl)
 {"reply":"你好","code":0} #要回复消息，必须包含reply的属性，其他属性有无并不重要
 ```
 则表示希望通过post_api响应的内容来直接回复该消息，会直接对上报的该条消息进行回复，回复的内容为 "你好"
+
+### 7. 好友问答
+|   API  |发送消息给好友并等待好友回答
+|--------|:------------------------------------------|
+|url     |/openwx/consult|
+|请求方法|GET\|POST|
+|请求参数|**id**: 好友的id<br>**account**: 好友的帐号<br>**displayname**: 好友显示名称<br>**markname**: 好友备注名称<br>**timeout**：等待回复的时间，默认30秒<br>|
+|数据格式|application/x-www-form-urlencoded|
+|调用示例|http://127.0.0.1:3000/openwx/consult?account=ms-xiaoice&content=haha|
+
+主要应用场景是把小冰(微信帐号ms-xiaoice)的智能回复封装成接口，给小冰发好友消息前，你需要先关注小冰的公众号
+```
+GET /openwx/consult?account=ms-xiaoice&content=haha HTTP/1.1
+User-Agent: curl/7.29.0
+Host: 127.0.0.1:3000
+Accept: */*
+
+HTTP/1.1 200 OK
+Content-Type: application/json;charset=UTF-8
+Date: Tue, 01 Mar 2016 07:25:11 GMT
+Content-Length: 94
+Server: Mojolicious (Perl)
+
+{"reply":"哈哈，有什么事情","status":"发送成功","msg_id":"2683625013724723712","code":0}
+
+超时失败时的返回结果：
+
+{"reply":null,"reply_status":"reply timeout","status":"发送成功","msg_id":1456817344504,"code":0}
+```
