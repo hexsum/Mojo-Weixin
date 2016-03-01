@@ -66,7 +66,7 @@ sub _remove{
     my $array_ref = shift;
     my $element = shift;
     for( my $i=0;$i<@$array_ref;$i++ ){
-        if($array_ref->[$i]->id  eq $element->[$i]){
+        if($array_ref->[$i]->id  eq $element->id){
             splice @$array_ref,$i,1;
             return 1;
         }
