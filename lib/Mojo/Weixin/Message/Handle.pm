@@ -179,6 +179,12 @@ sub _parse_sync_data {
                     require HTML::Entities;
                     $msg->{content} = HTML::Entities::decode_entities($msg->{content});
                 };
+                if($@){
+                    eval{
+                        $msg->{content} = Mojo::Util::html_unescape($msg->{content});
+                    };
+                    if($@){$self->warn("html entities unescape fail: $@")}
+                }
                 if($e->{FromUserName} eq $self->user->id){#发送的消息
                     $msg->{source} = 'outer';
                     $msg->{class} = "send";

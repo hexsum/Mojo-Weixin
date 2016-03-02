@@ -10,13 +10,15 @@ sub client {
 sub to_json_hash{
     my $self = shift;
     my $json = {};
-    for my $key ( ( (keys %$self),qw(sender receiver group) ) ){
+    for my $key ( ( (keys %$self),qw(sender receiver group ) ) ){
         next if substr($key,0,1) eq "_";
         if($key eq "sender"){
             $json->{sender} = decode_utf8($self->sender->displayname);
+            $json->{sender_account} = $self->sender->account;
         }
         elsif($key eq "receiver"){
             $json->{receiver} = decode_utf8($self->receiver->displayname);
+            $json->{receiver_account} = $self->receiver->account;
         }
         elsif($key eq "group"){
             next if $self->type ne "group_message";

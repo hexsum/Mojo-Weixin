@@ -16,10 +16,12 @@ has [qw(
 sub new {
     my $self = shift;
     $self = $self->Mojo::Weixin::Base::new(@_);
-    if( my @code = $self->{name}=~/<span class="emoji emoji([a-zA-Z0-9]+)"><\/span>/g){
+    if( my @code = $self->name=~/<span class="emoji emoji([a-zA-Z0-9]+)"><\/span>/g){
         my %map = reverse %FACE_MAP_EMOJI;
         for(@code){
-            $self->{name}=~s/<span class="emoji emoji$_"><\/span>/exists $map{$_}?"[$map{$_}]":"[未知表情]"/eg
+            my $name = $self->name;
+            $name=~s/<span class="emoji emoji$_"><\/span>/exists $map{$_}?"[$map{$_}]":"[未知表情]"/eg;
+            $self->name($name);
         }
     }
     $self;
