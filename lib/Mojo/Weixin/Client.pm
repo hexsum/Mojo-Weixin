@@ -6,6 +6,7 @@ use Mojo::Weixin::Client::Remote::_is_need_login;
 use Mojo::Weixin::Client::Remote::_synccheck;
 use Mojo::Weixin::Client::Remote::_sync;
 use Mojo::Weixin::Message::Handle;
+use Mojo::IOLoop::Delay;
 
 use base qw(Mojo::Weixin::Request Mojo::Weixin::Client::Cron);
 
@@ -54,6 +55,14 @@ sub relogin{
 }
 sub logout{
     my $self = shift;
+}
+sub steps {
+    my $self = shift;
+    Mojo::IOLoop::Delay->new(ioloop=>$self->ioloop)->steps(@_)->catch(sub {
+        my ($delay, $err) = @_;
+        $self->error("steps error: $err");
+    })->wait;
+    $self;
 }
 sub ready {
     my $self = shift;

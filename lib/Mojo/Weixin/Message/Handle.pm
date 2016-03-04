@@ -8,6 +8,8 @@ use Mojo::Weixin::Message::SendStatus;
 use Mojo::Weixin::Const;
 use Mojo::Weixin::Message::SendStatus;
 use Mojo::Weixin::Message::Queue;
+use Mojo::Weixin::Message::Remote::_upload_media;
+use Mojo::Weixin::Message::Remote::_send_media_message;
 use Mojo::Weixin::Message::Remote::_send_text_message;
 $Mojo::Weixin::Message::LAST_DISPATCH_TIME  = undef;
 $Mojo::Weixin::Message::SEND_INTERVAL  = 3;
@@ -66,7 +68,12 @@ sub gen_message_queue{
             }
             $self->timer($delay,sub{
                 $msg->time(time);
-                $self->_send_text_message($msg);
+                if($msg->format eq "text"){
+                    $self->_send_text_message($msg);
+                }
+                elsif($msg->format eq "media"){
+                    $self->_send_media_message($msg);
+                }
             });
             $Mojo::Weixin::Message::LAST_DISPATCH_TIME = $now+$delay;
         }
@@ -269,6 +276,31 @@ sub send_message{
     $callback->($self,$msg) if ref $callback eq "CODE"; 
     $self->message_queue->put($msg);
 
+}
+sub send_media {
+    my $self = shift;
+    my $object = shift;
+    my $media = shift;
+    my $callback = shift;
+    if( ref($object) ne "Mojo::Weixin::Friend" and ref($object) ne "Mojo::Weixin::Group") {
+        $self->error("无效的发送消息对象");
+        return;
+    }
+
+    my $msg = Mojo::Weixin::Message->new(
+        id => $self->now(),
+        media_name => $media,
+        content => "[media]($media)",
+        sender_id => $self->user->id,
+        receiver_id => (ref $object eq "Mojo::Weixin::Friend"?$object->id : undef),
+        group_id =>(ref $object eq "Mojo::Weixin::Group"?$object->id : undef),
+        type => (ref $object eq "Mojo::Weixin::Group"?"group_message":"friend_message"),
+        class => "send",
+        format => "media",
+    );
+
+    $callback->($self,$msg) if ref $callback eq "CODE";
+    $self->message_queue->put($msg);
 }
 sub reply_message{
     my $self = shift;

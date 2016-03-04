@@ -12,6 +12,7 @@ has 'cb';
 has from => 'none';
 has allow_plugin => 1;
 has [qw(sender_id receiver_id group_id content type id class format)];
+has [qw(media_id media_mime media_name media_size media_data media_mtime media_ext)];
 
 sub new {
     my $s = shift;
@@ -71,4 +72,5 @@ sub  reply{
     my $s = shift;
     $s->client->reply_message($s,@_);
 }
+
 1;
