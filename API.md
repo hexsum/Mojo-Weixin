@@ -141,9 +141,9 @@
 |--------|:------------------------------------------|
 |url     |/openwx/send_friend_message|
 |请求方法|GET\|POST|
-|请求参数|**id**: 好友的id<br>**account**: 好友的帐号<br>**displayname**: 好友显示名称<br>**markname**: 好友备注名称<br>|
+|请求参数|**id**: 好友的id<br>**account**: 好友的帐号<br>**displayname**: 好友显示名称<br>**markname**: 好友备注名称<br>**media_path**:媒体路径(可以是文件路径或url，需要做urlencode)|
 |数据格式|application/x-www-form-urlencoded|
-|调用示例|http://127.0.0.1:3000/openwx/send_friend_message?id=xxxx&content=hello<br>http://127.0.0.1:3000/openwx/send_friend_message?markname=xxx&content=%e4%bd%a0%e5%a5%bd|
+|调用示例|http://127.0.0.1:3000/openwx/send_friend_message?id=xxxx&content=hello<br>http://127.0.0.1:3000/openwx/send_friend_message?markname=xxx&content=%e4%bd%a0%e5%a5%bd<br>http://127.0.0.1:3000/openwx/send_friend_message?id=xxx&media_path=https%3a%2f%2fss0.bdstatic.com%2f5aV1bjqh_Q23odCf%2fstatic%2fsuperman%2fimg%2flogo%2fbd_logo1_31bdc765.png|
 返回JSON数组:
 ```
 {"status":"发送成功","msg_id":23910327,"code":0} #code为 0 表示发送成功
@@ -153,9 +153,9 @@
 |--------|:------------------------------------------|
 |url     |/openwx/send_group_message|
 |请求方法|GET\|POST|
-|请求参数|**id**: 群组的id<br>**displayname**: 群组显示名称|
+|请求参数|**id**: 群组的id<br>**displayname**: 群组显示名称<br>**media_path**:媒体路径(可以是文件路径或url，需要做urlencode)|
 |数据格式|application/x-www-form-urlencoded|
-|调用示例|http://127.0.0.1:3000/openwx/send_group_message?id=xxxx&content=hello<br>http://127.0.0.1:3000/openwx/send_group_message?markname=xxx&content=%e4%bd%a0%e5%a5%bd|
+|调用示例|http://127.0.0.1:3000/openwx/send_group_message?id=xxxx&content=hello<br>http://127.0.0.1:3000/openwx/send_group_message?markname=xxx&content=%e4%bd%a0%e5%a5%bd<br>http://127.0.0.1:3000/openwx/send_group_message?id=xxx&media_path=https%3a%2f%2fss0.bdstatic.com%2f5aV1bjqh_Q23odCf%2fstatic%2fsuperman%2fimg%2flogo%2fbd_logo1_31bdc765.png|
 返回JSON数组:
 ```
 {"status":"发送成功","msg_id":23910327,"code":0} #code为 0 表示发送成功
@@ -217,9 +217,9 @@ Server: Mojolicious (Perl)
 |--------|:------------------------------------------|
 |url     |/openwx/consult|
 |请求方法|GET\|POST|
-|请求参数|**id**: 好友的id<br>**account**: 好友的帐号<br>**displayname**: 好友显示名称<br>**markname**: 好友备注名称<br>**timeout**：等待回复的时间，默认30秒<br>|
+|请求参数|**id**: 好友的id<br>**account**: 好友的帐号<br>**displayname**: 好友显示名称<br>**markname**: 好友备注名称<br>**timeout**：等待回复的时间，默认30秒<br>**media_path**:媒体路径(可以是文件路径或url，需要做urlencode)|
 |数据格式|application/x-www-form-urlencoded|
-|调用示例|http://127.0.0.1:3000/openwx/consult?account=ms-xiaoice&content=haha|
+|调用示例|http://127.0.0.1:3000/openwx/consult?account=ms-xiaoice&content=haha<br>http://127.0.0.1:3000/openwx/consult?account=ms-xiaoice&media_path=%2ftmp%2fhello.jpg|
 
 主要应用场景是把小冰(微信帐号ms-xiaoice)的智能回复封装成接口，给小冰发好友消息前，你需要先关注小冰的公众号
 ```
