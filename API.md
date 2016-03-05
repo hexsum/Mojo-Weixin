@@ -143,7 +143,7 @@
 |请求方法|GET\|POST|
 |请求参数|**id**: 好友的id<br>**account**: 好友的帐号<br>**displayname**: 好友显示名称<br>**markname**: 好友备注名称<br>|
 |数据格式|application/x-www-form-urlencoded|
-|调用示例|http://127.0.0.1:3000/openwx/send_friend_message?id=xxxx&content=hello<br>http://127.0.0.1:3000/openwx/send_friend_message?markname=xxx&content=%e4%bd%a0%e5%a5%bd|
+|调用示例|http://127.0.0.1:3000/openwx/send_friend_message?id=xxxx&content=hello<br>http://127.0.0.1:3000/openwx/send_friend_message?markname=xxx&content=%e4%bd%a0%e5%a5%bd<br>http://127.0.0.1:3000/openwx/send_friend_message?id=xxx&media_path=https%3a%2f%2fss0.bdstatic.com%2f5aV1bjqh_Q23odCf%2fstatic%2fsuperman%2fimg%2flogo%2fbd_logo1_31bdc765.png|
 返回JSON数组:
 ```
 {"status":"发送成功","msg_id":23910327,"code":0} #code为 0 表示发送成功

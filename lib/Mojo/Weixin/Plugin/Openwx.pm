@@ -96,6 +96,17 @@ sub call{
     any [qw(GET POST)] => '/openwx/send_friend_message'         => sub{
         my $c = shift;
         my($id,$account,$displayname,$markname,$content)= map {defined $_?Encode::encode("utf8",$_):$_} ($c->param("id"),$c->param("account"),$c->param("displayname"),$c->param("markname"),$c->param("content"));
+        my($media_mime,$media_name,$media_size,$media_data,$media_mtime,$media_ext,$media_path) = 
+            map {defined $_?Encode::encode("utf8",$_):$_} 
+        (
+            $c->param("media_mime"),
+            $c->param("media_name"),
+            $c->param("media_size"),
+            $c->param("media_data"),
+            $c->param("media_mtime"),
+            $c->param("media_ext"),
+            $c->param("media_path"),
+        );
         my $object = $client->search_friend(id=>$id,account=>$account,displayname=>$displayname,markname=>$markname);
         if(defined $object){
             $c->render_later;
@@ -106,13 +117,42 @@ sub call{
                     $c->render(json=>{msg_id=>$msg->id,code=>$status->code,status=>Encode::decode("utf8",$status->msg)});
                 });
                 $msg->from("api");
-            });
+            }) if defined $content;
+            if(defined $media_data or defined $media_path){
+                $client->send_media($object,{
+                    media_mime  =>  $media_mime,
+                    media_name  =>  $media_name,
+                    media_size  =>  $media_size,
+                    media_data  =>  $media_data,
+                    media_mtime =>  $media_mtime,
+                    media_ext   =>  $media_ext,
+                    media_path  =>  $media_path,
+                },sub{
+                    my $msg= $_[1];
+                    $msg->cb(sub{
+                        my($client,$msg,$status)=@_;
+                        $c->render(json=>{msg_id=>$msg->id,code=>$status->code,status=>Encode::decode("utf8",$status->msg)});
+                    });
+                    $msg->from("api");
+                });
+            }
         }
         else{$c->render(json=>{msg_id=>undef,code=>100,status=>"object not found"});}
     };
     any [qw(GET POST)] => '/openwx/send_group_message'         => sub{
         my $c = shift;
         my($id,$account,$displayname,$markname,$content)= map {defined $_?Encode::encode("utf8",$_):$_} ($c->param("id"),$c->param("account"),$c->param("displayname"),$c->param("markname"),$c->param("content"));
+        my($media_mime,$media_name,$media_size,$media_data,$media_mtime,$media_ext,$media_path) =
+            map {defined $_?Encode::encode("utf8",$_):$_}
+        (
+            $c->param("media_mime"),
+            $c->param("media_name"),
+            $c->param("media_size"),
+            $c->param("media_data"),
+            $c->param("media_mtime"),
+            $c->param("media_ext"),
+            $c->param("media_path"),
+        );
         my $object = $client->search_group(id=>$id,displayname=>$displayname);
         if(defined $object){
             $c->render_later;
@@ -123,13 +163,42 @@ sub call{
                     $c->render(json=>{msg_id=>$msg->id,code=>$status->code,status=>decode("utf8",$status->msg)});
                 });
                 $msg->from("api");
-            });
+            }) if defined $content;
+            if(defined $media_data or defined $media_path){
+                $client->send_media($object,{
+                    media_mime  =>  $media_mime,
+                    media_name  =>  $media_name,
+                    media_size  =>  $media_size,
+                    media_data  =>  $media_data,
+                    media_mtime =>  $media_mtime,
+                    media_ext   =>  $media_ext,
+                    media_path  =>  $media_path,
+                },sub{
+                    my $msg= $_[1];
+                    $msg->cb(sub{
+                        my($client,$msg,$status)=@_;
+                        $c->render(json=>{msg_id=>$msg->id,code=>$status->code,status=>Encode::decode("utf8",$status->msg)});
+                    });
+                    $msg->from("api");
+                });
+            }
         }
         else{$c->render(json=>{msg_id=>undef,code=>100,status=>"object not found"});}
     }; 
     any [qw(GET POST)] => '/openwx/consult'         => sub{
         my $c = shift;
         my($id,$account,$displayname,$markname,$content,$timeout)= map {defined $_?Encode::encode("utf8",$_):$_} ($c->param("id"),$c->param("account"),$c->param("displayname"),$c->param("markname"),$c->param("content"),$c->param("timeout"));
+        my($media_mime,$media_name,$media_size,$media_data,$media_mtime,$media_ext,$media_path) =
+            map {defined $_?Encode::encode("utf8",$_):$_}
+        (
+            $c->param("media_mime"),
+            $c->param("media_name"),
+            $c->param("media_size"),
+            $c->param("media_data"),
+            $c->param("media_mtime"),
+            $c->param("media_ext"),
+            $c->param("media_path"),
+        );
         my $object = $client->search_friend(id=>$id,account=>$account,displayname=>$displayname,markname=>$markname);
         if(defined $object){
             $c->render_later;
@@ -149,7 +218,25 @@ sub call{
                     });
                 });
                 $msg->from("api");
-            });
+            }) if defined $content;
+            if(defined $media_data or defined $media_path){
+                $client->send_media($object,{
+                    media_mime  =>  $media_mime,
+                    media_name  =>  $media_name,
+                    media_size  =>  $media_size,
+                    media_data  =>  $media_data,
+                    media_mtime =>  $media_mtime,
+                    media_ext   =>  $media_ext,
+                    media_path  =>  $media_path,
+                },sub{
+                    my $msg= $_[1];
+                    $msg->cb(sub{
+                        my($client,$msg,$status)=@_;
+                        $c->render(json=>{msg_id=>$msg->id,code=>$status->code,status=>Encode::decode("utf8",$status->msg)});
+                    });
+                    $msg->from("api");
+                });
+            }
         }
         else{$c->render(json=>{msg_id=>undef,code=>100,status=>"object not found"});}
     };

@@ -286,11 +286,24 @@ sub send_media {
         $self->error("无效的发送消息对象");
         return;
     }
-
+    my $media_info = {};
+    if(ref $media eq ""){
+        $media_info->{media_path} = $media;
+    }
+    elsif(ref $media eq "HASH"){
+        $media_info = $media;
+    }
     my $msg = Mojo::Weixin::Message->new(
         id => $self->now(),
-        media_name => $media,
-        content => "[media]($media)",
+        media_id   => $media_info->{media_id},
+        media_name => $media_info->{media_name},
+        media_path => $media_info->{media_path},
+        media_data => $media_info->{media_data},
+        media_mime => $media_info->{media_mime},
+        media_size => $media_info->{media_size},
+        media_mtime => $media_info->{media_mtime},
+        media_ext => $media_info->{media_ext},
+        content => "[media]($media_info->{media_path})",
         sender_id => $self->user->id,
         receiver_id => (ref $object eq "Mojo::Weixin::Friend"?$object->id : undef),
         group_id =>(ref $object eq "Mojo::Weixin::Group"?$object->id : undef),

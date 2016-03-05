@@ -365,6 +365,28 @@ Mojo::Weixin - A Weixin Client Framework base on Mojolicious
         $msg->content($content . "我是消息小尾巴");
     });
 
+=head4 send_media($friend|$group,$media_path|$media_hash,$callback) 发送媒体文件
+    
+    #发送本地文件，指定本地文件路径
+    $client->send_media($friend|$group,"/tmp/test.jpg");
+    $client->send_media($friend|$group,"/tmp/test.txt");
+
+    #发送url指定的文件
+    $client->send_media($friend|$group,"http://www.example.com/test.jpg");
+
+    #默认情况下，程序依靠文件扩展名或者url响应中的content-type等信息来识别媒体的格式，可能会导致识别不准确而影响发送
+    #这种情况下你可以传递一个hash的结构，手动指定媒体的相关信息
+    $client->send_media($friend|$group,{
+        media_path => '/tmp/hello.txt', #媒体路径，可以是本地文件路径或者http协议的url
+        media_data => 'hello world',    #可选，用于直接发送内存数据，优先级高于 media_path，
+        media_mime => 'text/plain',     #可选，默认是 application/octet-stream，用于指定
+        media_mtime => 1457169652 ,     #时间戳，文件修改时间，随意
+        media_ext  => 'txt',            #文件扩展名
+        media_size => 1024,             #可选，数据大小，默认会自动计算
+        media_name => 'hello.txt',      #可选，媒体名称，默认是取文件名作为名称
+    });
+
+
 =head4 reply_message($msg,$content,$callback) 回复指定的消息
 
     #回复消息，如果是群消息，就回复给该群，如果是好友消息，就回复给该好友
@@ -817,11 +839,19 @@ Mojo::Weixin - A Weixin Client Framework base on Mojolicious
     displayname     #好友的显示名称（如果你设置了备注名称就是备注名称，否则就是好友的昵称）
     markname        #好友的备注名称
 
+    media_path      #可选，媒体的路径，比如 /tmp/123.jpg, http://www.example.com/123.jpg（需要做urlencode）
+    media_mime      #可选，媒体的文件类型，比如image/jpeg, text/plain
+    media_ext       #可选，媒体可扩展名，比如 jpg,txt
+
     #群消息接口  /openwx/send_group_message
 
     支持的参数：
     id              #群组的id
     displayname     #群组的显示名称
+
+    media_path      #可选，媒体的路径，比如 /tmp/123.jpg, http://www.example.com/123.jpg（需要做urlencode）
+    media_mime      #可选，媒体的文件类型，比如image/jpeg, text/plain
+    media_ext       #可选，媒体可扩展名，比如 jpg,txt
 
     #好友问答接口 /openwx/consult
     
@@ -831,6 +861,10 @@ Mojo::Weixin - A Weixin Client Framework base on Mojolicious
     displayname     #好友的显示名称（如果你设置了备注名称就是备注名称，否则就是好友的昵称）
     markname        #好友的备注名称
     timeout         #等待回复的时间，默认30秒
+
+    media_path      #必选，媒体的路径，比如 /tmp/123.jpg, http://www.example.com/123.jpg（需要做urlencode）
+    media_mime      #可选，媒体的文件类型，比如image/jpeg, text/plain
+    media_ext       #可选，媒体可扩展名，比如 jpg,txt
 
     主要应用场景是把小冰(微信帐号ms-xiaoice)的智能回复封装成接口
     GET /openwx/consult?account=ms-xiaoice&content=haha HTTP/1.1
@@ -860,6 +894,9 @@ Mojo::Weixin - A Weixin Client Framework base on Mojolicious
     http://127.0.0.1:3000/openwx/send_group_message?displayname=test_group&content=hello
     http://127.0.0.1:3000/openqq/send_group_message?id=xxx&content=%e4%bd%a0%e5%a5%bd (中文需要utf8编码并进行urlencode)
     http://127.0.0.1:3000/openwx/consult?account=ms-xiaoice&content=haha
+
+    http://127.0.0.1:3000/openwx/send_friend_message?id=xxx&media_path=https%3a%2f%2fss0.bdstatic.com%2f5aV1bjqh_Q23odCf%2fstatic%2fsuperman%2fimg%2flogo%2fbd_logo1_31bdc765.png
+    http://127.0.0.1:3000/openwx/send_friend_message?id=xxx&media_path=%2ftmp%2fhello.jpg
 
 =head1 SEE ALSO
 
