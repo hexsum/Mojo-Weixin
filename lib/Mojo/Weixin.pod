@@ -716,6 +716,12 @@ Mojo::Weixin - A Weixin Client Framework base on Mojolicious
     附件：weixin_qrcode_xxxx.png
     正文：请使用手机微信扫描附件中的二维码
 
+=head2 Mojo::Weixin::Plugin::Beauty
+
+识别关键字发送美图，例如发送"看妹子"消息，就自动发送美女图片
+    
+    $client->load("Beauty",data=>{command=>"看妹子"});
+
 =head2 Mojo::Weixin::Plugin::Translation
 
 多国语言翻译功能，自动检测输入输出语言，消息指令格式：

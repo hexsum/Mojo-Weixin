@@ -11,10 +11,11 @@ Mojo-Weixin v1.0.5 [![Build Status](https://travis-ci.org/sjdy521/Mojo-Weixin.sv
   名称                 优先级   当前状态    github作者    功能说明
   ------------------------------------------------------------------------------
   ShowMsg              100      已发布      sjdy521       打印客户端接收和发送的消息
-  IRCShell             99       已发布      sjdy521       Linux环境下通过irc客户端使用qq
+  IRCShell             99       已发布      sjdy521       Linux环境下通过irc客户端使用微信
   Openwx               98       已发布      sjdy521       提供微信发送消息api接口
   Perlcode             97       已发布      sjdy521       通过微信消息执行perl代码
   Perldoc              96       已发布      sjdy521       通过微信消息查询perl文档
+  Beauty               95       已发布      sjdy521       识别指定关键字发送美女图片
   Translation          93       已发布      sjdy521       多国语言翻译功能
   KnowledgeBase        2        已发布      sjdy521       通过微信消息自定义问答知识库
   FuckDaShen           1        已发布      sjdy521       对消息中的"大神"关键词进行鄙视
