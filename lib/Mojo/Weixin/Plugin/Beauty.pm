@@ -24,6 +24,7 @@ sub call{
     my $callback = sub{
         my($client,$msg) = @_;
         return if $msg->content ne $command; 
+        return if $msg->from eq "bot";
         $msg->allow_plugin(0);
         my $pin = shift @pins;
         if(not defined $pin){
@@ -42,10 +43,13 @@ sub call{
                     push @pins,{id=>$_->{pin_id}, url=>'http://img.hb.aicdn.com/' . $_->{file}{key}} for @{$json->{pins}};
                     my $pin = shift @pins;
                     if($msg->type eq "group_message"){
-                        $client->send_media($msg->group,$pin->{url});
+                        $client->send_media($msg->group,$pin->{url},sub{$_[1]->from("bot")});
                     }
-                    elsif($msg->type eq "friend_message"){
-                        $client->send_media($msg->sender,$pin->{url});
+                    elsif($msg->type eq "friend_message" and $msg->class eq "recv"){
+                        $client->send_media($msg->sender,$pin->{url},sub{$_[1]->from("bot")});
+                    }
+                    elsif($msg->type eq "friend_message" and $msg->class eq "send"){
+                        $client->send_media($msg->receiver,$pin->{url},sub{$_[1]->from("bot")});
                     }
                     $last_pin_id = $pin->{id};
                 }
@@ -53,10 +57,13 @@ sub call{
         }
         else{
             if($msg->type eq "group_message"){
-                $client->send_media($msg->group,$pin->{url});
+                $client->send_media($msg->group,$pin->{url},sub{$_[1]->from("bot")});
             }
-            elsif($msg->type eq "friend_message"){
-                $client->send_media($msg->sender,$pin->{url});
+            elsif($msg->type eq "friend_message" and $msg->class eq "recv"){
+                $client->send_media($msg->sender,$pin->{url},sub{$_[1]->from("bot")});
+            }
+            elsif($msg->type eq "friend_message" and $msg->class eq "send"){
+                $client->send_media($msg->receiver,$pin->{url},sub{$_[1]->from("bot")});
             }
             $last_pin_id = $pin->{id};
         }
