@@ -721,7 +721,7 @@ Mojo::Weixin - A Weixin Client Framework base on Mojolicious
 识别关键字发送美图，例如发送"看妹子"消息，就自动发送美女图片
     
     $client->load("Beauty",data=>{
-        file => './Beauty.dat', #数据库保存路径
+        file => './Beauty.dat', #可选，数据库保存路径，默认当前目录
         board=>[
             {command=>"看妹子", url=>'http://huaban.com/boards/19570858/'},
             {command=>"搞基"  , url=>'http://huaban.com/boards/28226262/'},
