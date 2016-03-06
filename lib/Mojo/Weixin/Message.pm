@@ -17,13 +17,13 @@ has [qw(media_id media_mime media_name media_size media_data media_mtime media_e
 sub new {
     my $s = shift;
     $s = $s->Mojo::Weixin::Base::new(@_);
-    if( my @code = $s->{content}=~/<span class="emoji emoji([a-zA-Z0-9]+)"><\/span>/g){
+    if(defined $s->{content} and  my @code = $s->{content}=~/<span class="emoji emoji([a-zA-Z0-9]+)"><\/span>/g){
         my %map = reverse %FACE_MAP_EMOJI;
         for(@code){
             $s->{content}=~s/<span class="emoji emoji$_"><\/span>/exists $map{$_}?"[$map{$_}]":"[未知表情]"/eg
         }
     }
-    $s->{content}=~s/<br\/>/\n/g;
+    $s->{content}=~s/<br\/>/\n/g if defined $s->{content};
     $s;
 }
 
