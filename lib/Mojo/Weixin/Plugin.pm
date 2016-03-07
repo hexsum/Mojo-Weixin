@@ -13,6 +13,8 @@ sub load {
     
     for my $module_name (@module_name){
         my $module_function = undef;
+       # 有+号的是绝对命名空间，没有+号的是相对命名空间。 step5 插件的设计结构
+        my $module;
         if(substr($module_name,0,1) eq '+'){
             substr($module_name,0,1) = "";
             $module = $module_name;
