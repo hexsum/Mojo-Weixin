@@ -25,6 +25,10 @@ sub call{
             delete $db->{$url};
             next;
         }
+        if(@{$db->{$url}{pins}} != 0){
+            $db->{$url}{last_pin_id} = $db->{$url}{pins}->[-1]->{id} if not defined $db->{$url}{last_pin_id};
+            next ;
+        }
         my $html = $client->http_get($url);
         if(defined $html){
             if($html=~m#\Qapp.page["board"]\E\s*=\s*(.*?);#){
@@ -39,6 +43,7 @@ sub call{
         if(@{$db->{$url}{pins}} == 0){
             $self->error("插件[ ".__PACKAGE__ . " ]初始化数据失败: [$db->{$url}{command}]($url)");
         }
+        $db->{$url}{last_pin_id} = $db->{$url}{pins}->[-1]->{id};
     }
 
     my $callback = sub{
@@ -62,9 +67,9 @@ sub call{
                 sub{
                     my $json = shift;
                     return if not defined $json;
-                    if(defined $json->{pins} ){
-                        if(@{$json->{pins}} > 0){
-                            push @{$board->{pins}},{id=>$_->{pin_id}, url=>'http://img.hb.aicdn.com/' . $_->{file}{key}} for @{$json->{pins}};
+                    if(defined $json->{board}{pins} ){
+                        if(@{$json->{board}{pins}} > 0){
+                            push @{$board->{pins}},{id=>$_->{pin_id}, url=>'http://img.hb.aicdn.com/' . $_->{file}{key}} for @{$json->{board}{pins}};
                         }
                         else{
                             my $html = $client->http_get($board->{url});
