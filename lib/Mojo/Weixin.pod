@@ -719,7 +719,11 @@ Mojo::Weixin - A Weixin Client Framework base on Mojolicious
 =head2 Mojo::Weixin::Plugin::Beauty
 
 识别关键字发送美图，例如发送"看妹子"消息，就自动发送美女图片
-    
+
+    #使用默认的配置
+    $client->load("Beauty"); 
+
+    #自定义触发关键字和关键字对应的图片库
     $client->load("Beauty",data=>{
         file => './Beauty.dat', #可选，数据库保存路径，默认当前目录
         board=>[

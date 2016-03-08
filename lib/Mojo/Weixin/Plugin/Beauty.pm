@@ -7,21 +7,22 @@ sub call{
     my $data = shift;
     my $file = $data->{file} || './Beauty.dat';
     my $db = {};$db = retrieve($file) if -e $file;
-    if(ref $data->{board} eq "ARRAY"){
-        for(@{ $data->{board} }){
-            my $command = $_->{command} || '看妹子';
-            my $url = $_->{url} || 'http://huaban.com/boards/19570858/';
-            if(not exists $db->{$url}){
-                $db->{$url} = {command=>$command,pins=>[],last_pin_id=>undef,url=>$url};
-            }
-            else{
-                $db->{$url}{command} = $command;
-                $db->{$url}{url} = $url;
-            }
+    my $boards = ref($data->{board}) eq "ARRAY"? $data->{board}: [{command=>"看妹子",url=>'http://huaban.com/boards/19570858/'}];
+    for(@{ $boards }){
+        my $command = $_->{command} ;
+        my $url = $_->{url};
+        next if not $command;
+        next if not $url;
+        if(not exists $db->{$url}){
+            $db->{$url} = {command=>$command,pins=>[],last_pin_id=>undef,url=>$url};
+        }
+        else{
+            $db->{$url}{command} = $command;
+            $db->{$url}{url} = $url;
         }
     }
     for my $url (keys %$db){
-        if(not first {$url eq $_->{url} } @{ $data->{board} } ){
+        if(not first {$url eq $_->{url} } @{ $boards } ){
             delete $db->{$url};
             next;
         }
