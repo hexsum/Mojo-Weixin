@@ -62,7 +62,7 @@ Mojo::Weixin - A Weixin Client Framework base on Mojolicious
     ├── Changes #更新记录
     ├── demo    #存放演示程序
     │   ├── echo-reply.pl     
-    │   └── openqq-client.pl
+    │   └── openwx-client.pl
     ├── doc     #模块文档
     │   └── Weixin.pod
     ├── lib
@@ -750,7 +750,7 @@ Mojo::Weixin - A Weixin Client Framework base on Mojolicious
 提供HTTP API接口，方便获取客户端帐号、好友、群信息，以及通过接口发送和接收好友消息、群消息
 
     #ata是一个HASH引用
-    $client->load("Openqq",data=>{
+    $client->load("Openwx",data=>{
         listen => [ {host=>"127.0.0.1",port=>3000}, ] , #监听的地址和端口，支持多个，默认监听0.0.0.0:3000
         auth   => sub {my($param,$controller) = @_},    #可选，认证回调函数，用于进行请求鉴权
         post_api => 'http://xxxx',                      #可选，你自定义的接收消息上报接口
@@ -905,7 +905,7 @@ Mojo::Weixin - A Weixin Client Framework base on Mojolicious
     http://127.0.0.1:3000/openwx/send_friend_message?account=xxx&content=hello
     http://127.0.0.1:3000/openwx/send_friend_message?markname=test_friend&content=hello
     http://127.0.0.1:3000/openwx/send_group_message?displayname=test_group&content=hello
-    http://127.0.0.1:3000/openqq/send_group_message?id=xxx&content=%e4%bd%a0%e5%a5%bd (中文需要utf8编码并进行urlencode)
+    http://127.0.0.1:3000/openwx/send_group_message?id=xxx&content=%e4%bd%a0%e5%a5%bd (中文需要utf8编码并进行urlencode)
     http://127.0.0.1:3000/openwx/consult?account=ms-xiaoice&content=haha
 
     http://127.0.0.1:3000/openwx/send_friend_message?id=xxx&media_path=https%3a%2f%2fss0.bdstatic.com%2f5aV1bjqh_Q23odCf%2fstatic%2fsuperman%2fimg%2flogo%2fbd_logo1_31bdc765.png
