@@ -17,6 +17,7 @@ Mojo-Weixin v1.0.5 [![Build Status](https://travis-ci.org/sjdy521/Mojo-Weixin.sv
   Perldoc              96       已发布      sjdy521       通过微信消息查询perl文档
   Beauty               95       已发布      sjdy521       识别指定关键字发送美女图片
   Translation          93       已发布      sjdy521       多国语言翻译功能
+  Riddle               92       已发布      limengyu1990  输入"猜谜"关键字进行猜谜游戏
   KnowledgeBase        2        已发布      sjdy521       通过微信消息自定义问答知识库
   FuckDaShen           1        已发布      sjdy521       对消息中的"大神"关键词进行鄙视
   PostQRcode           0        已发布      sjdy521       登录二维码发送到邮箱实现远程扫码
@@ -113,7 +114,7 @@ Mojo-Weixin v1.0.5 [![Build Status](https://travis-ci.org/sjdy521/Mojo-Weixin.sv
 
 2. *我是对Perl不熟悉，是一个其他语言的开发者，只对提供的消息发送/接收接口感兴趣*
 
-    可以直接把如下代码保存成一个源码文件，使用 perl 解释器来运行
+    可以直接把如下代码保存成一个源码文件(必须使用UTF8编码)，使用 perl 解释器来运行
     
         #!/usr/bin/env perl
         use Mojo::Weixin;

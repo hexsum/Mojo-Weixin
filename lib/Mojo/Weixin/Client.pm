@@ -108,12 +108,11 @@ sub clean_qrcode{
 
 sub timer {
     my $self = shift;
-    $self->ioloop->timer(@_);
-    return $self;
+    return $self->ioloop->timer(@_);
 }
 sub interval{
     my $self = shift;
-    $self->ioloop->recurring(@_);
+    return $self->ioloop->recurring(@_);
 }
 
 sub exit{

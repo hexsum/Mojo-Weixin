@@ -733,6 +733,18 @@ Mojo::Weixin - A Weixin Client Framework base on Mojolicious
         ]
     });
 
+=head2 Mojo::Webqq::Plugin::Riddle
+
+输入关键字进行猜谜，作者 limengyu1990 L<https://github.com/limengyu1990>
+
+    $client->load("Riddle");
+    
+    $client->load("Riddle",data=>{
+        command     => "猜谜",   #可选，触发关键字
+        apikey      => "xxxx",   #可选，参见 http://apistore.baidu.com/apiworks/servicedetail/440.html?qq-pf-to=pcqq.c2c
+        timeout     => 30, #等待答案的超时时间，超时后会自动公布答案
+    });
+
 =head2 Mojo::Weixin::Plugin::Translation
 
 多国语言翻译功能，自动检测输入输出语言，消息指令格式：
