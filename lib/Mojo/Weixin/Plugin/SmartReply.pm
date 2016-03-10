@@ -32,16 +32,16 @@ sub call{
             $limit{$key}{$msg->group->id}{$msg->sender->id}++; 
             my $limit  = $limit{$key}{$msg->group->id}{$msg->sender->id};
             if($limit>=8 and $limit<=9){
-                $client->reply_message($msg,"\@$sender_nick " . $limit_reply[int rand($#limit_reply+1)],sub{$_[1]->msg_from("bot")});
+                $client->reply_message($msg,"\@$sender_nick " . $limit_reply[int rand($#limit_reply+1)],sub{$_[1]->from("bot")});
                 return;
             }   
             if($limit >=10 and $limit <=11){
-                $client->reply_message($msg,"\@$sender_nick " . "警告，您艾特过于频繁，即将被列入黑名单，请克制",sub{$_[1]->msg_from("bot")});
+                $client->reply_message($msg,"\@$sender_nick " . "警告，您艾特过于频繁，即将被列入黑名单，请克制",sub{$_[1]->from("bot")});
                 return;
             }
             if($limit > 11){
                 $ban{$msg->sender->id} = 1;
-                $client->reply_message($msg,"\@$sender_nick " . "您已被列入黑名单，1小时内提问无视",sub{$_[1]->msg_from("bot")});
+                $client->reply_message($msg,"\@$sender_nick " . "您已被列入黑名单，1小时内提问无视",sub{$_[1]->from("bot")});
                 $client->timer(3600,sub{delete $ban{$msg->sender->id};});
             }
         } 
