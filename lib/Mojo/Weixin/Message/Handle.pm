@@ -271,6 +271,7 @@ sub send_message{
         type => (ref $object eq "Mojo::Weixin::Group"?"group_message":"friend_message"),
         class => "send",
         format => "text", 
+        from  => "code",
     );
 
     $callback->($self,$msg) if ref $callback eq "CODE"; 
