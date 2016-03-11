@@ -74,7 +74,15 @@ sub update_friend{
 
 }
 sub update_group{
-
+    my $self = shift;
+    if(defined $_[0]){
+        if(ref $_[0] eq "Mojo::Weixin::Group"){
+            my $group = shift;
+        }
+        else{
+            my $gid = shift;
+        }   
+    }
 }
 
 sub search_friend{

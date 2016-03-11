@@ -100,4 +100,15 @@ sub is_group_member{
     my $self = shift;
     ref $self eq "Mojo::Weixin::Group::Member"?1:0;
 }
+sub type{
+    my $self = shift;
+    my %map = (
+        "Mojo::Weixin::Friend"           => "friend",
+        "Mojo::Weixin::Group"            => "group",
+        "Mojo::Weixin::Group::Member"    => "member",
+        "Mojo::Weixin::User"             => "user",
+    );
+    return $map{ref($self)};
+}
+
 1;

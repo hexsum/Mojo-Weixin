@@ -9,6 +9,7 @@ use Mojo::Weixin::Const;
 use Mojo::Weixin::Message::SendStatus;
 use Mojo::Weixin::Message::Queue;
 use Mojo::Weixin::Message::Remote::_upload_media;
+use Mojo::Weixin::Message::Remote::_get_media;
 use Mojo::Weixin::Message::Remote::_send_media_message;
 use Mojo::Weixin::Message::Remote::_send_text_message;
 $Mojo::Weixin::Message::LAST_DISPATCH_TIME  = undef;
@@ -22,6 +23,14 @@ sub gen_message_queue{
         return if $self->is_stop;
         if($msg->class eq "recv"){
             $self->emit(receive_message=>$msg);
+            if($msg->format eq "media"){
+                if($self->has_subscribers("receive_media")){
+                    $self->_get_media($msg->media_id,sub{
+                        my ($path,$data) = @_;
+                        $self->emit(receive_media=>$path,$data,$msg->sender);
+                    });
+                }
+            }
         }
         elsif($msg->class eq "send"){
             if($msg->source ne "local"){
@@ -178,10 +187,19 @@ sub _parse_sync_data {
     #有新消息
     if($json->{AddMsgCount} != 0){
         for my $e (@{$json->{AddMsgList}}){
+            my $msg = {};
+            for(keys %KEY_MAP_MESSAGE){
+                $msg->{$_} = defined $e->{$KEY_MAP_MESSAGE{$_}}?encode("utf8",$e->{$KEY_MAP_MESSAGE{$_}}):"";
+            }
             if($e->{MsgType} == 1){
-                my $msg = {};
                 $msg->{format} = "text";
-                for(keys %KEY_MAP_MESSAGE){$msg->{$_} = defined $e->{$KEY_MAP_MESSAGE{$_}}?encode("utf8",$e->{$KEY_MAP_MESSAGE{$_}}):"";}
+            }
+            elsif($e->{MsgType} == 3){#图片消息
+                $msg->{format} = "media";
+                $msg->{media_id} = $msg->{id};
+            }
+            else{next;}
+            if(defined $msg->{content}){
                 eval{
                     require HTML::Entities;
                     $msg->{content} = HTML::Entities::decode_entities($msg->{content});
@@ -192,39 +210,39 @@ sub _parse_sync_data {
                     };
                     if($@){$self->warn("html entities unescape fail: $@")}
                 }
-                if($e->{FromUserName} eq $self->user->id){#发送的消息
-                    $msg->{source} = 'outer';
-                    $msg->{class} = "send";
-                    $msg->{sender_id} = $self->user->id;
-                    if($self->is_group($e->{ToUserName})){
-                        $msg->{type} = "group_message";
-                        $msg->{group_id} = $e->{ToUserName};
-                    }
-                    else{
-                        $msg->{type} = "friend_message";
-                        $msg->{receiver_id} = $e->{ToUserName};
+            }
+            if($e->{FromUserName} eq $self->user->id){#发送的消息
+                $msg->{source} = 'outer';
+                $msg->{class} = "send";
+                $msg->{sender_id} = $self->user->id;
+                if($self->is_group($e->{ToUserName})){
+                    $msg->{type} = "group_message";
+                    $msg->{group_id} = $e->{ToUserName};
+                }
+                else{
+                    $msg->{type} = "friend_message";
+                    $msg->{receiver_id} = $e->{ToUserName};
+                }
+            }
+            elsif($e->{ToUserName} eq $self->user->id){#接收的消息
+                $msg->{class} = "recv";
+                $msg->{receiver_id} = $self->user->id;
+                if($self->is_group($e->{FromUserName})){#接收到群组消息
+                    $msg->{type} = "group_message";
+                    $msg->{group_id} = $e->{FromUserName};
+                    my ($member_id,$content) = $msg->{content}=~/^(\@.+):<br\/>(.*)/g;
+                    if(defined $member_id and defined $content){
+                            $msg->{sender_id} = $member_id;
+                            $msg->{content} = $content;
                     }
                 }
-                elsif($e->{ToUserName} eq $self->user->id){#接收的消息
-                    $msg->{class} = "recv";
-                    $msg->{receiver_id} = $self->user->id;
-                    if($self->is_group($e->{FromUserName})){#接收到群组消息
-                        $msg->{type} = "group_message";
-                        $msg->{group_id} = $e->{FromUserName};
-                        my ($member_id,$content) = $msg->{content}=~/^(\@.+):<br\/>(.*)/g;
-                        if(defined $member_id and defined $content){
-                                $msg->{sender_id} = $member_id;
-                                $msg->{content} = $content;
-                        }
-                    }
-                    else{
-                        $msg->{type} = "friend_message";
-                        $msg->{sender_id} = $e->{FromUserName};
-                    }
+                else{
+                    $msg->{type} = "friend_message";
+                    $msg->{sender_id} = $e->{FromUserName};
                 }
-
-                $self->message_queue->put(Mojo::Weixin::Message->new($msg)); 
-            }#MsgType == 1 END
+            }
+            $msg->{content} = '[media]' if $msg->{format} eq "media";
+            $self->message_queue->put(Mojo::Weixin::Message->new($msg)); 
         }
     }
 
