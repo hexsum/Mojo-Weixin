@@ -18,6 +18,7 @@ Mojo-Weixin v1.0.5 [![Build Status](https://travis-ci.org/sjdy521/Mojo-Weixin.sv
   Beauty               95       已发布      sjdy521       识别指定关键字发送美女图片
   Translation          93       已发布      sjdy521       多国语言翻译功能
   Riddle               92       已发布      limengyu1990  输入"猜谜"关键字进行猜谜游戏
+  Weather              91       已发布      autodataming  输入"北京天气"查询指定地区天气
   KnowledgeBase        2        已发布      sjdy521       通过微信消息自定义问答知识库
   FuckDaShen           1        已发布      sjdy521       对消息中的"大神"关键词进行鄙视
   PostQRcode           0        已发布      sjdy521       登录二维码发送到邮箱实现远程扫码

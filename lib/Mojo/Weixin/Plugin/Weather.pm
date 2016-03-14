@@ -1,7 +1,7 @@
 package Mojo::Weixin::Plugin::Weather;
 use Mojo::JSON qw(decode_json encode_json );
 use Mojo::Util qw(url_escape encode);
-our $PRIORITY=96;
+our $PRIORITY=91;
 
 sub call
 {
@@ -10,8 +10,10 @@ sub call
     {
     	my ($client,$msg)=@_;
         return if $msg->class eq "send" and $msg->from eq "code";
+        return if not $msg->allow_plugin;
     	if($msg->content=~/^(\S+)天气$/)
     	{
+            $msg->allow_plugin(0);
     		my $city=$1;
     		my $weatherurl='http://apix.sinaapp.com/weather/?&city='. url_escape($city);
     		$client->http_get($weatherurl,sub

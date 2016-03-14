@@ -650,6 +650,10 @@ Mojo::Weixin - A Weixin Client Framework base on Mojolicious
 
 =head2 Mojo::Weixin::Plugin::ShowMsg
 
+打印消息到终端
+
+    $client->load("ShowMsg");
+
 =head2 Mojo::Weixin::Plugin::IRCShell
 
 将微信协议转换成irc协议，启动一个本地的irc服务器，使用任意irc客户端（irc user设置为微信帐号）连接后即可以按照irc的方式使用微信
@@ -752,6 +756,12 @@ Mojo::Weixin - A Weixin Client Framework base on Mojolicious
     翻译 hello
     翻译 你好
     翻译 こんにちは
+
+=head2 Mojo::Weixin::Plugin::Weather
+
+输入关键字，比如"北京天气"，查询天气预报。 作者 autodataming L<https://github.com/autodataming>
+
+    $client->load("Weather");
 
 =head2 Mojo::Weixin::Plugin::SmartReply
 
