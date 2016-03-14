@@ -1,3 +1,12 @@
+2016-03-14 Mojo::Weixin v1.0.6
+1）修复好友、群对象创建时产生报警错误
+2）增加发送图片和文件的方法（函数）
+3）Openwx插件增加发送图片和文件的参数 media_path 和 account参数
+4）支持接收图片、增加 receive_media 事件，可以在事件回调中获取图片保存路径和图片原始数据
+5）新增Mojo::Weixin::Plugin::Beauty插件，识别消息中的关键字”看妹子“发送美女图片
+6）新增 Mojo::Weixin::Plugin::Weather 插件，天气预报 感谢 @autodataming
+7）新增 Mojo::Weixin::Plugin::Riddle 插件，输入关键字"猜谜"进行猜谜游戏
+
 2016-03-02 Mojo::Weixin v1.0.5
 1）修复发送消息和接收消息中的换行符被显示为<br\>的问题
 2）增加API.md/FAQ.md
