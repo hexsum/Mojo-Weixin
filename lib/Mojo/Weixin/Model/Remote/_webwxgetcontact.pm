@@ -1,7 +1,6 @@
 use Mojo::Util qw(url_escape encode);
 use strict;
 use Mojo::Weixin::Const qw(%KEY_MAP_USER %KEY_MAP_GROUP %KEY_MAP_GROUP_MEMBER %KEY_MAP_FRIEND);
-use Mojo::Weixin::Const;
 sub Mojo::Weixin::_webwxgetcontact {
     my $self = shift;
     my $api = "https://".$self->domain . "/cgi-bin/mmwebwx-bin/webwxgetcontact";

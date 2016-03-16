@@ -1,4 +1,5 @@
 package Mojo::Weixin::Model;
+use strict;
 use base qw(Mojo::Weixin::Model::Base);
 use List::Util qw(first);
 use Mojo::Weixin::Model::Remote::_webwxinit;

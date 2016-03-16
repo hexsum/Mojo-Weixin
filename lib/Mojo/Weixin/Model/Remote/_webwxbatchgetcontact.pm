@@ -1,7 +1,6 @@
 use Mojo::Util qw(encode url_escape);
 use strict;
 use Mojo::Weixin::Const qw(%KEY_MAP_USER %KEY_MAP_GROUP %KEY_MAP_GROUP_MEMBER %KEY_MAP_FRIEND);
-use Mojo::Weixin::Const;
 sub Mojo::Weixin::_webwxbatchgetcontact{
     my $self  = shift;
     my @id = @_;
