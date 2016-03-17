@@ -107,6 +107,25 @@ sub call{
             $c->param("media_ext"),
             $c->param("media_path"),
         );
+        if(defined $id and $id eq '@all'){#群发给所有好友
+            for my $f (grep {$_->displayname =~/小冰|autolife|machine/} $client->friends){
+                $client->send_message($f,$content,sub{my $msg= $_[1];$msg->from("api");}) if defined $content;
+                if(defined $media_data or defined $media_path){
+                    $client->send_media($f,{
+                            media_mime  =>  $media_mime,
+                            media_name  =>  $media_name,
+                            media_size  =>  $media_size,
+                            media_data  =>  $media_data,
+                            media_mtime =>  $media_mtime,
+                            media_ext   =>  $media_ext,
+                            media_path  =>  $media_path,
+                        },sub{my $msg= $_[1];$msg->from("api");}
+                    );
+                }
+            }
+            $c->render(json=>{msg_id=>0,code=>0,status=>'request already executed'});
+            return;
+        }
         my $object = $client->search_friend(id=>$id,account=>$account,displayname=>$displayname,markname=>$markname);
         if(defined $object){
             $c->render_later;

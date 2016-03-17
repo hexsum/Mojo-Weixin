@@ -72,17 +72,23 @@ sub update_user {
 
 }
 sub update_friend{
-
+    my $self = shift;
+    if(defined $_[0]){
+        my $friend_id = ref $_[0] eq "Mojo::Weixin::Friend"?$_[0]->id:$_[0];
+        my($friends) = $self->_webwxbatchgetcontact($friend_id);
+        return if not defined $friends;
+        $self->add_friend(Mojo::Weixin::Friend->new($friends->[0]));
+        return;
+    }
 }
 sub update_group{
     my $self = shift;
     if(defined $_[0]){
-        if(ref $_[0] eq "Mojo::Weixin::Group"){
-            my $group = shift;
-        }
-        else{
-            my $gid = shift;
-        }   
+        my $group_id = ref $_[0] eq "Mojo::Weixin::Group"?$_[0]->id:$_[0];
+        my(undef,$groups) = $self->_webwxbatchgetcontact($group_id); 
+        return if not defined $groups;
+        $self->add_group(Mojo::Weixin::Group->new($groups->[0]));
+        return;
     }
 }
 
@@ -94,7 +100,7 @@ sub search_friend{
             my @f = $self->_search($self->friend,@_);
             if(@f){return @f}
             else{
-                $self->update_friend();
+                $self->update_friend($p{id}) if defined $p{id};
                 return $self->_search($self->friend,@_);
             }
         }
@@ -102,7 +108,7 @@ sub search_friend{
             my $f = $self->_search($self->friend,@_);
             if(defined $f){return $f }
             else{
-                $self->update_friend();
+                $self->update_friend($p{id}) if defined $p{id};
                 return $self->_search($self->friend,@_);
             }
         }
@@ -117,7 +123,7 @@ sub search_group{
             my @g = $self->_search($self->group,@_);
             if(@g){return @g}
             else{
-                $self->update_group();
+                $self->update_group($p{id}) if defined $p{id};
                 return $self->_search($self->group,@_);
             }
         }
@@ -125,7 +131,7 @@ sub search_group{
             my $g = $self->_search($self->group,@_);
             if(defined $g){return $g }
             else{
-                $self->update_group();
+                $self->update_group($p{id}) if defined $p{id};
                 return $self->_search($self->group,@_);
             }
         }

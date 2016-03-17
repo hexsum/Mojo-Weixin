@@ -1,7 +1,6 @@
 package Mojo::Weixin::Request;
 use Mojo::Util qw(url_escape);
 use List::Util qw(first);
-use File::Spec ();
 sub gen_url{
     my $self = shift;
     my ($url,@query_string) = @_;
@@ -116,7 +115,7 @@ sub load_cookie{
     my $self = shift;
     return if not $self->keep_cookie;
     my $cookie_jar;
-    my $cookie_path = File::Spec->catfile($self->cookie_dir , 'mojo_weixin_cookie.dat');
+    my $cookie_path = $self->cookie_path;
     return if not -f $cookie_path;
     eval{require Storable;$cookie_jar = Storable::retrieve($cookie_path)};
     if($@){
@@ -130,7 +129,7 @@ sub save_cookie{
     my $self = shift;
     return if not $self->keep_cookie;
     return if not defined $self->wxuin;
-    my $cookie_path = File::Spec->catfile($self->cookie_dir ,'mojo_weixin_cookie.dat');
+    my $cookie_path = $self->cookie_path;
     eval{Storable::nstore($self->ua->cookie_jar,$cookie_path);};
     $self->warn("客户端保存cookie失败: $@") if $@;
 }

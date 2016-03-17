@@ -15,7 +15,7 @@ has log_encoding        => undef;      #utf8|gbk|...
 
 has tmpdir              => sub {File::Spec->tmpdir();};
 has media_dir           => sub {$_[0]->tmpdir};
-has cookie_dir          => sub {return $_[0]->tmpdir;};
+has cookie_path         => sub {File::Spec->catfile($_[0]->tmpdir,join('','mojo_weixin_cookie','.dat'))};
 has qrcode_path         => sub {File::Spec->catfile($_[0]->tmpdir,join('','mojo_weixin_qrcode','.jpg'))};
 has ioloop              => sub {Mojo::IOLoop->singleton};
 has keep_cookie         => 1;
