@@ -162,7 +162,7 @@ Mojo::Weixin - A Weixin Client Framework base on Mojolicious
                     #编码必须是 Encode 模块支持的格式，比如utf8 gbk等
 
     tmpdir          #程序使用的临时目录，主要用于保存一些验证码、二维码等数据，默认为系统临时目录
-    cookie_dir      #登录cookie的保存目录，默认为 tmpdir 参数所设置的目录
+    cookie_path     #登录cookie的保存文件，默认为 tmpdir/mojo_weixin_cookie.dat（多账号运行时需要设置不同的cookie_path）
     pic_dir         #图片接收默认地址，默认为 tmpdir 参数所设置的目录
 
     qrcode_path     #二维码保存路径，默认是 tmpdir 目录下固定文件名
