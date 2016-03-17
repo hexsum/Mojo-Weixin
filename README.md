@@ -94,9 +94,9 @@ Mojo-Weixin v1.0.7 [![Build Status](https://travis-ci.org/sjdy521/Mojo-Weixin.sv
 
     安装 [Strawberry Perl](http://strawberryperl.com/)，这是一个已经包含 [Mojo::Weixin](https://metacpan.org/pod/distribution/Mojo-Weixin/doc/Weixin.pod) 所需核心依赖的较全面的Windows Perl运行环境 
     
-    [32位系统安装包](http://strawberryperl.com/download/5.22.0.1/strawberry-perl-5.22.0.1-32bit.msi)
+    [32位系统安装包](http://strawberryperl.com/download/5.22.1.3/strawberry-perl-5.22.1.3-32bit.msi)
         
-    [64位系统安装包](http://strawberryperl.com/download/5.22.0.1/strawberry-perl-5.22.0.1-64bit.msi)
+    [64位系统安装包](http://strawberryperl.com/download/5.22.1.3/strawberry-perl-5.22.1.3-64bit.msi)
         
     或者自己到 [Strawberry Perl官网](http://strawberryperl.com/) 下载适合自己的最新版本
     
