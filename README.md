@@ -44,6 +44,26 @@ Mojo-Weixin v1.0.7 [![Build Status](https://travis-ci.org/sjdy521/Mojo-Weixin.sv
 ```
 ###通过irc客户端在linux终端上使用微信
 
+```
+    +-------------------+                      +----------------+  
+    |  Tencent          |                      | Any IRC Client |
+    |  Weixin Server    |                      | wechat、irssi  |
+    +---v-------------^-+                      +-v------------^-+     
+        |             |                          |            |
+        | 微信协议交互|                          |IRC协议交互 |
++-- --- |--  - -  --  | - - -   --   -  -   ---  | ---  ----- | --+
+|   +---v-------------^--+                  +----v------------^-+ |   
+|   |                    <——————————————————<                   | |
+|   |   Weixin  Client   |  Weixin - IRC    |  IRC Server       | |
+|   |                    |     协议转换     |  监听本机6667端口 | |
+|   |                    >——————————————————>                   | | 
+|   +--------------------+                  +-------------------+ |
+|                                                                 |
+|                                       我们程序实现的部分        | 
++---  - - - -  -- - --  ----  ------  -------  ------  ---    ----+
+
+```
+
 ![IRCShell](screenshot/IRCShell.jpg)
 
 ###安装方法
@@ -158,6 +178,10 @@ Mojo-Weixin v1.0.7 [![Build Status](https://travis-ci.org/sjdy521/Mojo-Weixin.sv
         {"status":"发送成功","msg_id":23910327,"code":0}
     
     更多接口参数说明参考[Openwx插件API文档](API.md)
+    
+3.  *我是一个极客，我只想能够在命令行上通过  IRC 的方式来玩转微信聊天*
+
+    请阅读[IRCShell插件使用步骤](IRC.md)
     
 ###核心依赖模块
 
