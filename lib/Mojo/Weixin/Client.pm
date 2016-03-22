@@ -1,5 +1,6 @@
 package Mojo::Weixin::Client;
 use Mojo::Weixin::Client::Remote::_login;
+use Mojo::Weixin::Client::Remote::_logout;
 use Mojo::Weixin::Client::Remote::_get_qrcode_uuid;
 use Mojo::Weixin::Client::Remote::_get_qrcode_image;
 use Mojo::Weixin::Client::Remote::_is_need_login;
@@ -55,6 +56,8 @@ sub relogin{
 }
 sub logout{
     my $self = shift;
+    my $retcode = shift;
+    $self->_logout($retcode);
 }
 sub steps {
     my $self = shift;

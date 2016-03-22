@@ -5,6 +5,7 @@ use List::Util qw(first);
 use Mojo::Weixin::Model::Remote::_webwxinit;
 use Mojo::Weixin::Model::Remote::_webwxgetcontact;
 use Mojo::Weixin::Model::Remote::_webwxbatchgetcontact;
+use Mojo::Weixin::Model::Remote::_webwxstatusnotify;
 use Mojo::Weixin::User;
 use Mojo::Weixin::Group;
 use Mojo::Weixin::Const;
@@ -21,8 +22,8 @@ sub model_init{
     if(defined $user){
         $self->info("更新个人信息成功");
         $self->user(Mojo::Weixin::User->new($user));
+        $self->_webwxstatusnotify(3);
     }
-
     my $contactinfo = $self->_webwxgetcontact();
     if(not defined $contactinfo){
         $self->error("获取通讯录联系人信息失败");

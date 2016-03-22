@@ -15,7 +15,6 @@ use Mojo::Weixin::Message::Remote::_send_text_message;
 $Mojo::Weixin::Message::LAST_DISPATCH_TIME  = undef;
 $Mojo::Weixin::Message::SEND_INTERVAL  = 3;
 
-my @logout_code = qw(1100 1101 1102 1205);
 sub gen_message_queue{
     my $self = shift;
     Mojo::Weixin::Message::Queue->new(callback_for_get=>sub{
@@ -89,6 +88,7 @@ sub gen_message_queue{
     });
 }
 sub _parse_synccheck_data{
+    my @logout_code = qw(1100 1101 1102 1205);
     my $self = shift;
     my($retcode,$selector) = @_;
     if(defined $retcode and defined $selector){
@@ -117,11 +117,16 @@ sub _parse_sync_data {
     my $self = shift;
     my $json = shift;
     return if not defined $json;
-    if(first {$json->{BaseResponse}{Ret} == $_} @logout_code  ){
+    my @logout_code = qw(1100 1102 1205);
+    if($json->{BaseResponse}{Ret} == 1101){#手机端强制下线 或 其他设备登录Web微信
+        $self->info("收到下线通知");
+        $self->logout($json->{BaseResponse}{Ret});
+        $self->stop();
+    }
+    elsif(first {$json->{BaseResponse}{Ret} == $_} @logout_code  ){
         $self->relogin($json->{BaseResponse}{Ret});
         return;
     }
-
     elsif($json->{BaseResponse}{Ret} !=0){
         $self->warn("收到无法识别消息，已将其忽略");
         return;

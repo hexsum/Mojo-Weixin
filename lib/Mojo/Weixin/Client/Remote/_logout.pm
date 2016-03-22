@@ -19,7 +19,7 @@ sub Mojo::Weixin::_logout {
         sid => $self->wxsid,
         uin => $self->wxuin,
     };
-    $self->info("客户端正在注销...");
+    $self->info("客户端注销...");
     $self->http_post($self->gen_url($api,@query_string),{Referer=>"https://". $self->domain . "/?&lang=zh_CN"},form=>$post,);
 }
 1;

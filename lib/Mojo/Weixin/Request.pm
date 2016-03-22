@@ -148,4 +148,8 @@ sub search_cookie{
     my $c = first  { $_->name eq $cookie} @cookies;
     return defined $c?$c->value:undef;
 }
+sub clear_cookie{
+    my $self = shift;
+    $self->ua->cookie_jar->empty;
+}
 1;
