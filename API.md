@@ -171,10 +171,13 @@
 需要加载Openwx插件时通过 `post_api` 参数来指定上报地址:
 ```
 $client->load("Openwx",data=>{
-    listen => [{host=>xxx,port=>xxx}],
-    post_api=> 'http://127.0.0.1:4000/post_api',
+    listen => [{host=>xxx,port=>xxx}],           #可选，发送消息api监听端口
+    post_api=> 'http://127.0.0.1:4000/post_api', #可选，接收消息或事件的上报地址
+    post_event => 1,                             #可选，是否上报事件，为了向后兼容性，默认值为0
 });
 ```
+#### 接收消息上报 
+
 当接收到消息时，会把消息通过JSON格式数据POST到该接口
 
 ```
@@ -194,7 +197,8 @@ Content-Type: application/json
     "group_id":"@@2617047292",
     "sender":"灰灰",
     "id":"10856",
-    "type":"group_message"
+    "type":"group_message",
+    "post_type": "receive_message"
 }
 
 ```
@@ -211,7 +215,55 @@ Server: Mojolicious (Perl)
 
 {"reply":"你好","code":0} #要回复消息，必须包含reply的属性，其他属性有无并不重要
 ```
+
 则表示希望通过post_api响应的内容来直接回复该消息，会直接对上报的该条消息进行回复，回复的内容为 "你好"
+
+#### 事件上报
+
+当事件发生时，会把事件相关信息上报到指定的接口，当前支持上报的事件包括：
+
+|  事件名称                    |事件说明    |上报参数列表
+|------------------------------|:-----------|:-------------------------------|
+|new_group                     |新加入群聊  | 对应群对象
+|new_friend                    |新增好友    | 对应好友对象
+|new_group_member              |新增群聊成员| 对应成员对象
+|lose_group                    |退出群聊    | 对应群对象
+|lose_friend                   |删除好友    | 对应好友对象
+|lose_group_member             |成员退出群聊| 对应成员对象
+|group_property_change         |群聊属性变化| 群对象，属性，原始值，更新值
+|group_member_property_change  |成员属性变化| 成员对象，属性，原始值，更新值
+|friend_property_change        |好友属性变化| 好友对象，属性，原始值，更新值
+|user_property_change          |帐号属性变化| 账户对象，属性，原始值，更新值
+
+```
+connect to 127.0.0.1 port 4000
+POST /post_api
+Accept: */*
+Content-Length: xxx
+Content-Type: application/json
+
+{
+    "post_type":"event",
+    "event":"new_friend",
+    "params":[
+        {
+            "account":"ms-xiaoice",
+            "name":"小冰",
+            "markname":"",
+            "sex":"0",
+            "city":"海淀",
+            "signature":"我是人工智能微软小冰，我回来了，吼吼~~",
+            "province":"北京",
+            "displayname":"小冰",
+            "id":"@75b9db5ae52c87361d1800eaaf307f4d"
+        }
+    ],
+
+}
+
+```
+
+可以通过上报的json数组中的`post_type`来区分上报的数据数接收到的消息还是事件
 
 ### 7. 好友问答
 |   API  |发送消息给好友并等待好友回答
