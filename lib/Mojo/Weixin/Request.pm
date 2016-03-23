@@ -1,5 +1,5 @@
 package Mojo::Weixin::Request;
-use Mojo::Util qw(url_escape);
+use Mojo::Util qw(url_escape encode);
 use List::Util qw(first);
 sub gen_url{
     my $self = shift;
@@ -70,7 +70,7 @@ sub _http_request{
                 else{$cb->($r,$ua,$tx);}
             }
             elsif(defined $tx){
-                $self->warn($tx->req->url->to_abs . " 请求失败: " . ($tx->error->{code}||"-") . " " . $tx->error->{message});
+                $self->warn($tx->req->url->to_abs . " 请求失败: " . ($tx->error->{code}||"-") . " " . encode("utf8",$tx->error->{message}));
                 $cb->(undef,$ua,$tx);
             }
         });
@@ -102,11 +102,11 @@ sub _http_request{
                 }
             }
             elsif(defined $tx){
-                $self->warn($tx->req->url->to_abs . " 请求失败: " . ($tx->error->{code} || "-") . " " . $tx->error->{message});
+                $self->warn($tx->req->url->to_abs . " 请求失败: " . ($tx->error->{code} || "-") . " " . encode("utf8",$tx->error->{message}));
                 next;
             }
         }
-        $self->warn($tx->req->url->to_abs . " 请求失败: " . ($tx->error->{code}||"-") . " " . $tx->error->{message}) if defined $tx;
+        $self->warn($tx->req->url->to_abs . " 请求失败: " . ($tx->error->{code}||"-") . " " . encode("utf8",$tx->error->{message})) if defined $tx;
         return wantarray?(undef,$self->ua,$tx):undef;
     }
 }

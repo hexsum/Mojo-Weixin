@@ -10,10 +10,49 @@ sub call{
     my $post_api = $data->{post_api} if ref $data eq "HASH";
 
     if(defined $post_api){
+        $client->on(all_event => sub{
+            my($client,$event,@args) =@_;
+            if($event =~ /^new_group|lose_group|new_friend|lose_friend|new_group_member|lose_group_member$/){
+                my $object = $args[0];
+                my $post_json = {};
+                $post_json->{post_type} = "event";
+                $post_json->{event} = $event;
+                $post_json->{params} = [$object->to_json_hash(0)];
+                $client->http_post($post_api,json=>$post_json,sub{
+                    my($data,$ua,$tx) = @_;
+                    if($tx->success){
+                        $client->debug("插件[".__PACKAGE__ ."]事件[".$event."]上报成功");
+                    }
+                    else{
+                        $client->warn("插件[".__PACKAGE__ . "]事件[".$event."]上报失败: ".encode("utf8",$tx->error->{message}));
+                    }
+                });
+            }
+            elsif($event =~ /^group_property_change|group_member_property_change|friend_property_change|user_property_change$/){
+                my ($object,$property,$old,$new) = @args;
+                my $post_json = {
+                    post_type => "event",
+                    event     => $event,
+                    params    => [$object->to_json_hash(0),$property,$old,$new],
+                };
+                $client->http_post($post_api,json=>$post_json,sub{
+                    my($data,$ua,$tx) = @_;
+                    if($tx->success){
+                        $client->debug("插件[".__PACKAGE__ ."]事件[".$event."]上报成功");
+                    }
+                    else{
+                        $client->warn("插件[".__PACKAGE__ . "]事件[".$event."]上报失败: ".encode("utf8",$tx->error->{message}));
+                    }
+                });
+
+            }
+        }) if $data->{post_event};
         $client->on(receive_message=>sub{
             my($client,$msg) = @_;
             return if $msg->type !~ /^friend_message|group_message$/;
-            $client->http_post($post_api,json=>$msg->to_json_hash,sub{
+            my $post_json = $msg->to_json_hash;
+            $post_json->{post_type} = "receive_message";
+            $client->http_post($post_api,json=>$post_json,sub{
                 my($data,$ua,$tx) = @_;
                 if($tx->success){
                     $client->debug("插件[".__PACKAGE__ ."]接收消息[".$msg->id."]上报成功");

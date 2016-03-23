@@ -9,7 +9,8 @@ sub client {
     return $Mojo::Weixin::_CLIENT;
 }
 sub to_json_hash{
-    my $self = shift;
+    my $self = shift;   
+    my $is_keep_member = shift || 1;
     my $hash = {};
     for(keys %$self){
         next if substr($_,0,1) eq "_";
@@ -17,7 +18,7 @@ sub to_json_hash{
         $hash->{$_} = decode_utf8($self->{$_});
         $hash->{displayname} = decode_utf8 $self->displayname;
     }
-    if(exists $self->{member}){
+    if($is_keep_member and exists $self->{member} ){
         $hash->{member} = [];
         if(ref $self->{member} eq "ARRAY"){
             for my $m(@{$self->{member}}){
@@ -58,7 +59,7 @@ sub _add{
 
     if(@$array_ref == 0){ push @$array_ref,$element; return 3;}
     my $o = first { $element->id eq $_->id } @$array_ref;
-    if(defined $o){ %$o = %$element;return 2}
+    if(defined $o){ $o->update($element);return 2}
     else{ push @$array_ref,$element;return 1}
 }
 sub _remove{

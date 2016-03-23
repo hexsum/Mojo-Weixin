@@ -96,6 +96,11 @@ sub on {
     }
     return wantarray?@return:$return[0];
 }
+sub emit {
+    my $self = shift;
+    $self->SUPER::emit(@_);
+    $self->SUPER::emit(all_event=>@_);
+}
 
 sub wait_once {
     my $self = shift;

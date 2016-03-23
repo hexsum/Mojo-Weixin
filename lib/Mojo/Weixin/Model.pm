@@ -143,25 +143,25 @@ sub add_friend{
     my $self = shift;
     my $friend = shift;
     $self->die("不支持的数据类型\n") if ref $friend ne "Mojo::Weixin::Friend";
-    return $self->_add($self->friend,$friend);   
+    $self->emit(new_friend=>$friend) if $self->_add($self->friend,$friend) == 1;
 }
 sub remove_friend{
     my $self = shift;
     my $friend = shift;
     $self->die("不支持的数据类型\n") if ref $friend ne "Mojo::Weixin::Friend";
-    return $self->_remove($self->friend,$friend);
+    $self->emit(lose_friend=>$friend) if $self->_remove($self->friend,$friend) == 1;
 }
 sub add_group{
     my $self = shift;
     my $group = shift;
     $self->die("不支持的数据类型\n") if ref $group ne "Mojo::Weixin::Group";
-    return $self->_add($self->group,$group);
+    $self->emit(new_group=>$group) if $self->_add($self->group,$group) == 1;
 }
 sub remove_group{
     my $self = shift;
     my $group = shift;
     $self->die("不支持的数据类型\n") if ref $group ne "Mojo::Weixin::Group";
-    return $self->_remove($self->group,$group);
+    $self->emit(lose_group=>$group) if $self->_remove($self->group,$group) == 1;
 }
 
 sub is_group{

@@ -56,11 +56,9 @@ sub update {
                 my($new_members,$lost_members,$sames)=$self->client->array_diff($self->member, \@member,sub{$_[0]->id});
                 for(@{$new_members}){
                     $self->add_group_member($_);
-                    $self->client->emit(new_group_member=>$_) if defined $self->client;
                 }
                 for(@{$lost_members}){
                     $self->remove_group_member($_);
-                    $self->client->emit(lose_group_member=>$_) if defined $self->client;
                 }
                 for(@{$sames}){
                     my($old_member,$new_member) = ($_->[0],$_->[1]);
@@ -117,13 +115,13 @@ sub add_group_member{
     my $self = shift;
     my $member = shift;
     $self->client->die("不支持的数据类型\n") if ref $member ne "Mojo::Weixin::Group::Member";
-    return $self->_add($self->member,$member);
+    $self->client->emit(new_group_member=>$member) if $self->_add($self->member,$member) == 1;
 }
 sub remove_group_member{
     my $self = shift;
     my $member = shift;
     $self->client->die("不支持的数据类型\n") if ref $member ne "Mojo::Weixin::Group::Member";
-    return $self->_remove($self->member,$member);
+    $self->client->emit(lose_group_member=>$member) if $self->_remove($self->member,$member) == 1;
 }
 
 sub me {
