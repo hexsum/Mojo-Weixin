@@ -1,6 +1,6 @@
 Mojo-Weixin v1.0.8 [![Build Status](https://travis-ci.org/sjdy521/Mojo-Weixin.svg?branch=master)](https://travis-ci.org/sjdy521/Mojo-Weixin)
 ========================
-使用Perl语言编写的微信客户端框架，基于Mojolicious，要求Perl版本5.10.1+，可通过插件提供基于HTTP协议的api接口供其他语言或系统调用
+使用Perl语言编写的微信客户端框架，基于Mojolicious，要求Perl版本5.14+，可通过插件提供基于HTTP协议的api接口供其他语言或系统调用
 
 ###郑重声明
 
@@ -70,7 +70,25 @@ Mojo-Weixin v1.0.8 [![Build Status](https://travis-ci.org/sjdy521/Mojo-Weixin.sv
 
 推荐使用[cpanm](https://metacpan.org/pod/distribution/App-cpanminus/bin/cpanm)在线安装[Mojo::Weixin](https://metacpan.org/pod/distribution/Mojo-Weixin/doc/Weixin.pod)模块 
 
-1. *安装cpanm工具*
+1. *安装perl*
+  
+    安装之前请先确认下你的系统是否已经安装了Perl，因为除了windows，其他大部分的平台默认都可能已经预装过
+
+    [Perl官网下载页面](https://www.perl.org/get.html) 有包含Unix/Linux、Mac OS X、Windows多平台比较全面详细的安装说明
+
+    建议大家尽量选择**Binaries**（二进制预编译）的版本，安装即可使用，比较方便
+
+  |平台   |推荐选择|下载地址
+  |-------|--------|-------------|
+  |Windows|1. **StrawberryPerl**<br>2. ActivePerl<br>|[StrawberryPerl下载地址](http://strawberryperl.com/)<br>[ActivePerl下载地址](http://www.activestate.com/activeperl/downloads)|
+  |Linux  |1. **ActivePerl**<br>2. 官方源码<br>3. yum/apt等包管理器<br>4. MojoActivePerl|[ActivePerl下载地址](http://www.activestate.com/activeperl/downloads)<br>[MojoActivePerl下载地址](https://github.com/sjdy521/MojoActivePerl)|
+  |Mac    |1. **ActivePerl**|[ActivePerl下载地址](http://www.activestate.com/activeperl/downloads)
+  
+    注意：[MojoActivePerl](https://github.com/sjdy521/MojoActivePerl)是我基于ActivePerl打包的而成
+  
+    已经包含perl-5.22+cpanm+Mojo-Webqq+Mojo-Weixin的完整运行环境，适用于linux x86_64系统，并且系统glibc 2.15+
+
+2. *安装cpanm工具*（如果系统已经安装了cpanm可以忽略此步骤）
 
     方法a： 通过cpan安装cpanm
 
@@ -80,7 +98,7 @@ Mojo-Weixin v1.0.8 [![Build Status](https://travis-ci.org/sjdy521/Mojo-Weixin.sv
 
         $ curl -kL http://cpanmin.us | perl - App::cpanminus
 
-2. *使用cpanm在线安装 Mojo::Weixin 模块*
+2. *使用cpanm在线安装 Mojo::Weixin 模块*（如果系统已经安装了该模块，执行此步骤会对模块进行升级）
 
         $ cpanm -v Mojo::Weixin
 
@@ -107,20 +125,6 @@ Mojo-Weixin v1.0.8 [![Build Status](https://travis-ci.org/sjdy521/Mojo-Weixin.sv
     Ubuntu:
 
         $ sudo apt-get install libssl-dev
-
-    Window:
-        
-    这里以 strawberryperl 为例
-
-    安装 [Strawberry Perl](http://strawberryperl.com/)，这是一个已经包含 [Mojo::Weixin](https://metacpan.org/pod/distribution/Mojo-Weixin/doc/Weixin.pod) 所需核心依赖的较全面的Windows Perl运行环境 
-    
-    [32位系统安装包](http://strawberryperl.com/download/5.22.1.3/strawberry-perl-5.22.1.3-32bit.msi)
-        
-    [64位系统安装包](http://strawberryperl.com/download/5.22.1.3/strawberry-perl-5.22.1.3-64bit.msi)
-        
-    或者自己到 [Strawberry Perl官网](http://strawberryperl.com/) 下载适合自己的最新版本
-    
-    安装前最好先卸载系统中已经安装的其他Perl版本以免互相影响
     
     搞定了编译和运行环境之后，再重新回到 步骤2 安装Mojo::Weixin即可
         
