@@ -1,6 +1,6 @@
 Mojo-Weixin v1.0.8 [![Build Status](https://travis-ci.org/sjdy521/Mojo-Weixin.svg?branch=master)](https://travis-ci.org/sjdy521/Mojo-Weixin)
 ========================
-使用Perl语言编写的微信客户端框架，基于Mojolicious，要求Perl版本5.14+，可通过插件提供基于HTTP协议的api接口供其他语言或系统调用
+使用Perl语言编写的微信客户端框架，基于Mojolicious，要求Perl版本5.10+，可通过插件提供基于HTTP协议的api接口供其他语言或系统调用
 
 ###郑重声明
 
