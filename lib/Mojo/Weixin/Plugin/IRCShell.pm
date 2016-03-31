@@ -170,8 +170,8 @@ sub call{
             my $member = $msg->sender;
             return if @groups and not first {$member->group->displayname eq $_} @groups;
             my $user = $ircd->search_user(id=>$member->id,virtual=>1) || $ircd->search_user(nick=>$member->displayname,virtual=>0);
-            my $channel = $ircd->search_channel(id=>$member->id) ||
-                    $ircd->new_channel(id=>$member->id,name=>'#'.$member->group->displayname,);
+            my $channel = $ircd->search_channel(id=>$member->group->id) ||
+                    $ircd->new_channel(id=>$member->group->id,name=>'#'.$member->group->displayname,);
             return if not defined $channel;
             if(not defined $user){
                 $user=$ircd->new_user(

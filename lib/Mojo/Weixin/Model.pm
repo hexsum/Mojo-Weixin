@@ -6,6 +6,8 @@ use Mojo::Weixin::Model::Remote::_webwxinit;
 use Mojo::Weixin::Model::Remote::_webwxgetcontact;
 use Mojo::Weixin::Model::Remote::_webwxbatchgetcontact;
 use Mojo::Weixin::Model::Remote::_webwxstatusnotify;
+use Mojo::Weixin::Model::Remote::_webwxcreatechatroom;
+use Mojo::Weixin::Model::Remote::_webwxupdatechatroom;
 use Mojo::Weixin::User;
 use Mojo::Weixin::Group;
 use Mojo::Weixin::Const;
@@ -76,8 +78,9 @@ sub update_friend{
     my $self = shift;
     if(defined $_[0]){
         my $friend_id = ref $_[0] eq "Mojo::Weixin::Friend"?$_[0]->id:$_[0];
-        my($friends) = $self->_webwxbatchgetcontact($friend_id);
-        return if not defined $friends;
+        my $info = $self->_webwxbatchgetcontact($friend_id);
+        return if not defined $info;
+        my ($friends) = @$info;
         $self->add_friend(Mojo::Weixin::Friend->new($friends->[0]));
         return;
     }
@@ -86,8 +89,9 @@ sub update_group{
     my $self = shift;
     if(defined $_[0]){
         my $group_id = ref $_[0] eq "Mojo::Weixin::Group"?$_[0]->id:$_[0];
-        my(undef,$groups) = $self->_webwxbatchgetcontact($group_id); 
-        return if not defined $groups;
+        my $info = $self->_webwxbatchgetcontact($group_id);
+        return if not defined $info;
+        my(undef,$groups) = @$info;
         $self->add_group(Mojo::Weixin::Group->new($groups->[0]));
         return;
     }
@@ -205,4 +209,106 @@ sub groups{
     return @{$self->group};
 }
 
+sub create_group {
+    my $self = shift;
+    my $friends;
+    my $displayname;
+    if(ref $_[0] eq "HASH"){
+        my %opt = @_;
+        $friends = $opt{friends};
+        $displayname = $opt{displayname};
+    }
+    elsif(ref $_[0] eq "ARRAY"){
+        $friends = $_[0];
+        $displayname = $_[1];
+    }
+    else{
+        $friends = \@_;
+    } 
+    my $group_info = $self->_webwxcreatechatroom($friends,$displayname);
+    if(not defined $group_info){
+        $self->error("创建群聊". (defined $displayname?"[ $displayname ]":"") . "失败");
+        return;
+    }
+    my $info = $self->_webwxbatchgetcontact($group_info->{id});
+    my $group;
+    if(defined $info){
+        my(undef,$groups)=@$info;
+        if(ref $groups eq "ARRAY"){
+            $group = Mojo::Weixin::Group->new($groups->[0]);
+        }
+        else{
+            $group =Mojo::Weixin::Group->new($group_info);
+        }
+    }
+    else{
+        $group =Mojo::Weixin::Group->new($group_info);
+    }
+    $self->add_group($group);
+    $self->info("创建群聊[ ". $group->displayname ." ]成功");
+    return $group;
+}
+
+sub set_group_displayname {
+    my $self = shift;
+    my $group = shift;
+    my $displayname  = shift;
+    if(ref $group ne "Mojo::Weixin::Group"){
+        $self->die("无效的对象数据类型");
+        return;
+    } 
+    if(not $displayname){
+        $self->die("无效的显示名称");
+        return;
+    }
+
+    my $ret = $self->_webwxupdatechatroom("mod",$group,$displayname);
+    if($ret){
+        $self->info("修改群显示名称[ $displayname ]成功");
+        return 1;
+    }
+    else{
+        $self->info("修改群显示名称[ $displayname ]失败");
+        return 0;
+    }
+}
+
+sub invite_friend{
+    my $self =shift;
+    my $group = shift;
+    my @friends = @_;
+    for(@friends){
+        $self->die("非好友对象") if not $_->is_friend;
+    }
+    $self->die("非群组对象") if not $group->is_group;
+    my $ret = $self->_webwxupdatechatroom("add",$group,@friends);    
+    if($ret){
+        $self->update_group($group);
+        $self->info("邀请好友 " . join("、",map {$_->displayname} grep {defined $_} @friends[0..2]) . "... 加入群[ " . $group->displayname . " ]成功");
+        return 1;
+    }
+    else{
+        $self->info("邀请好友 " . join("、",map {$_->displayname} grep {defined $_} @friends[0..2]) . "... 加入群[ " . $group->displayname . " ]失败");
+        return 0;
+    }
+}
+sub kick_group_member{
+    my $self = shift;
+    my $group = shift;
+    my @members = @_;
+    for(@members){
+        $self->die("非群成员对象") if not $_->is_group_member;
+    }
+    $self->die("非群组对象") if not $group->is_group;
+    my $ret = $self->_webwxupdatechatroom("del",$group,@members);
+    if($ret){
+        $group->remove_group_member($_) for @members;
+        $self->info("从群组[ ". $group->displayname. " ]移除群成员" . join("、",map {$_->displayname} grep {defined $_} @members[0..2]) . "成功");
+        return 1;
+    }
+    else{
+        $self->info("从群组[ ". $group->displayname. " ]移除群成员" . join("、",map {$_->displayname} grep {defined $_} @members[0..2]) . "失败");
+        return 0;
+    }
+}
 1;

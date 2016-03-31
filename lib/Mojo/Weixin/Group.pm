@@ -96,7 +96,7 @@ sub search_group_member{
             my @g = $self->_search($self->member,@_);
             if(@g){return @g}
             else{
-                $self->update_group($self);
+                $self->client->update_group($self);
                 return $self->_search($self->member,@_);
             }
         }
@@ -104,7 +104,7 @@ sub search_group_member{
             my $g = $self->_search($self->member,@_);
             if(defined $g){return $g }
             else{
-                $self->update_group($self);
+                $self->client->update_group($self);
                 return $self->_search($self->member,@_);
             }
         }
@@ -128,9 +128,26 @@ sub me {
     my $self = shift;
     return $self->search_group_member(id=>$self->client->user->id);
 }
+sub members {
+    my $self = shift;
+    return @{$self->member};
+}
 sub send{
     my $self = shift;
     $self->client->send_message($self,@_);
+}
+sub set_displayname{
+    my $self = shift;
+    my $displayname = shift;
+    $self->client->set_group_displayname($self,$displayname);
+}
+sub invite_friend{
+    my $self = shift;
+    $self->client->invite_friend($self,@_)
+}
+sub kick_group_member{
+    my $self = shift;
+    $self->client->kick_group_member($self,@_);
 }
 
 1;

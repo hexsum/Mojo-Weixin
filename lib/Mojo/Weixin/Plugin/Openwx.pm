@@ -101,6 +101,29 @@ sub call{
     get '/openwx/get_user_info'     => sub {$_[0]->render(json=>$client->user->to_json_hash());};
     get '/openwx/get_friend_info'   => sub {$_[0]->render(json=>[map {$_->to_json_hash()} @{$client->friend}]); };
     get '/openwx/get_group_info'    => sub {$_[0]->render(json=>[map {$_->to_json_hash()} @{$client->group}]); };
+    any [qw(GET POST)] => '/openwx/search_friend' => sub{
+        my $c = shift;
+        my @params = map {defined $_?Encode::encode("utf8",$_):$_} @{$c->req->params->pairs};
+        use DDP; p @params;
+        my @objects = $client->search_friend(@params);
+        if(@objects){
+            $c->render(json=>[map {$_->to_json_hash()} @objects]);
+        }
+        else{
+            $c->render(json=>{code=>100,status=>"object not found"});
+        }
+    };
+    any [qw(GET POST)] => 'openwx/search_group' => sub{
+        my $c = shift;
+        my @params = map {defined $_?Encode::encode("utf8",$_):$_} @{$c->req->params->pairs};
+        my @objects = $client->search_group(@params);
+        if(@objects){
+            $c->render(json=>[map {$_->to_json_hash()} @objects]);
+        }
+        else{
+            $c->render(json=>{code=>100,status=>"object not found"});
+        }
+    };
     any [qw(GET POST)] => '/openwx/send_message'         => sub{
         my $c = shift;
         my($id,$account,$displayname,$markname,$type,$content)= map {defined $_?Encode::encode("utf8",$_):$_} ($c->param("id"),$c->param("account"),$c->param("displayname"),$c->param("markname"),$c->param("type"),$c->param("content"));
@@ -298,7 +321,89 @@ sub call{
         }
         else{$c->render(json=>{msg_id=>undef,code=>100,status=>"object not found"});}
     };
-    any '/*whatever'  => sub{whatever=>'',$_[0]->render(text=>"request error",status=>403)};
+    any [qw(GET POST)] => '/openwx/create_group' => sub{
+        my $c = shift;
+        my($friends,$displayname)= map {defined $_?Encode::encode("utf8",$_):$_} ($c->param("friend"),$c->param("displayname"));
+        my @id = split /,/,$friends;
+        if(@id){
+            my @friends;
+            for(@id){
+                my $friend = $client->search_friend(id=>$_);
+                if(not defined $friend){
+                    $c->render(json=>{code=>100,status=>"friend id $_ not found"});
+                    return;
+                }
+                push @friends,$friend;
+            } 
+            my $group = $client->create_group(\@friends,$displayname);
+            if(defined $group){
+                $c->render(json=>{code=>0,group_id=>$group->id,status=>"success"});
+            }
+            else{
+                $c->render(json=>{code=>201,id=>undef,status=>"failure"});
+            }
+        }
+        else{$c->render(json=>{code=>200,status=>"friend id empty"});}
+    };
+    any [qw(GET POST)] => '/openwx/invite_friend' => sub{
+        my $c = shift;
+        my($id,$displayname,$friends)= map {defined $_?Encode::encode("utf8",$_):$_} ($c->param("id"),$c->param("displayname"),$c->param("friend"));
+        my $object = $client->search_group(id=>$id,displayname=>$displayname,);
+        if(not defined $object){
+            $c->render(json=>{code=>100,status=>"object not found"});
+            return;    
+        }
+        my @id = split /,/,$friends;
+        if(@id){
+            my @friends;
+            for(@id){
+                my $friend = $client->search_friend(id=>$_);
+                if(not defined $friend){
+                    $c->render(json=>{code=>100,status=>"friend id $_ not found"});
+                    return;
+                }
+                push @friends,$friend;
+            }
+            if($object->invite_friend(@friends)){
+                $c->render(json=>{code=>0,status=>"success"});   
+            }
+            else{
+                $c->render(json=>{code=>201,status=>"failure"});
+            }
+        }
+        else{$c->render(json=>{code=>200,status=>"friend id empty"});}
+        
+    };
+    any [qw(GET POST)] => '/openwx/kick_group_member' => sub{
+        my $c = shift;
+        my($id,$displayname,$members)= map {defined $_?Encode::encode("utf8",$_):$_} ($c->param("id"),$c->param("displayname"),$c->param("member"));
+        my $object = $client->search_group(id=>$id,displayname=>$displayname,);
+        if(not defined $object){
+            $c->render(json=>{code=>100,status=>"object not found"});
+            return;
+        }
+        my @id = split /,/,$members;
+        if(@id){
+            my @members;
+            for(@id){
+                my $member = $object->search_group_member(id=>$_);
+                if(not defined $member){
+                    $c->render(json=>{code=>100,status=>"member id $_ not found"});
+                    return;
+                }
+                push @members,$member;
+            }
+            if($object->kick_group_member(@members)){
+                $c->render(json=>{code=>0,status=>"success"});
+            }
+            else{
+                $c->render(json=>{code=>201,status=>"failure"});
+            }
+        }
+        else{$c->render(json=>{code=>200,status=>"member id empty"});}
+        
+    };
+    any '/*whatever'  => sub{whatever=>'',$_[0]->render(text=>"api not found",status=>403)};
     package Mojo::Weixin::Plugin::Openwx;
     $server = Mojo::Weixin::Server->new();   
     $server->app($server->build_app("Mojo::Weixin::Plugin::Openwx::App"));

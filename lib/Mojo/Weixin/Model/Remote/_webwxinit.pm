@@ -1,5 +1,6 @@
 use Mojo::Util qw(encode url_escape);
 use strict;
+use List::Util qw(first);
 use Mojo::Weixin::Const qw(%KEY_MAP_USER %KEY_MAP_GROUP %KEY_MAP_GROUP_MEMBER %KEY_MAP_FRIEND);
 sub Mojo::Weixin::_webwxinit{
     my $self = shift;
@@ -20,7 +21,10 @@ sub Mojo::Weixin::_webwxinit{
     
     my $json = $self->http_post($self->gen_url($api,@query_string),{json=>1,Referer=>'https://'.$self->domain .'/?&lang=zh_CN'},json=>$post);
     return if not defined $json;
-    return if $json->{BaseResponse}{Ret}!=0;
+    if($json->{BaseResponse}{Ret}!=0){
+        $self->relogin($json->{BaseResponse}{Ret});
+        return ;
+    }
     $self->sync_key($json->{SyncKey}) if $json->{SyncKey}{Count} !=0;
     $self->skey($json->{Skey}) if $json->{Skey};
     my $user = {};

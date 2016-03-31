@@ -100,7 +100,7 @@ Mojo-Weixin v1.0.8 [![Build Status](https://travis-ci.org/sjdy521/Mojo-Weixin.sv
 
 2. *使用cpanm在线安装 Mojo::Weixin 模块*（如果系统已经安装了该模块，执行此步骤会对模块进行升级）
 
-        $ cpanm -v Mojo::Weixin
+        $ cpanm Mojo::Weixin
 
 3. *安装失败可能有帮助的解决方法*
         

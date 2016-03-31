@@ -349,6 +349,20 @@ Mojo::Weixin - A Weixin Client Framework base on Mojolicious
     #支持按任意群对象属性进行组合搜索，标量上下文返回符合条件的第一个好友对象，列表上下文返回全部对象
     my $group = $client->search_group(name=>xxx);
 
+=head4 create_group()  创建群聊
+
+    #hash传参
+    my $group = $client->create_group({
+        friends     =>  [ $friend1, $friend2, ... ], 
+        displayname =>  "测试", #可选，群聊名称
+    });    
+
+    #数组引用传参
+    my $group = $client->create_group([ $friend1, $friend2, ... ], "测试",);
+
+    #列表传参
+    my $grouup = $client->create_group($friend1, $friend2, ...);
+
 =head4 send_message($friend|$group,$content,$callback) 发送文本消息
 
     #给指定的好友对象发送好友消息
@@ -447,10 +461,18 @@ Mojo::Weixin - A Weixin Client Framework base on Mojolicious
     me                   #返回群成员中的自己对象
     send                 #发送消息给该群
     dump                 #打印群对象结构
+    members              #返回所有的群成员对象列表
+    invite_friend        #邀请好友入群
+    kick_group_member    #移除群成员
+    set_displayname      #设置群聊显示名称
 
     my $group = $client->search_group(displayname=>"红包群");
     $group->send("大家好");
     print "我在群中的称呼是：" . $group->me->displayname;
+
+    $group->invite_friend($friend1,$friend2,...);
+    $group->kick_group_member($member);
+    $group->set_displayname("测试");
 
 =head2 群成员对象
 
