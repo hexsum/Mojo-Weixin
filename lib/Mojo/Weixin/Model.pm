@@ -303,11 +303,11 @@ sub kick_group_member{
     my $ret = $self->_webwxupdatechatroom("del",$group,@members);
     if($ret){
         $group->remove_group_member($_) for @members;
-        $self->info("从群组[ ". $group->displayname. " ]移除群成员" . join("、",map {$_->displayname} grep {defined $_} @members[0..2]) . "成功");
+        $self->info("从群组[ ". $group->displayname. " ]移除群成员 " . join("、",map {$_->displayname} grep {defined $_} @members[0..2]) . " 成功");
         return 1;
     }
     else{
-        $self->info("从群组[ ". $group->displayname. " ]移除群成员" . join("、",map {$_->displayname} grep {defined $_} @members[0..2]) . "失败");
+        $self->info("从群组[ ". $group->displayname. " ]移除群成员 " . join("、",map {$_->displayname} grep {defined $_} @members[0..2]) . " 失败");
         return 0;
     }
 }
