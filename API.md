@@ -293,3 +293,172 @@ Server: Mojolicious (Perl)
 
 {"reply":null,"reply_status":"reply timeout","status":"发送成功","msg_id":1456817344504,"code":0}
 ```
+
+### 8. 搜索好友对象
+|   API  |搜索好友对象
+|--------|:------------------------------------------|
+|url     |/openwx/search_friend|
+|请求方法|GET\|POST|
+|请求参数|好友对象的任意属性，中文需要做urlencode，比如：<br>**id**: 好友的id<br>**account**: 好友的帐号<br>**displayname**: 好友显示名称<br>**markname**: 好友备注名称<br>|
+|数据格式|application/x-www-form-urlencoded|
+|调用示例|http://127.0.0.1:3000/openwx/search_friend?id=xxxxxx<br>http://127.0.0.1:3000/openwx/search_friend?province=xxxxxx&city=xxxx|
+返回JSON数组:
+
+```
+[#好友数组
+    {#第一个好友
+        "account": "wxzhifu",
+        "name": "微信支付",
+        "markname": "",
+        "sex": "none",
+        "display": "",
+        "city": "",
+        "signature": "帮助解决微信支付中遇到的困难，收集关于微信支付的建议反馈。",
+        "province": "广东",
+        "id": "@efc5f86c30df4b9c80e98ac428e0e257",
+        "displayname": "微信支付"
+    },
+    {#第二个好友
+        "account": "",
+        "name": "财付通",
+        "markname": "",
+        "sex": "none",
+        "display": "",
+        "city": "深圳",
+        "signature": "会支付 会生活",
+        "province": "广东",
+        "id": "@00227d73fa6b8326f69bca419db7a05c",
+        "displayname": "财付通"
+    }
+]
+```
+
+### 9. 搜索群组对象
+|   API  |搜索群组对象
+|--------|:------------------------------------------|
+|url     |/openwx/search_group|
+|请求方法|GET\|POST|
+|请求参数|群对象的任意属性，中文需要做urlencode，比如：<br>**id**: 群组的id<br>**displayname**: 群组的显示名称<br>|
+|数据格式|application/x-www-form-urlencoded|
+|调用示例|http://127.0.0.1:3000/openwx/search_group?id=xxxxxx<br>http://127.0.0.1:3000/openwx/search_group?displayname=xxxxx|
+返回JSON数组:
+
+```
+[#群数组
+    {#第一个群
+        "name": "",
+        "id": "@@dadadadada",
+        "displayname": "xxxx"
+        "member": [#群成员数组
+            {#第一个群成员
+                "account": "",
+                "name": "xxx",
+                "markname": "",
+                "sex": "none",
+                "display": "",
+                "city": "",
+                "signature": "",
+                "province": "",
+                "id": "@adadada",
+                "displayname": "xxx"
+            },
+            {#第二个群成员
+                "account": "",
+                "name": "xxx",
+                "markname": "",
+                "sex": "none",
+                "display": "",
+                "city": "",
+                "signature": "",
+                "province": "",
+                "id": "@dadada",
+                "displayname": "xxx"
+            },
+        ],
+
+    },
+    {#第二个群组
+        "name": "xxxx",
+        "id": "@@dadadada",
+        "displayname": "xxx"
+        "member": [
+            {
+                "account": "",
+                "name": "xxx",
+                "markname": "",
+                "sex": "none",
+                "display": "",
+                "city": "",
+                "signature": "",
+                "province": "",
+                "id": "@dadadada",
+                "displayname": "xxx"
+            },
+            {
+                "account": "",
+                "name": "xxx",
+                "markname": "",
+                "sex": "none",
+                "display": "",
+                "city": "",
+                "signature": "",
+                "province": "",
+                "id": "@dadadada",
+                "displayname": "xxx"
+            },
+        ],
+
+    },
+]
+```
+
+### 10. 创建群组
+|   API  |创建群组
+|--------|:------------------------------------------|
+|url     |/openwx/create_group|
+|请求方法|GET\|POST|
+|请求参数|**friend**: 好友的id（多个好友id用逗号分割）<br>**displayname**: 可选，群组的显示名称<br>|
+|数据格式|application/x-www-form-urlencoded|
+|调用示例|http://127.0.0.1:3000/openwx/create_group?displayname=xxxxxx&friend=xxxx,xxxx|
+返回JSON结果:
+
+```
+{
+    "group_id":"@@a6588c3bfa8b5458ffc8d758ae851d3f40f396c2ebc970d006a365fdbb5299e1", #创建的群组id
+    "status":"success",
+    "code":0  #创建成功状态码为0，失败为非0
+}
+```
+
+### 11. 邀请好友加入群组
+|   API  |邀请好友加入群组
+|--------|:------------------------------------------|
+|url     |/openwx/invite_friend|
+|请求方法|GET\|POST|
+|请求参数|**friend**: 好友的id（多个好友id用逗号分割）<br>**id**: 群组对象的id<br>**displayname**: 群组的显示名称<br>|
+|数据格式|application/x-www-form-urlencoded|
+|调用示例|http://127.0.0.1:3000/openwx/invite_friend?id=xxxxxx&friend=xxxx,xxxx<br>http://127.0.0.1:3000/openwx/invite_friend?displayname=xxxxxx&friend=xxxx,xxxx|
+返回JSON结果:
+
+```
+{
+    "status":"success",
+    "code":0  #成功状态码为0，失败为非0
+}
+```
+
+### 11. 移除群组成员
+|   API  |移除群组成员
+|--------|:------------------------------------------|
+|url     |/openwx/kick_group_member|
+|请求方法|GET\|POST|
+|请求参数|**member**: 成员的id（多个成员id用逗号分割）<br>**id**: 群组的id<br>**displayname**: 群组的显示名称<br>|
+|数据格式|application/x-www-form-urlencoded|
+|调用示例|http://127.0.0.1:3000/openwx/kick_group_member?id=xxxxxx&member=xxxx,xxxx<br>http://127.0.0.1:3000/openwx/kick_group_member?displayname=xxxxxx&member=xxxx,xxxx|
+返回JSON结果:
+
+```
+{
+    "status":"success",
+    "code":0  #成功状态码为0，失败为非0
+}
