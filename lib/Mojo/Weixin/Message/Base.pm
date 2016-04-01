@@ -52,6 +52,30 @@ sub is_at{
     return $self->content =~/\@\Q$displayname\E(|"\xe2\x80\x85")/;
 }
 
+sub remove_at{
+    my $self = shift;
+    my $object;
+    my $displayname;
+    if($self->class eq "recv"){
+        $object = shift || $self->receiver;
+        $displayname = $object->displayname;
+    }
+    elsif($self->class eq "send"){
+        if($self->type eq "group_message"){
+            $object = shift || $self->group->me;
+            $displayname = $object->displayname;
+        }
+        elsif($self->type=~/^friend_message$/){
+            $object = shift || $self->receiver;
+            $displayname = $object->displayname;
+        }
+    }
+    my $content = $self->content;
+    $content=~s/\@\Q$displayname\E(|"\xe2\x80\x85")//g;
+    $self->content($content);
+    return $self;
+}
+
 sub dump{
     my $self = shift;
     my $clone = {};

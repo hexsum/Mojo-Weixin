@@ -51,6 +51,7 @@ sub relogin{
     $self->user(+{});
     $self->friend([]);
     $self->group([]);
+    $self->data(+{});
 
     $self->login();
 }
@@ -236,8 +237,5 @@ sub mail{
     }
 
 }
-
-
-
 
 1;

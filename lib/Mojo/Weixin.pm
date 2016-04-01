@@ -23,6 +23,7 @@ has keep_cookie         => 1;
 has user    => sub {+{}};
 has friend  => sub {[]};
 has group   => sub {[]};
+has data    => sub {+{}};
 
 has version => $Mojo::Weixin::VERSION;
 has plugins => sub{+{}};

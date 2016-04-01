@@ -2,6 +2,24 @@ package Mojo::Weixin::Cache;
 sub new{
     return bless {}
 }
+sub all {
+    my $self = shift;
+    my @res;
+    for (keys %$self){
+        if($self->{$_}{ctime}+$self->{$_}{ttl} <= time){push @res,{key=>$_,data=>$self->{$_}{data}}}
+        else{$self->delete($_)}
+    }
+    return wantarray?@res:\@res;
+}
+sub count {
+    my $self = shift;
+    my $count = 0;
+    for (keys %$self){
+        if($self->{$_}{ctime}+$self->{$_}{ttl} <= time){$count++}
+        else{$self->delete($_)}
+    }
+    return $count;
+}
 sub store {
     my $self= shift;
     my ($data_key,$data,$ttl) = @_; 
