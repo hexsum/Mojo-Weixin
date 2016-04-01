@@ -1,6 +1,7 @@
 package Mojo::Weixin::Plugin::SmartReply;
 use POSIX;
 use Encode;
+use Mojo::Util;
 my $api = 'http://www.tuling123.com/openapi/api';
 my %limit;
 my %ban;
@@ -70,7 +71,9 @@ sub call{
                 $reply = encode("utf8","$json->{text}$json->{url}");
             }
             else{return}
-
+            $reply=~s#<br(\s*/)?>#\n#g;
+            eval{$reply= Mojo::Util::html_unescape($reply);};
+            $client->warn("html entities unescape fail: $@") if $@;
             $reply  = "\@$sender_nick " . $reply  if $msg->type eq 'group_message' and rand(100)>20;
             $reply = $client->truncate($reply,max_bytes=>500,max_lines=>10) if $msg->type eq 'group_message';        
             $client->reply_message($msg,$reply,sub{$_[1]->from("bot")}) if $reply;
