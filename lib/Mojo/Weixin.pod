@@ -785,6 +785,19 @@ Mojo::Weixin - A Weixin Client Framework base on Mojolicious
 
     $client->load("Weather");
 
+=head2 Mojo::Weixin::Plugin::XiaoiceReply
+
+利用微软小冰实现智能回复，需要登录的微信帐号先关注微软小冰公众号
+
+该智能回复是独占模式，即一段时间内只能够和某个好友或某个群进行智能对话
+
+    $client->load("XiaoiceReply");
+    $client->load("XiaoiceReply",data=>{
+        is_need_at  => 1,           #可选，是否需要艾特我来触发智能回复
+        comamnd_on  => "小冰启动",  #可选，启动智能回复的命令，在手机端发送给任何人/群该消息内容即可
+        comamnd_off => "小冰停止",  #可选，停止智能回复的命令，在手机端发送给任何人/群该消息内容即可
+    });
+
 =head2 Mojo::Weixin::Plugin::SmartReply
 
 实现机器人的智能回复，支持好友消息、群消息

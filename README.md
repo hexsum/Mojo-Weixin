@@ -1,4 +1,4 @@
-Mojo-Weixin v1.0.8 [![Build Status](https://travis-ci.org/sjdy521/Mojo-Weixin.svg?branch=master)](https://travis-ci.org/sjdy521/Mojo-Weixin)
+Mojo-Weixin v1.0.9 [![Build Status](https://travis-ci.org/sjdy521/Mojo-Weixin.svg?branch=master)](https://travis-ci.org/sjdy521/Mojo-Weixin)
 ========================
 使用Perl语言编写的微信客户端框架，基于Mojolicious，要求Perl版本5.10+，可通过插件提供基于HTTP协议的api接口供其他语言或系统调用
 
@@ -22,6 +22,7 @@ Mojo-Weixin v1.0.8 [![Build Status](https://travis-ci.org/sjdy521/Mojo-Weixin.sv
   KnowledgeBase        2        已发布      sjdy521       通过微信消息自定义问答知识库
   FuckDaShen           1        已发布      sjdy521       对消息中的"大神"关键词进行鄙视
   PostQRcode           0        已发布      sjdy521       登录二维码发送到邮箱实现远程扫码
+  XiaoiceReply         1        已发布      sjdy521       利用微软小冰实现智能聊天回复
   SmartReply           0        已发布      sjdy521       智能聊天回复
 ```
 ###效果展示
@@ -73,6 +74,8 @@ Mojo-Weixin v1.0.8 [![Build Status](https://travis-ci.org/sjdy521/Mojo-Weixin.sv
 1. *安装perl*
   
     安装之前请先确认下你的系统是否已经安装了Perl，因为除了windows，其他大部分的平台默认都可能已经预装过
+
+    并且你的Perl版本至少5.10.1+，推荐5.14+
 
     [Perl官网下载页面](https://www.perl.org/get.html) 有包含Unix/Linux、Mac OS X、Windows多平台比较全面详细的安装说明
 
