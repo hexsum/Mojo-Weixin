@@ -1,7 +1,7 @@
 ### 1. 获取用户数据
 |   API  |获取用户数据
 |--------|:------------------------------------------|
-|url     |/openwx/get_user_info|
+|uri     |/openwx/get_user_info|
 |请求方法|GET\|POST|
 |请求参数|无|
 |调用示例|http://127.0.0.1:3000/openwx/get_user_info|
@@ -26,7 +26,7 @@
 ### 2. 获取好友数据
 |   API  |获取好友数据
 |--------|:------------------------------------------|
-|url     |/openwx/get_friend_info|
+|uri     |/openwx/get_friend_info|
 |请求方法|GET\|POST|
 |请求参数|无|
 |调用示例|http://127.0.0.1:3000/openwx/get_friend_info|
@@ -63,7 +63,7 @@
 ### 3. 获取群组数据
 |   API  |获取群组数据
 |--------|:------------------------------------------|
-|url     |/openwx/get_group_info|
+|uri     |/openwx/get_group_info|
 |请求方法|GET\|POST|
 |请求参数|无|
 |调用示例|http://127.0.0.1:3000/openwx/get_group_info|
@@ -139,7 +139,7 @@
 ### 4. 发送好友消息
 |   API  |发送好友消息
 |--------|:------------------------------------------|
-|url     |/openwx/send_friend_message|
+|uri     |/openwx/send_friend_message|
 |请求方法|GET\|POST|
 |请求参数|**id**: 好友的id<br>**account**: 好友的帐号<br>**displayname**: 好友显示名称<br>**markname**: 好友备注名称<br>**media_path**:媒体路径(可以是文件路径或url，需要做urlencode)|
 |数据格式|application/x-www-form-urlencoded|
@@ -152,7 +152,7 @@
 ### 5. 发送群组消息
 |   API  |发送群组消息
 |--------|:------------------------------------------|
-|url     |/openwx/send_group_message|
+|uri     |/openwx/send_group_message|
 |请求方法|GET\|POST|
 |请求参数|**id**: 群组的id<br>**displayname**: 群组显示名称<br>**media_path**:媒体路径(可以是文件路径或url，需要做urlencode)|
 |数据格式|application/x-www-form-urlencoded|
@@ -164,7 +164,7 @@
 ### 6. 自定义接收消息上报地址
 |   API  |接收消息上报（支持好友消息、群消息）
 |--------|:------------------------------------------|
-|url     |自定义任意支持http协议的url|
+|uri     |自定义任意支持http协议的url|
 |请求方法|POST|
 |数据格式|application/json|
 
@@ -268,7 +268,7 @@ Content-Type: application/json
 ### 7. 好友问答
 |   API  |发送消息给好友并等待好友回答
 |--------|:------------------------------------------|
-|url     |/openwx/consult|
+|uri     |/openwx/consult|
 |请求方法|GET\|POST|
 |请求参数|**id**: 好友的id<br>**account**: 好友的帐号<br>**displayname**: 好友显示名称<br>**markname**: 好友备注名称<br>**timeout**：等待回复的时间，默认30秒<br>**media_path**:媒体路径(可以是文件路径或url，需要做urlencode)|
 |数据格式|application/x-www-form-urlencoded|
@@ -297,7 +297,7 @@ Server: Mojolicious (Perl)
 ### 8. 搜索好友对象
 |   API  |搜索好友对象
 |--------|:------------------------------------------|
-|url     |/openwx/search_friend|
+|uri     |/openwx/search_friend|
 |请求方法|GET\|POST|
 |请求参数|好友对象的任意属性，中文需要做urlencode，比如：<br>**id**: 好友的id<br>**account**: 好友的帐号<br>**displayname**: 好友显示名称<br>**markname**: 好友备注名称<br>|
 |数据格式|application/x-www-form-urlencoded|
@@ -336,7 +336,7 @@ Server: Mojolicious (Perl)
 ### 9. 搜索群组对象
 |   API  |搜索群组对象
 |--------|:------------------------------------------|
-|url     |/openwx/search_group|
+|uri     |/openwx/search_group|
 |请求方法|GET\|POST|
 |请求参数|群对象的任意属性，中文需要做urlencode，比如：<br>**id**: 群组的id<br>**displayname**: 群组的显示名称<br>|
 |数据格式|application/x-www-form-urlencoded|
@@ -415,7 +415,7 @@ Server: Mojolicious (Perl)
 ### 10. 创建群组
 |   API  |创建群组
 |--------|:------------------------------------------|
-|url     |/openwx/create_group|
+|uri     |/openwx/create_group|
 |请求方法|GET\|POST|
 |请求参数|**friend**: 好友的id（多个好友id用逗号分割）<br>**displayname**: 可选，群组的显示名称<br>|
 |数据格式|application/x-www-form-urlencoded|
@@ -433,7 +433,7 @@ Server: Mojolicious (Perl)
 ### 11. 邀请好友加入群组
 |   API  |邀请好友加入群组
 |--------|:------------------------------------------|
-|url     |/openwx/invite_friend|
+|uri     |/openwx/invite_friend|
 |请求方法|GET\|POST|
 |请求参数|**friend**: 好友的id（多个好友id用逗号分割）<br>**id**: 群组对象的id<br>**displayname**: 群组的显示名称<br>|
 |数据格式|application/x-www-form-urlencoded|
@@ -450,7 +450,7 @@ Server: Mojolicious (Perl)
 ### 11. 移除群组成员
 |   API  |移除群组成员
 |--------|:------------------------------------------|
-|url     |/openwx/kick_group_member|
+|uri     |/openwx/kick_group_member|
 |请求方法|GET\|POST|
 |请求参数|**member**: 成员的id（多个成员id用逗号分割）<br>**id**: 群组的id<br>**displayname**: 群组的显示名称<br>|
 |数据格式|application/x-www-form-urlencoded|

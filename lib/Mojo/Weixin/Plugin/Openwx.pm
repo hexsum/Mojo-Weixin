@@ -104,7 +104,6 @@ sub call{
     any [qw(GET POST)] => '/openwx/search_friend' => sub{
         my $c = shift;
         my @params = map {defined $_?Encode::encode("utf8",$_):$_} @{$c->req->params->pairs};
-        use DDP; p @params;
         my @objects = $client->search_friend(@params);
         if(@objects){
             $c->render(json=>[map {$_->to_json_hash()} @objects]);
