@@ -1,3 +1,7 @@
+2016-04-13 Mojo::Weixin v1.1.0
+1）Openwx插件删除调试代码 感谢 @lyrl 的反馈
+2）文档完善
+
 2016-04-07 Mojo::Weixin v1.0.9
 1）修复IRCShell插件的bug
 2）修复更新群信息的bug
