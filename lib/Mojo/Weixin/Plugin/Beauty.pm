@@ -42,7 +42,7 @@ sub call{
             }
         }
         if(@{$db->{$url}{pins}} == 0){
-            $self->error("插件[ ".__PACKAGE__ . " ]初始化数据失败: [$db->{$url}{command}]($url)");
+            $client->error("插件[ ".__PACKAGE__ . " ]初始化数据失败: [$db->{$url}{command}]($url)");
         }
         $db->{$url}{last_pin_id} = $db->{$url}{pins}->[-1]->{id};
     }
