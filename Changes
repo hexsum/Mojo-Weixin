@@ -1,3 +1,9 @@
+2016-04-21 Mojo::Weixin v1.1.1
+1）客户端的spawn方法增加一个新的参数 is_blocking 用于进行阻塞式执行命令
+2）修复Beauty插件的bug
+3）修复add_job方法的bug 感谢 @化缘 的反馈
+4）完善MakeFile
+
 2016-04-13 Mojo::Weixin v1.1.0
 1）Openwx插件删除调试代码 感谢 @lyrl 的反馈
 2）文档完善

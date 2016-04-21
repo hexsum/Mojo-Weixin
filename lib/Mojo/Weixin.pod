@@ -217,6 +217,7 @@ Mojo::Weixin - A Weixin Client Framework base on Mojolicious
 该方法实际上参考L<Mojo::Run>模块 并在该模块的基础上做了进一步完善
 
     #支持的参数：
+    is_blocking     #是否阻塞执行命令，默认0
     max_forks       #产生的最大进程数
     cmd             #要执行的命令或代码
     param           #命令的参数
