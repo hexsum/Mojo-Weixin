@@ -9,7 +9,7 @@ use Mojo::Weixin::Client::Remote::_sync;
 use Mojo::Weixin::Message::Handle;
 use Mojo::IOLoop::Delay;
 
-use base qw(Mojo::Weixin::Request Mojo::Weixin::Client::Cron);
+use base qw(Mojo::Weixin::Request);
 
 sub login{
     my $self = shift;
@@ -238,6 +238,11 @@ sub mail{
         return $@?(0,$@):(1,);
     }
 
+}
+sub add_job {
+    my $self = shift;
+    require Mojo::Weixin::Client::Cron;
+    $self->Mojo::Weixin::Client::Cron::add_job(@_);
 }
 
 1;
