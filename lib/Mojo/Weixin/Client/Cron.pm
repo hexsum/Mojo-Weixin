@@ -4,11 +4,6 @@ use Time::Piece;
 use Time::Seconds;
 sub add_job{
     my $self = shift;
-    eval{ require Time::Piece;require Time::Seconds; } ;
-    if($@){
-        $self->error("调用add_job，请先安装模块 Time::Piece Time::Seconds 两个模块");
-        return;
-    }
     my($type,$nt,$callback) = @_;
     my $t = $nt;
     if(ref $callback ne 'CODE'){ 
