@@ -33,7 +33,8 @@ sub call{
         my $html = $client->http_get($url);
         if(defined $html){
             if($html=~m#\Qapp.page["board"]\E\s*=\s*(.*?);#){
-                my $json = $client->decode_json($1);
+                my $data = $1;
+                my $json = $client->decode_json($data);
                 if(defined $json and defined  $json->{pins}){
                     for(@{ $json->{pins} }){
                         push @{$db->{$url}{pins}},{id=>$_->{pin_id}, url=>'http://img.hb.aicdn.com/' . $_->{file}{key}};
@@ -44,7 +45,9 @@ sub call{
         if(@{$db->{$url}{pins}} == 0){
             $client->error("插件[ ".__PACKAGE__ . " ]初始化数据失败: [$db->{$url}{command}]($url)");
         }
-        $db->{$url}{last_pin_id} = $db->{$url}{pins}->[-1]->{id};
+        else{
+            $db->{$url}{last_pin_id} = $db->{$url}{pins}->[-1]->{id};
+        }
     }
 
     my $callback = sub{
@@ -76,7 +79,8 @@ sub call{
                             my $html = $client->http_get($board->{url});
                             if(defined $html){
                                 if($html=~m#\Qapp.page["board"]\E\s*=\s*(.*?);#){
-                                    my $json = $client->decode_json($1);
+                                    my $data = $1;
+                                    my $json = $client->decode_json($data);
                                     if(defined $json and defined  $json->{pins}){
                                         for(@{ $json->{pins} }){
                                             push @{$board->{pins}},{id=>$_->{pin_id}, url=>'http://img.hb.aicdn.com/' . $_->{file}{key}};

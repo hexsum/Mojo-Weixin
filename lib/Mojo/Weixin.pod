@@ -756,7 +756,7 @@ Mojo::Weixin - A Weixin Client Framework base on Mojolicious
         board=>[
             {command=>"看妹子", url=>'http://huaban.com/boards/19570858/'},
             {command=>"搞基"  , url=>'http://huaban.com/boards/28226262/'},
-            {command=>"看帅哥", url=>'http://huaban.com/boards/28226490/'},
+            {command=>"看帅哥", url=>'http://huaban.com/boards/27865046/'},
         ]
     });
 
