@@ -12,7 +12,7 @@
 
 2. ***运行镜像***
 
-        docker run -at --env QQ=123456 --env LOG_ENCODING=utf8 --env PORT=5000 -p 5000:5000 -v /tmp:/tmp mojo-weixin 
+        docker run -at --env LOG_ENCODING=utf8 --env PORT=5000 -p 5000:5000 -v /tmp:/tmp mojo-weixin 
 
   为了能够方便查看日志，获取容器中下载的二维码文件等，建议把宿主的/tmp目录挂载到docker的/tmp上，同时设置容器的端口映射
 
@@ -26,4 +26,4 @@
   | LOG_PATH     | 日志报错路径             | STDERR                          |
   | LOG_ENCODING | 日志编码                 | utf8                            |
   | LOG_LEVEL    | 日志等级                 | info                            |
-  | QRCODE_PATH  | 二维码保持路径           | /tmp/mojo_weixin_qrcode_xxxx.png |
+  | QRCODE_PATH  | 二维码保持路径           | /tmp/mojo_weixin_qrcode.jpg     |
