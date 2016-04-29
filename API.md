@@ -226,10 +226,10 @@ Server: Mojolicious (Perl)
 |------------------------------|:-----------|:-------------------------------|
 |new_group                     |新加入群聊  | 对应群对象
 |new_friend                    |新增好友    | 对应好友对象
-|new_group_member              |新增群聊成员| 对应成员对象
+|new_group_member              |新增群聊成员| 对应成员对象，对应的群对象
 |lose_group                    |退出群聊    | 对应群对象
 |lose_friend                   |删除好友    | 对应好友对象
-|lose_group_member             |成员退出群聊| 对应成员对象
+|lose_group_member             |成员退出群聊| 对应成员对象，对应的群对象
 |group_property_change         |群聊属性变化| 群对象，属性，原始值，更新值
 |group_member_property_change  |成员属性变化| 成员对象，属性，原始值，更新值
 |friend_property_change        |好友属性变化| 好友对象，属性，原始值，更新值

@@ -115,13 +115,13 @@ sub add_group_member{
     my $self = shift;
     my $member = shift;
     $self->client->die("不支持的数据类型\n") if ref $member ne "Mojo::Weixin::Group::Member";
-    $self->client->emit(new_group_member=>$member) if $self->_add($self->member,$member) == 1;
+    $self->client->emit(new_group_member=>$member,$self) if $self->_add($self->member,$member) == 1;
 }
 sub remove_group_member{
     my $self = shift;
     my $member = shift;
     $self->client->die("不支持的数据类型\n") if ref $member ne "Mojo::Weixin::Group::Member";
-    $self->client->emit(lose_group_member=>$member) if $self->_remove($self->member,$member) == 1;
+    $self->client->emit(lose_group_member=>$member,$self) if $self->_remove($self->member,$member) == 1;
 }
 
 sub me {

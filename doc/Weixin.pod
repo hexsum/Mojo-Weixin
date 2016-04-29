@@ -594,7 +594,7 @@ Mojo::Weixin - A Weixin Client Framework base on Mojolicious
 
 =head2 new_group_member 新增群成员
 
-    $client->on(new_group_member=>sub{my ($client,$member)=@_});
+    $client->on(new_group_member=>sub{my ($client,$member,$group)=@_});
 
 =head2 new_friend  新增好友
 
@@ -603,6 +603,18 @@ Mojo::Weixin - A Weixin Client Framework base on Mojolicious
 =head2 new_group 新增群组
 
     $client->on(new_group=>sub{my ($client,$group)=@_});
+
+=head2 lose_friend 失去好友
+
+    $client->on(lose_friend=>sub{my ($client,$friend)=@_});
+
+=head2 lose_group 退出群组
+
+    $client->on(lose_group=>sub{my ($client,$group)=@_});
+
+=head2 lose_group_member 群组成员退出
+
+    $client->on(lose_group_member=>sub{my ($client,$member,$group)=@_});
 
 =head1 关于插件
 
@@ -907,10 +919,10 @@ Mojo::Weixin - A Weixin Client Framework base on Mojolicious
     |------------------------------|:-----------|:-------------------------------|
     |new_group                     |新加入群聊  | 对应群对象
     |new_friend                    |新增好友    | 对应好友对象
-    |new_group_member              |新增群聊成员| 对应成员对象
+    |new_group_member              |新增群聊成员| 对应成员对象，对应的群对象
     |lose_group                    |退出群聊    | 对应群对象
     |lose_friend                   |删除好友    | 对应好友对象
-    |lose_group_member             |成员退出群聊| 对应成员对象
+    |lose_group_member             |成员退出群聊| 对应成员对象，对应的群对象
     |group_property_change         |群聊属性变化| 群对象，属性，原始值，更新值
     |group_member_property_change  |成员属性变化| 成员对象，属性，原始值，更新值
     |friend_property_change        |好友属性变化| 好友对象，属性，原始值，更新值

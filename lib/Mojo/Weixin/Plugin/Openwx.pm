@@ -13,11 +13,15 @@ sub call{
         $client->on(all_event => sub{
             my($client,$event,@args) =@_;
             if($event =~ /^new_group|lose_group|new_friend|lose_friend|new_group_member|lose_group_member$/){
-                my $object = $args[0];
                 my $post_json = {};
                 $post_json->{post_type} = "event";
                 $post_json->{event} = $event;
-                $post_json->{params} = [$object->to_json_hash(0)];
+                if($event =~ /^new_group_member|lose_group_member$/){
+                    $post_json->{params} = [$args[0]->to_json_hash(0),$args[1]->to_json_hash(0)];
+                }
+                else{
+                    $post_json->{params} = [$args[0]->to_json_hash(0)];
+                }
                 $client->http_post($post_api,json=>$post_json,sub{
                     my($data,$ua,$tx) = @_;
                     if($tx->success){
