@@ -174,6 +174,7 @@ $client->load("Openwx",data=>{
     listen => [{host=>xxx,port=>xxx}],           #可选，发送消息api监听端口
     post_api=> 'http://127.0.0.1:4000/post_api', #可选，接收消息或事件的上报地址
     post_event => 1,                             #可选，是否上报事件，为了向后兼容性，默认值为0
+    post_media_data => 1,                        #可选，是否上报经过urlencode编码的图片原始数据，默认值为1
 });
 ```
 #### 接收消息上报 
@@ -198,6 +199,35 @@ Content-Type: application/json
     "sender":"灰灰",
     "id":"10856",
     "type":"group_message",
+    "format": "text",
+    "post_type": "receive_message"
+}
+
+```
+
+图片消息上报
+
+```
+{   "receiver":"小灰",
+    "time":"1442542632",
+    "content":"[media](\/tmp\/mojo_weixin_media_Ja9l.jpg)",
+    "media_path": "\/tmp\/mojo_weixin_media_Ja9l.jpg",
+    "media_id": "2273934420223351581",
+    "media_mime":"image\/jpg",
+    "media_name": "mojo_weixin_media_Ja9l.jpg",
+    "media_size": "1234567",
+    "media_mtime": "1462763788",
+    "media_ext": "jpg",
+    "media_data": "%87%60M%B4A%E1%EB%A0%13%E4%C4%5C2%C4%0B%DFV%B7%0B...", #对图片原始二进制数据，使用url encode编码
+    "class":"recv",
+    "sender_id":"@2372835507",
+    "receiver_id":"@4072574066",
+    "group":"PERL学习交流",
+    "group_id":"@@2617047292",
+    "sender":"灰灰",
+    "id":"10856",
+    "type":"group_message",
+    "format": "media",
     "post_type": "receive_message"
 }
 
