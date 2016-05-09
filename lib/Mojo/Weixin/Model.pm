@@ -8,6 +8,7 @@ use Mojo::Weixin::Model::Remote::_webwxbatchgetcontact;
 use Mojo::Weixin::Model::Remote::_webwxstatusnotify;
 use Mojo::Weixin::Model::Remote::_webwxcreatechatroom;
 use Mojo::Weixin::Model::Remote::_webwxupdatechatroom;
+use Mojo::Weixin::Model::Remote::_webwxoplog;
 use Mojo::Weixin::User;
 use Mojo::Weixin::Group;
 use Mojo::Weixin::Const;
@@ -198,6 +199,27 @@ sub friends{
 sub groups{
     my $self = shift;
     return @{$self->group};
+}
+
+sub set_friend_markname {
+    my $self = shift;
+    my $friend = shift;
+    my $markname = shift;
+    if(ref $friend ne "Mojo::Weixin::Friend"){
+        $self->die("无效的对象数据类型");
+        return;
+    }
+    my $displayname = $friend->displayname;
+    my $ret = $self->_webwxoplog($friend->id,$markname);
+    if($ret){
+        $self->info("设置好友 $displayname 备注[ $markname ]成功");
+        return 1;
+    }
+    else{
+        $self->info("设置好友 $displayname 备注[ $markname ]失败");
+        return 0;
+    }
+
 }
 
 sub create_group {

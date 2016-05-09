@@ -408,6 +408,36 @@ sub call{
         else{$c->render(json=>{code=>200,status=>"member id empty"});}
         
     };
+    any [qw(GET POST)] => '/openwx/set_group_displayname' => sub{
+        my $c = shift;
+        my($id,$displayname,$new_displayname)= map {defined $_?Encode::encode("utf8",$_):$_} ($c->param("id"),$c->param("displayname"),$c->param("new_displayname"));
+        my $object = $client->search_group(id=>$id,displayname=>$displayname);
+        if(defined $object){
+            if($object->set_displayname($new_displayname)){
+                $c->render(json=>{code=>0,status=>"success"});
+            }
+            else{
+                $c->render(json=>{code=>201,status=>"failure"});
+            }
+            
+        }
+        else{$c->render(json=>{code=>100,status=>"object not found"});}
+    };
+    any [qw(GET POST)] => '/openwx/set_friend_markname' => sub{
+        my $c = shift;
+        my($id,$account,$displayname,$markname,$new_markname)= map {defined $_?Encode::encode("utf8",$_):$_} ($c->param("id"),$c->param("account"),$c->param("displayname"),$c->param("markname"),$c->param("new_markname"));
+        my $object = $client->search_friend(id=>$id,account=>$account,displayname=>$displayname,markname=>$markname);
+        if(defined $object){
+            if($object->set_markname($new_markname)){
+                $c->render(json=>{code=>0,status=>"success"});
+            }
+            else{
+                $c->render(json=>{code=>201,status=>"failure"});
+            }
+        }
+        else{$c->render(json=>{code=>100,status=>"object not found"});}
+
+    };
     any '/*whatever'  => sub{whatever=>'',$_[0]->render(text=>"api not found",status=>403)};
     package Mojo::Weixin::Plugin::Openwx;
     $server = Mojo::Weixin::Server->new();   
