@@ -23,7 +23,7 @@
   | PORT         | openwx插件api地址监听端口| 5000                            |
   | POST_API     | openwx插件消息上报地址   | 无                              |
   | UA_DEBUG     | 是否打印调试日志         | 0                               |
-  | LOG_PATH     | 日志报错路径             | STDERR                          |
+  | LOG_PATH     | 日志保存路径             | STDERR                          |
   | LOG_ENCODING | 日志编码                 | utf8                            |
   | LOG_LEVEL    | 日志等级                 | info                            |
   | QRCODE_PATH  | 二维码保持路径           | /tmp/mojo_weixin_qrcode.jpg     |
