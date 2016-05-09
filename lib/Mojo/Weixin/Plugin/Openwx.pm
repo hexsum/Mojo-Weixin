@@ -8,6 +8,7 @@ sub call{
     my $client = shift;
     my $data   =  shift;
     my $post_api = $data->{post_api} if ref $data eq "HASH";
+    $data->{post_media_data} = 1 if not defined $data->{post_media_data};
 
     if(defined $post_api){
         $client->on(all_event => sub{
@@ -55,6 +56,7 @@ sub call{
             my($client,$msg) = @_;
             return if $msg->type !~ /^friend_message|group_message$/;
             my $post_json = $msg->to_json_hash;
+            delete $post_json->{media_data} if ($post_json->{format} eq "media" and ! $data->{post_media_data});
             $post_json->{post_type} = "receive_message";
             $client->http_post($post_api,json=>$post_json,sub{
                 my($data,$ua,$tx) = @_;

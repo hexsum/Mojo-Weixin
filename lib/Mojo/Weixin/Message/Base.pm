@@ -1,6 +1,7 @@
 package Mojo::Weixin::Message::Base;
 use Mojo::Weixin::Base -base;
 use Data::Dumper;
+use Mojo::Util qw(url_escape);
 use Encode qw(decode_utf8);
 use Scalar::Util qw(blessed);
 
@@ -23,6 +24,9 @@ sub to_json_hash{
         elsif($key eq "group"){
             next if $self->type ne "group_message";
             $json->{group} = decode_utf8($self->group->displayname);
+        }
+        elsif($key eq "media_data"){
+            $json->{$key} = url_escape($self->{$key});
         }
         elsif(ref $self->{$key} eq ""){
             $json->{$key} = decode_utf8($self->{$key});

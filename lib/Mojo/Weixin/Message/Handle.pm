@@ -21,15 +21,15 @@ sub gen_message_queue{
         my $msg = shift;
         return if $self->is_stop;
         if($msg->class eq "recv"){
-            $self->emit(receive_message=>$msg);
             if($msg->format eq "media"){
-                if($self->has_subscribers("receive_media")){
-                    $self->_get_media($msg->media_id,sub{
-                        my ($path,$data) = @_;
-                        $self->emit(receive_media=>$path,$data,$msg->sender);
-                    });
-                }
+                $self->_get_media($msg,sub{
+                    my ($path,$data,$msg) = @_;
+                    $msg->content("[media](". $msg->media_path . ")");
+                    $self->emit(receive_media=>$path,$data,$msg);
+                    $self->emit(receive_message=>$msg);
+                });
             }
+            else{ $self->emit(receive_message=>$msg);}
         }
         elsif($msg->class eq "send"){
             if($msg->source ne "local"){
