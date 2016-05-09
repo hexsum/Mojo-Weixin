@@ -478,6 +478,7 @@ Server: Mojolicious (Perl)
 ```
 
 ### 11. 移除群组成员
+
 |   API  |移除群组成员
 |--------|:------------------------------------------|
 |uri     |/openwx/kick_group_member|
@@ -492,3 +493,43 @@ Server: Mojolicious (Perl)
     "status":"success",
     "code":0  #成功状态码为0，失败为非0
 }
+
+```
+
+### 12. 修改好友备注名称
+
+|   API  |修改好友备注名称
+|--------|:------------------------------------------|
+|uri     |/openwx/set_friend_markname|
+|请求方法|GET\|POST|
+|请求参数|**id**: 好友的id<br>**account**: 好友的帐号<br>**displayname**: 好友当前显示名称<br>**markname**: 好友当前备注名称<br>**new_markname**:设置的新备注名称 (参数中包含中文需要做urlencode)|
+|数据格式|application/x-www-form-urlencoded|
+|调用示例|http://127.0.0.1:3000/openwx/set_friend_markname?id=xxxxxx&new_markname=xxxx|
+返回JSON结果:
+
+```
+{
+    "status":"success",
+    "code":0  #成功状态码为0，失败为非0
+}
+
+```
+
+### 13. 设置群组的显示名称
+
+|   API  |设置群组的显示名称
+|--------|:------------------------------------------|
+|uri     |/openwx/set_group_displayname|
+|请求方法|GET\|POST|
+|请求参数|**id**: 群组的id<br>**displayname**: 群组当前显示名称<br>**new_displayname**:设置的新显示名称 (参数中包含中文需要做urlencode)|
+|数据格式|application/x-www-form-urlencoded|
+|调用示例|http://127.0.0.1:3000/openwx/set_group_displayname?id=xxxxxx&new_displayname=xxxx|
+返回JSON结果:
+
+```
+{
+    "status":"success",
+    "code":0  #成功状态码为0，失败为非0
+}
+
+```
