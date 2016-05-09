@@ -444,10 +444,12 @@ Mojo::Weixin - A Weixin Client Framework base on Mojolicious
     方法：
     dump        #打印对象结构
     send        #给该好友发送消息
+    set_markname #设置备注名称
 
     my $friend = $client->search_friend(name=>"小灰");
     $friend->dump();
     $friend->send("hello world"); 
+    $friend->set_markname("测试");
 
 
 =head2 群组对象
@@ -1030,6 +1032,8 @@ Mojo::Weixin - A Weixin Client Framework base on Mojolicious
 
     http://127.0.0.1:3000/openwx/send_friend_message?id=xxx&media_path=https%3a%2f%2fss0.bdstatic.com%2f5aV1bjqh_Q23odCf%2fstatic%2fsuperman%2fimg%2flogo%2fbd_logo1_31bdc765.png
     http://127.0.0.1:3000/openwx/send_friend_message?id=xxx&media_path=%2ftmp%2fhello.jpg
+
+更多API接口说明参见github：L<https://github.com/sjdy521/Mojo-Weixin/blob/master/API.md>
 
 =head1 SEE ALSO
 
