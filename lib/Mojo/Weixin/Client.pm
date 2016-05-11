@@ -7,6 +7,7 @@ use Mojo::Weixin::Client::Remote::_is_need_login;
 use Mojo::Weixin::Client::Remote::_synccheck;
 use Mojo::Weixin::Client::Remote::_sync;
 use Mojo::Weixin::Message::Handle;
+use Mojo::IOLoop;
 use Mojo::IOLoop::Delay;
 
 use base qw(Mojo::Weixin::Request);
@@ -102,6 +103,11 @@ sub run{
     $self->emit("run");
     $self->ioloop->start unless $self->ioloop->is_running;
 }
+
+sub multi_run{
+    Mojo::IOLoop->singleton->start unless Mojo::IOLoop->singleton->is_running;
+}
+
 sub clean_qrcode{
     my $self = shift;
     return if not defined $self->qrcode_path;

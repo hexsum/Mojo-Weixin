@@ -153,6 +153,7 @@ Mojo::Weixin - A Weixin Client Framework base on Mojolicious
 
     #支持的参数：
 
+    account         #可选，每个客户端的标识，多账号登录时需要设置，用于区分不同客户端保存的cookie路径
     ua_debug        #设置该参数，打印调试信息
     keep_cookie     #默认为1，0表示不保存登录cookie，1表示保存登录cookie方便下次直接恢复登录
 
