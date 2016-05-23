@@ -118,7 +118,7 @@ sub call{
             $c->render(json=>{code=>100,status=>"object not found"});
         }
     };
-    any [qw(GET POST)] => 'openwx/search_group' => sub{
+    any [qw(GET POST)] => '/openwx/search_group' => sub{
         my $c = shift;
         my @params = map {defined $_?Encode::encode("utf8",$_):$_} @{$c->req->params->pairs};
         my @objects = $client->search_group(@params);
