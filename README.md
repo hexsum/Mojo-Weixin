@@ -7,24 +7,25 @@ Mojo-Weixin v1.1.3 [![Build Status](https://travis-ci.org/sjdy521/Mojo-Weixin.sv
 本项目完全遵循网页微信官方提供的原始聊天功能，不包含任何破解、偷盗等行为，本项目完全开源，目的是为了促进技术交流学习，禁止任何商业盈利目的以及一切非法用途传播，否则后果自负
 
 ###插件列表
-``` 
-  名称                 优先级   当前状态    github作者    功能说明
-  ------------------------------------------------------------------------------
-  ShowMsg              100      已发布      sjdy521       打印客户端接收和发送的消息
-  IRCShell             99       已发布      sjdy521       Linux环境下通过irc客户端使用微信
-  Openwx               98       已发布      sjdy521       提供微信发送消息api接口
-  Perlcode             97       已发布      sjdy521       通过微信消息执行perl代码
-  Perldoc              96       已发布      sjdy521       通过微信消息查询perl文档
-  Beauty               95       已发布      sjdy521       识别指定关键字发送美女图片
-  Translation          93       已发布      sjdy521       多国语言翻译功能
-  Riddle               92       已发布      limengyu1990  输入"猜谜"关键字进行猜谜游戏
-  Weather              91       已发布      autodataming  输入"北京天气"查询指定地区天气
-  KnowledgeBase        2        已发布      sjdy521       通过微信消息自定义问答知识库
-  FuckDaShen           1        已发布      sjdy521       对消息中的"大神"关键词进行鄙视
-  PostQRcode           0        已发布      sjdy521       登录二维码发送到邮箱实现远程扫码
-  XiaoiceReply         1        已发布      sjdy521       利用微软小冰实现智能聊天回复
-  SmartReply           0        已发布      sjdy521       智能聊天回复
-```
+
+|名称                | 优先级  |当前状态    |github作者   | 功能说明                 
+|:-------------------|:--------|:-----------|:------------|:----------------------------
+|[ShowMsg](https://metacpan.org/pod/distribution/Mojo-Weixin/lib/Mojo/Weixin.pod#Mojo::Weixin::Plugin::ShowMsg)             |100      |已发布      |sjdy521      |打印客户端接收和发送的消息
+|[IRCShell](https://metacpan.org/pod/distribution/Mojo-Weixin/lib/Mojo/Weixin.pod#Mojo::Weixin::Plugin::IRCShell)            |99       |已发布      |sjdy521      |Linux环境下通过irc客户端使用微信
+|[Openwx](https://metacpan.org/pod/distribution/Mojo-Weixin/lib/Mojo/Weixin.pod#Mojo::Weixin::Plugin::Openwx)              |98       |已发布      |sjdy521      |提供微信发送消息api接口
+|[Perlcode](https://metacpan.org/pod/distribution/Mojo-Weixin/lib/Mojo/Weixin.pod#Mojo::Weixin::Plugin::Perlcode)            |97       |已发布      |sjdy521      |通过微信消息执行perl代码
+|[Perldoc](https://metacpan.org/pod/distribution/Mojo-Weixin/lib/Mojo/Weixin.pod#Mojo::Weixin::Plugin::Perldoc)             | 96      |已发布      |sjdy521      |通过微信消息查询perl文档
+|[Beauty](https://metacpan.org/pod/distribution/Mojo-Weixin/lib/Mojo/Weixin.pod#Mojo::Weixin::Plugin::Beauty)              |95       |已发布      |sjdy521      |识别指定关键字发送美女图片
+|[Translation](https://metacpan.org/pod/distribution/Mojo-Weixin/lib/Mojo/Weixin.pod#Mojo::Weixin::Plugin::Translation)         |93       |已发布      |sjdy521      |多国语言翻译功能
+|[Riddle](https://metacpan.org/pod/distribution/Mojo-Weixin/lib/Mojo/Weixin.pod#Mojo::Weixin::Plugin::Riddle)              |92       |已发布      |limengyu1990 |输入"猜谜"关键字进行猜谜游戏
+|[Weather](https://metacpan.org/pod/distribution/Mojo-Weixin/lib/Mojo/Weixin.pod#Mojo::Weixin::Plugin::Weather)             |91       |已发布      |autodataming |输入"北京天气"查询指定地区天气
+|[KnowledgeBase](https://metacpan.org/pod/distribution/Mojo-Weixin/lib/Mojo/Weixin.pod#Mojo::Weixin::Plugin::KnowledgeBase)       |2        |已发布      |sjdy521      | 通过微信消息自定义问答知识库
+|[FuckDaShen](https://metacpan.org/pod/distribution/Mojo-Weixin/lib/Mojo/Weixin.pod#Mojo::Weixin::Plugin::FuckDaShen)          |1        |已发布      |sjdy521      |对消息中的"大神"关键词进行鄙视
+|[PostQRcode](https://metacpan.org/pod/distribution/Mojo-Weixin/lib/Mojo/Weixin.pod#Mojo::Weixin::Plugin::PostQRcode)          |0        |已发布      |sjdy521      |登录二维码发送到邮箱实现远程扫码
+|[XiaoiceReply](https://metacpan.org/pod/distribution/Mojo-Weixin/lib/Mojo/Weixin.pod#Mojo::Weixin::Plugin::XiaoiceReply)        |1        |已发布      |sjdy521      |利用微软小冰实现智能聊天回复
+|[SmartReply](https://metacpan.org/pod/distribution/Mojo-Weixin/lib/Mojo/Weixin.pod#Mojo::Weixin::Plugin::SmartReply)          |0        |已发布      |sjdy521      |智能聊天回复
+
+
 ###效果展示
 ```
 [16/01/19 23:10:49] [info] 客户端准备登录...
