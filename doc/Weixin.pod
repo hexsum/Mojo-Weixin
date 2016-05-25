@@ -545,6 +545,16 @@ Mojo::Weixin - A Weixin Client Framework base on Mojolicious
         ...;
     });
 
+=head2 receive_media 接收到图片等媒体消息
+
+    $client->on(receive_media=>sub{
+        my($client,$path,$data,$msg) = @_;
+        # $path 图片的本地路径
+        # $data 图片的原始二进制数据
+        # $msg  图片对应的消息对象
+        ...;
+    });
+
 =head2 send_message 消息发送完成
 
     $client->on(send_message=>sub{
