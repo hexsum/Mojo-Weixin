@@ -205,6 +205,34 @@ Content-Type: application/json
 
 ```
 
+#### 发送消息上报（包括从手机或其他设备上发送的消息） 
+
+发送的消息会通过JSON格式数据POST到该接口
+
+```
+connect to 127.0.0.1 port 4000
+POST /post_api
+Accept: */*
+Content-Length: xxx
+Content-Type: application/json
+
+{   "receiver":"小灰",
+    "time":"1442542632",
+    "content":"测试一下",
+    "class":"send",
+    "sender_id":"@2372835507",
+    "receiver_id":"@4072574066",
+    "group":"PERL学习交流",
+    "group_id":"@@2617047292",
+    "sender":"灰灰",
+    "id":"10856",
+    "type":"group_message",
+    "format": "text",
+    "post_type": "send_message"
+}
+
+```
+
 图片消息上报
 
 ```
