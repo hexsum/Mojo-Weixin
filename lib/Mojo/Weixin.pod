@@ -153,7 +153,7 @@ Mojo::Weixin - A Weixin Client Framework base on Mojolicious
 
     #支持的参数：
 
-    account         #可选，每个客户端的标识，多账号登录时需要设置，用于区分不同客户端保存的cookie路径
+    account         #可选，默认值default, 每个客户端的标识，多账号登录时需要设置，用于区分不同客户端保存的cookie路径
     ua_debug        #设置该参数，打印调试信息
     keep_cookie     #默认为1，0表示不保存登录cookie，1表示保存登录cookie方便下次直接恢复登录
 
@@ -163,7 +163,7 @@ Mojo::Weixin - A Weixin Client Framework base on Mojolicious
                     #编码必须是 Encode 模块支持的格式，比如utf8 gbk等
 
     tmpdir          #程序使用的临时目录，主要用于保存一些验证码、二维码等数据，默认为系统临时目录
-    cookie_path     #登录cookie的保存文件，默认为 tmpdir/mojo_weixin_cookie.dat（多账号运行时需要设置不同的cookie_path）
+    cookie_path     #登录cookie的保存文件，默认为 tmpdir/mojo_weixin_cookie_default.dat（多账号运行时设置不同account）
     pic_dir         #图片接收默认地址，默认为 tmpdir 参数所设置的目录
 
     qrcode_path     #二维码保存路径，默认是 tmpdir 目录下固定文件名

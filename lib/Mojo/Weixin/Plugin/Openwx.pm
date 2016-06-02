@@ -83,6 +83,39 @@ sub call{
                 }
             });
         });
+
+        $client->on(send_message=>sub{
+            my($client,$msg) = @_;
+            return if $msg->type !~ /^friend_message|group_message$/;
+            my $post_json = $msg->to_json_hash;
+            delete $post_json->{media_data} if ($post_json->{format} eq "media" and ! $data->{post_media_data});
+            $post_json->{post_type} = "send_message";
+            $client->http_post($post_api,json=>$post_json,sub{
+                my($data,$ua,$tx) = @_;
+                if($tx->success){
+                    $client->debug("插件[".__PACKAGE__ ."]发送消息[".$msg->id."]上报成功");
+                    if($tx->res->headers->content_type =~m#text/json|application/json#){
+                        #文本类的返回结果必须是json字符串
+                        my $json;
+                        eval{$json = $tx->res->json};
+                        if($@){$client->warn($@);return}
+                        if(defined $json){
+                            #{code=>0,reply=>"回复的消息",format=>"text"}
+                            if((!defined $json->{format}) or (defined $json->{format} and $json->{format} eq "text")){
+                                $msg->reply(Encode::encode("utf8",$json->{reply})) if defined $json->{reply};
+                            }
+                        }
+                    }
+                    #elsif($tx->res->headers->content_type =~ m#image/#){
+                    #   #发送图片，暂未实现
+                    #}
+                }
+                else{
+                    $client->warn("插件[".__PACKAGE__ . "]发送消息[".$msg->id."]上报失败: ".$tx->error->{message}); 
+                }
+            });
+        });
+
     }
 
     package Mojo::Weixin::Plugin::Openwx::App;

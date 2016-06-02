@@ -59,7 +59,7 @@ sub Mojo::Weixin::_login {
             if($data{redirect_uri}=~m#https?://([^/]+)#m){
                 $self->domain($1) if ($1 and $1 ne $self->domain);
             }   
-            my $data = $self->http_get($data{redirect_uri} . '&fun=new&version=v2&lang=zh_CN');
+            my $data = $self->http_get($data{redirect_uri} . '&fun=new&version=v2&lang=zh_CN',{Referer=>'https://' . $self->domain . '/'});
             #<error><ret>0</ret><message>OK</message><skey>@crypt_859d8a8a_3f3db5290570080d1db29da9507e35de</skey><wxsid>rsuMHe7xmA0aHW1D</wxsid><wxuin>138122335</wxuin><pass_ticket>hWdpMVCMqXIVfhXLcsJxYrC6bv785tVDLZAres096ZE%3D</pass_ticket></error
             if($data !~ m#^<error>.*</error>#){
                 $self->error("登录返回数据格式异常");
