@@ -35,18 +35,33 @@ sub call{
         if($msg->sender->id eq $xiaoice->id){
             my $binder = $db[0];
             return if not defined $binder;
-            $binder->send($msg->content);
+            if($msg->format eq "media" and -e $msg->media_path){
+                $binder->send_media($msg->media_path);
+            }
+            else{
+                $binder->send($msg->content);
+            }
         }
         else{
             my $object = $msg->type eq "group_message"?$msg->group:$msg->sender;
             if (@db == 0){
                 $db[0] = $object;
                 $msg->remove_at();
-                $xiaoice->send($msg->content);
+                if($msg->format eq "media" and -e $msg->media_path){
+                    $xiaoice->send_media($msg->media_path);
+                }
+                else{
+                    $xiaoice->send($msg->content);
+                }
             }
             elsif(@db > 0 and $db[0]->id eq $object->id){
                 $msg->remove_at();
-                $xiaoice->send($msg->content); 
+                if($msg->format eq "media" and -e $msg->media_path){
+                    $xiaoice->send_media($msg->media_path);
+                }
+                else{
+                    $xiaoice->send($msg->content); 
+                }
             }
         } 
     });

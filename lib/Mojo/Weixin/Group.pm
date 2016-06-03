@@ -136,6 +136,10 @@ sub send{
     my $self = shift;
     $self->client->send_message($self,@_);
 }
+sub send_media {
+    my $self = shift;
+    $self->client->send_media($self,@_);
+}
 sub set_displayname{
     my $self = shift;
     my $displayname = shift;

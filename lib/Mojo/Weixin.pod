@@ -445,6 +445,7 @@ Mojo::Weixin - A Weixin Client Framework base on Mojolicious
     方法：
     dump        #打印对象结构
     send        #给该好友发送消息
+    send_media  #发送图片
     set_markname #设置备注名称
 
     my $friend = $client->search_friend(name=>"小灰");
@@ -464,6 +465,7 @@ Mojo::Weixin - A Weixin Client Framework base on Mojolicious
     search_group_member  #搜索群成员
     me                   #返回群成员中的自己对象
     send                 #发送消息给该群
+    send_media           #发送图片
     dump                 #打印群对象结构
     members              #返回所有的群成员对象列表
     invite_friend        #邀请好友入群

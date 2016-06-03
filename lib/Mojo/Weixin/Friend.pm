@@ -60,6 +60,10 @@ sub send{
     my $self = shift;
     $self->client->send_message($self,@_);
 }
+sub send_media{
+    my $self = shift;
+    $self->client->send_media($self,@_);
+}
 sub set_markname {
     my $self = shift;
     $self->client->set_friend_markname($self,@_);
