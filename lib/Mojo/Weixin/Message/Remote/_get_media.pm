@@ -9,14 +9,14 @@ sub Mojo::Weixin::_get_media {
     my $type = shift;
 
     my $media_id = $msg->media_id; 
-    my $api = 'https://wx.qq.com/cgi-bin/mmwebwx-bin/webwxgetmsgimg';
+    my $api = 'https://'.$self->domain . '/cgi-bin/mmwebwx-bin/webwxgetmsgimg';
     my @query_string = (
         '' => '',
         MsgID => $media_id,
         skey  => Mojo::Util::url_escape($self->skey),
     );
     push @query_string,(type => "slave") if $type;
-    $self->http_get($self->gen_url($api,@query_string), {Referer=>'https' . $self->domain .'/'},sub{
+    $self->http_get($self->gen_url($api,@query_string), {Referer=>'https://' . $self->domain .'/'},sub{
         my ($data,$ua,$tx) = @_;
         if(not defined $data){
             $self->warn("media[ " . $msg->media_id . " ]下载失败");
