@@ -34,6 +34,7 @@ sub Mojo::Weixin::_get_media {
                     :                           ".dat"
         ; 
         return unless defined $type;
+        $mime=~s/\s*;.*$//g;
         $msg->media_mime($mime);
         $msg->media_ext(substr($type,1));
         $msg->media_data($data);
