@@ -34,17 +34,23 @@ sub gen_message_queue{
         elsif($msg->class eq "send"){
             if($msg->source ne "local"){
                 my $status = Mojo::Weixin::Message::SendStatus->new(code=>0,msg=>"发送成功",info=>"来自其他设备");
-                if(ref $msg->cb eq 'CODE'){
-                    $msg->cb->(
-                        $self,
-                        $msg,
-                        $status,
-                    );
+                if($msg->format eq "media"){
+                    $self->_get_media($msg,sub{
+                        my ($path,$data,$msg) = @_;
+                        $msg->content("[media](". $msg->media_path . ")");
+                        $self->emit(send_media=>$path,$data,$msg);
+                        if(ref $msg->cb eq 'CODE'){
+                            $msg->cb->($self,$msg,$status);
+                        }
+                        $self->emit(send_message=>$msg,$status);
+                    });
                 }
-                $self->emit(send_message=>
-                    $msg,
-                    $status,
-                );
+                else{ 
+                    if(ref $msg->cb eq 'CODE'){
+                        $msg->cb->($self,$msg,$status);
+                    }
+                    $self->emit(send_message=>$msg,$status);
+                }
                 return;
             }
             #消息的ttl值减少到0则丢弃消息
