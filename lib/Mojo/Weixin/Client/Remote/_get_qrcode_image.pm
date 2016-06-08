@@ -4,10 +4,11 @@ sub Mojo::Weixin::_get_qrcode_image{
     my $self = shift;
     my $qrcode_uuid = shift;
     my $api = 'https://login.weixin.qq.com/qrcode/';
-    my @query_string = (
-        t => "webwx",
-    );
-    my $data = $self->http_get($self->gen_url($api . $qrcode_uuid,@query_string));
+    #my @query_string = (
+    #    t => "webwx",
+    #);
+    my $url = $api . $qrcode_uuid;
+    my $data = $self->http_get($url);
     if( not defined $data){
         $self->error("登录二维码下载失败");
         return 0;
@@ -26,8 +27,8 @@ sub Mojo::Weixin::_get_qrcode_image{
     }
 
     my $filename_for_log = encode("utf8",decode(locale_fs,$self->qrcode_path));
-    $self->info("二维码已下载到本地[ $filename_for_log ]");
-    $self->emit(input_qrcode=>$self->qrcode_path);
+    $self->info("二维码已下载到本地[ $filename_for_log ]\n二维码原始下载地址[ $url ]");
+    $self->emit(input_qrcode=>$self->qrcode_path,$url);
     return 1;
 }
 1;
