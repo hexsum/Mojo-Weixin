@@ -11,6 +11,7 @@ Mojo-Weixin v1.1.3 [![Build Status](https://travis-ci.org/sjdy521/Mojo-Weixin.sv
 |名称                | 优先级  |当前状态    |github作者   | 功能说明                 
 |:-------------------|:--------|:-----------|:------------|:----------------------------
 |[ShowMsg](https://metacpan.org/pod/distribution/Mojo-Weixin/lib/Mojo/Weixin.pod#Mojo::Weixin::Plugin::ShowMsg)             |100      |已发布      |sjdy521      |打印客户端接收和发送的消息
+|[ImageStore](https://metacpan.org/pod/distribution/Mojo-Weixin/lib/Mojo/Weixin.pod#Mojo::Weixin::Plugin::ImageStore)             |100      |已发布      |sjdy521      |按日期目录保存发送和接收的图片
 |[IRCShell](https://metacpan.org/pod/distribution/Mojo-Weixin/lib/Mojo/Weixin.pod#Mojo::Weixin::Plugin::IRCShell)            |99       |已发布      |sjdy521      |Linux环境下通过irc客户端使用微信
 |[Openwx](https://metacpan.org/pod/distribution/Mojo-Weixin/lib/Mojo/Weixin.pod#Mojo::Weixin::Plugin::Openwx)              |98       |已发布      |sjdy521      |提供微信发送消息api接口
 |[Perlcode](https://metacpan.org/pod/distribution/Mojo-Weixin/lib/Mojo/Weixin.pod#Mojo::Weixin::Plugin::Perlcode)            |97       |已发布      |sjdy521      |通过微信消息执行perl代码

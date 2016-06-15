@@ -704,6 +704,17 @@ Mojo::Weixin - A Weixin Client Framework base on Mojolicious
 
     $client->load("ShowMsg");
 
+=head2 Mojo::Weixin::Plugin::ImageStore
+
+按日期目录保存发送和接收的图片
+
+    my $client = Mojo::Weixin->new(media_dir=>"/home/test");
+    $client->load("ShowMsg");
+
+    保存的效果:
+    /home/test/20150505/20150505123456.jpg
+    /home/test/20150505/20150505124356.jpg
+
 =head2 Mojo::Weixin::Plugin::IRCShell
 
 将微信协议转换成irc协议，启动一个本地的irc服务器，使用任意irc客户端（irc user设置为微信帐号）连接后即可以按照irc的方式使用微信
