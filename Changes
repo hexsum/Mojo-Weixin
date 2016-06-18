@@ -1,3 +1,12 @@
+2016-06-18 Mojo::Weixin v1.1.4
+1）修复Translate插件不可用的bug 感谢 @丶Seven
+2）Openwx插件支持发送消息上报，原来只支持接收消息上报 感谢 @斌 的建议
+3）README文档中增加友情链接
+4）XiaoiceReply插件支持图片消息 感谢 @hejialaifen 反馈
+5）新增send_media事件，手机发送的图片也会下载到本地并触发相关事件 感谢 @斌 反馈
+6）二维码事件回调参数中新增二维码原始url
+7）新增ImageStore插件，按日期保存图片
+
 2016-05-25 Mojo::Weixin v1.1.3
 1）Openwx插件支持图片消息上报，bug修复，新增以下接口：
         修改好友备注名称 /openwx/set_friend_markname
