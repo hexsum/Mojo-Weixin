@@ -561,3 +561,22 @@ Server: Mojolicious (Perl)
 }
 
 ```
+
+### 14. 向指定的群成员发送好友请求
+
+|   API  |向指定的群成员发送好友请求
+|--------|:------------------------------------------|
+|uri     |/openwx/make_friend|
+|请求方法|GET\|POST|
+|请求参数|**id**: 群成员的id<br>**verify**:好友请求的附加信息 (参数中包含中文需要做urlencode)|
+|数据格式|application/x-www-form-urlencoded|
+|调用示例|http://127.0.0.1:3000/openwx/make_friend?id=xxxxxx&verify=hello|
+返回JSON结果:
+
+```
+{
+    "status":"success",
+    "code":0  #成功状态码为0，失败为非0
+}
+
+```
