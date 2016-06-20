@@ -33,8 +33,9 @@ sub Mojo::Weixin::_webwxupdatechatroom {
     elsif($fun eq "add"){
         my $group = shift;
         my @member = @_;
+        my $mode = ($group->members + @member)>=40?'invitemember':'addmember';
         my @query_string = (
-            fun => 'addmember',
+            fun => $mode,
         );
         push @query_string,(pass_ticket =>  url_escape($self->pass_ticket)) if $self->pass_ticket;
         my $post = {
@@ -45,12 +46,11 @@ sub Mojo::Weixin::_webwxupdatechatroom {
                 DeviceID    =>  $self->deviceid,
             },
             ChatRoomName    =>  $group->id,
-            AddMemberList   =>  join(",",map{ $_->id } @member),
         }; 
+        $post->{($mode eq 'invitemember'?'InviteMemberList':'AddMemberList')} = join(",",map{ $_->id } @member);
         my $json = $self->http_post($self->gen_url($api,@query_string),{json=>1,Referer=>'https://' . $self->domain . '/'},json=>$post);
         return if not defined $json;
         return if $json->{BaseResponse}{Ret}!=0;
-        return if $json->{MemberCount}!=0+@member; 
         return 1;
     }
     elsif($fun eq "del"){

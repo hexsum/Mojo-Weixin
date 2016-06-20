@@ -6,9 +6,9 @@ sub Mojo::Weixin::_sync {
     my $api = 'https://'. $self->domain . '/cgi-bin/mmwebwx-bin/webwxsync';
     my @query_string = (
         sid     => $self->wxsid,
-        skey    => url_escape($self->skey),
-        pass_ticket => $self->pass_ticket,
     );
+    push @query_string,(skey    => url_escape($self->skey)) if defined $self->skey;
+    push @query_string,(skey    => url_escape($self->pass_ticket)) if defined $self->pass_ticket;
     my $post = {
         BaseRequest =>  {Uin => $self->wxuin,Sid=>$self->wxsid,},
         SyncKey     =>  $self->sync_key,
