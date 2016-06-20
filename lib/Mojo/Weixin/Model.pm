@@ -9,6 +9,7 @@ use Mojo::Weixin::Model::Remote::_webwxstatusnotify;
 use Mojo::Weixin::Model::Remote::_webwxcreatechatroom;
 use Mojo::Weixin::Model::Remote::_webwxupdatechatroom;
 use Mojo::Weixin::Model::Remote::_webwxoplog;
+use Mojo::Weixin::Model::Remote::_webwxverifyuser;
 use Mojo::Weixin::User;
 use Mojo::Weixin::Group;
 use Mojo::Weixin::Const;
@@ -324,4 +325,22 @@ sub kick_group_member{
         return 0;
     }
 }
+
+sub make_friend{
+    my $self = shift;
+    my $member = shift;
+    my $content = shift || '';
+    $self->die("非群组成员对象") if not $member->is_group_member;
+    my $ret = $self->_webwxverifyuser($member,$content);
+    if($ret){
+        $self->info("好友请求[ ". $member->displayname . "|" . $member->group->displayname. " ]发送成功，验证内容: $content");
+        return 1;
+    }
+    else{
+        $self->info("好友请求[ ". $member->displayname . "|" . $member->group->displayname. " ]发送失败，验证内容: $content");
+        return 0;
+    }
+}
+
+
 1;

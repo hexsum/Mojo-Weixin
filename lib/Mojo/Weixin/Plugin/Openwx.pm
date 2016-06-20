@@ -471,6 +471,35 @@ sub call{
         else{$c->render(json=>{code=>100,status=>"object not found"});}
 
     };
+    any [qw(GET POST)] => '/openwx/make_friend' => sub{
+        my $c = shift;
+        #my($id,$account,$displayname,$markname)= map {defined $_?Encode::encode("utf8",$_):$_} ($c->param("id"),$c->param("account"),$c->param("displayname"),$c->param("markname"));
+        my($id,$verify)= map {defined $_?Encode::encode("utf8",$_):$_} ($c->param("id"),$c->param("verify"));
+        my $object;
+        if($id eq $client->user->id){
+            $c->render(json=>{code=>101,status=>"can not be yourself"});
+            return;
+        }
+        if(defined $client->search_friend(id=>$id)){
+            $c->render(json=>{code=>101,status=>"already a friend"});
+            return;
+        }
+        for my $group ($client->groups){
+            $object = $group->search_group_member(id=>$id,); 
+            last if defined $object;
+        }
+        if(not defined $object){
+            $c->render(json=>{code=>100,status=>"object not found"});
+            return;
+        }
+
+        if($object->make_friend($verify || '')){
+            $c->render(json=>{code=>0,status=>"success"});
+        }
+        else{
+            $c->render(json=>{code=>201,status=>"failure"});
+        }
+    };
     any '/*whatever'  => sub{whatever=>'',$_[0]->render(text=>"api not found",status=>403)};
     package Mojo::Weixin::Plugin::Openwx;
     $server = Mojo::Weixin::Server->new();   

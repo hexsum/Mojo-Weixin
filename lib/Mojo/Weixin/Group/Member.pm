@@ -60,5 +60,8 @@ sub group {
     my $self = shift;
     return scalar $self->client->search_group(id=>$self->_group_id);
 }
-
+sub make_friend{
+    my $self = shift;
+    $self->client->make_friend($self,@_);
+}
 1;

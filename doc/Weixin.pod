@@ -496,11 +496,13 @@ Mojo::Weixin - A Weixin Client Framework base on Mojolicious
     方法:
     dump            #打印对象结构
     group           #返回群成员对应的群组对象
+    make_friend     #发送好友请求
 
     my $group = $client->search_group(displayname=>"红包群");
     my $group_member = $group->search_group_member(displayname=>"小灰");
     $group_member->dump;
     $group_member->group->displayname;
+    $group_member->make_friend("你好，加个好友吧");
 
 =head2 消息对象
 
