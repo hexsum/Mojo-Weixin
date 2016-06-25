@@ -6,7 +6,6 @@ sub Mojo::Weixin::_login {
         $self->info("检测到近期登录活动，尝试直接恢复登录");
         $self->wxuin($self->search_cookie("wxuin"));
         $self->wxsid($self->search_cookie("wxsid"));
-        $self->skey($self->search_cookie("skey"));
         if(defined $self->wxuin and defined $self->wxsid){
             $self->login_state("success");
             return 1;

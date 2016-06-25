@@ -13,8 +13,8 @@ sub Mojo::Weixin::_get_media {
     my @query_string = (
         '' => '',
         MsgID => $media_id,
-        skey  => Mojo::Util::url_escape($self->skey),
     );
+    push @query_string,(skey=>Mojo::Util::url_escape($self->skey)) if $self->skey;
     push @query_string,(type => "slave") if $type;
     $self->http_get($self->gen_url($api,@query_string), {Referer=>'https://' . $self->domain .'/'},sub{
         my ($data,$ua,$tx) = @_;
