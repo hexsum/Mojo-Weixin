@@ -91,7 +91,7 @@ sub _http_request{
                 my $r = $opt{json}?$self->decode_json($tx->res->body):$tx->res->body;
                 return wantarray?($r,$self->ua,$tx):$r;
             }
-            elseif(defined $tx){
+            elsif(defined $tx){
                 $self->warn($tx->req->url->to_abs . " 请求失败: " . ($tx->error->{code} || "-") . " " . encode("utf8",$tx->error->{message}));
                 next;
             }
