@@ -62,12 +62,8 @@ sub _http_request{
             }
             $self->save_cookie();
             if(defined $tx and $tx->success){
-                my $r = eval{$opt{json}?$tx->res->json:$tx->res->body;};
-                if($@){
-                    $self->warn($@);
-                    $cb->(undef,$ua,$tx);
-                }
-                else{$cb->($r,$ua,$tx);}
+                my $r = $opt{json}?$self->decode_json($tx->res->body):$tx->res->body;
+                $cb->($r,$ua,$tx);
             }
             elsif(defined $tx){
                 $self->warn($tx->req->url->to_abs . " 请求失败: " . ($tx->error->{code}||"-") . " " . encode("utf8",$tx->error->{message}));
@@ -95,7 +91,7 @@ sub _http_request{
                 my $r = $opt{json}?$self->decode_json($tx->res->body):$tx->res->body;
                 return wantarray?($r,$self->ua,$tx):$r;
             }
-            else{
+            elseif(defined $tx){
                 $self->warn($tx->req->url->to_abs . " 请求失败: " . ($tx->error->{code} || "-") . " " . encode("utf8",$tx->error->{message}));
                 next;
             }
