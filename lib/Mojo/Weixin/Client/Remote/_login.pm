@@ -73,7 +73,7 @@ sub Mojo::Weixin::_login {
             $self->pass_ticket($d{pass_ticket} || '');
             $self->info("微信登录成功");
             $self->login_state("success");
-            return 1;
+            return 2;
         }
         elsif($data{code} == 400){
             $self->info("登录错误，客户端退出");

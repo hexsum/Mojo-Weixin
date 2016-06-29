@@ -61,8 +61,10 @@ sub model_init{
         }
         else{
             $self->error("更新群组信息失败");
+            return;
         }
     }
+    return 1;
 }
 sub update_user {
 

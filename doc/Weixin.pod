@@ -586,6 +586,14 @@ Mojo::Weixin - A Weixin Client Framework base on Mojolicious
         ...;
     });
         
+=head2 login 客户端发生登录
+
+    $client->on(login=>sub{
+        my($client,$is_scann) = @_;
+        # $is_scann 值为1表示本次登录经过二维码扫描，好友、群组对象的id可能发生变化
+        #           值为0表示本次登录未经过二维码扫描，好友、群组对象的id一般不发生变化
+    });
+
 =head2 ready 客户端准备就绪
 
     $client->on(input_qrcode=>sub{

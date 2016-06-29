@@ -25,9 +25,10 @@ sub login{
         $self->load_cookie();
     }
 
-    $self->_login();
+    my $ret = $self->_login();
     if($self->login_state eq "success"){
         $self->model_init();
+        $self->emit("login"=>($ret==2?1:0));
     }
     else{
         $self->error("登录失败");
