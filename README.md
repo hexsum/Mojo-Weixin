@@ -24,6 +24,7 @@ Mojo-Weixin v1.1.4 [![Build Status](https://travis-ci.org/sjdy521/Mojo-Weixin.sv
 |[Weather](https://metacpan.org/pod/distribution/Mojo-Weixin/lib/Mojo/Weixin.pod#Mojo::Weixin::Plugin::Weather)             |91       |已发布      |autodataming |输入"北京天气"查询指定地区天气
 |[KnowledgeBase](https://metacpan.org/pod/distribution/Mojo-Weixin/lib/Mojo/Weixin.pod#Mojo::Weixin::Plugin::KnowledgeBase)       |2        |已发布      |sjdy521      | 通过微信消息自定义问答知识库
 |[FuckDaShen](https://metacpan.org/pod/distribution/Mojo-Weixin/lib/Mojo/Weixin.pod#Mojo::Weixin::Plugin::FuckDaShen)          |1        |已发布      |sjdy521      |对消息中的"大神"关键词进行鄙视
+|[AutoVerify](https://metacpan.org/pod/distribution/Mojo-Weixin/lib/Mojo/Weixin.pod#Mojo::Weixin::Plugin::AutoVerify)          |1        |已发布      |sjdy521      |收到好友验证请求时自动批准同意
 |[PostQRcode](https://metacpan.org/pod/distribution/Mojo-Weixin/lib/Mojo/Weixin.pod#Mojo::Weixin::Plugin::PostQRcode)          |0        |已发布      |sjdy521      |登录二维码发送到邮箱实现远程扫码
 |[XiaoiceReply](https://metacpan.org/pod/distribution/Mojo-Weixin/lib/Mojo/Weixin.pod#Mojo::Weixin::Plugin::XiaoiceReply)        |1        |已发布      |sjdy521      |利用微软小冰实现智能聊天回复
 |[SmartReply](https://metacpan.org/pod/distribution/Mojo-Weixin/lib/Mojo/Weixin.pod#Mojo::Weixin::Plugin::SmartReply)          |0        |已发布      |sjdy521      |智能聊天回复

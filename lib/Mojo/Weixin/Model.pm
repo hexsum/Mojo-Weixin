@@ -26,7 +26,7 @@ sub model_init{
     if(defined $user){
         $self->info("更新个人信息成功");
         $self->user(Mojo::Weixin::User->new($user));
-        $self->_webwxstatusnotify(3);
+        $self->_webwxstatusnotify($self->user->id,3);
     }
     my $contactinfo = $self->_webwxgetcontact();
     if(not defined $contactinfo){
@@ -331,16 +331,31 @@ sub make_friend{
     my $member = shift;
     my $content = shift || '';
     $self->die("非群组成员对象") if not $member->is_group_member;
-    my $ret = $self->_webwxverifyuser($member,$content);
+    my $ret = $self->_webwxverifyuser($member->id,$content,2,"");
     if($ret){
-        $self->info("好友请求[ ". $member->displayname . "|" . $member->group->displayname. " ]发送成功，验证内容: $content");
+        $self->info("好友请求[ ". $member->displayname . " ]发送成功: "  . ($content?$content:"(验证内容为空)"));
         return 1;
     }
     else{
-        $self->info("好友请求[ ". $member->displayname . "|" . $member->group->displayname. " ]发送失败，验证内容: $content");
+        $self->info("好友请求[ ". $member->displayname . " ]发送失败: " . ($content?$content:"(验证内容为空)"));
         return 0;
     }
 }
 
+sub accept_friend_request{
+    my $self = shift;
+    my $id = shift;
+    my $displayname = shift;
+    my $ticket = shift;
+    my $ret = $self->_webwxverifyuser($id,"",3,$ticket);
+    if($ret){
+        $self->info("[ " . $displayname .  " ]的好友请求已被接受");
+        return 1;
+    }
+    else{
+        $self->info("[ " . $displayname . " ]的好友请求接受失败");
+        return 0;
+    }
+}
 
 1;

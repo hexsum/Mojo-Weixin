@@ -408,6 +408,14 @@ Mojo::Weixin - A Weixin Client Framework base on Mojolicious
     #回复消息，如果是群消息，就回复给该群，如果是好友消息，就回复给该好友
     $client->reply_message($msg,$content);
 
+=head4 accept_friend_request($id,$displayname,$ticket) 同意好友验证申请
+
+    #参数说明参见 friend_request 事件
+    $client->on(friend_request=>sub{
+        my($client,$id,$displayname,$verify,$ticket) = @_;
+        $client->accept_friend_request($id,$displayname,$ticket);
+    });
+
 =head2 个人对象
 
     属性：
@@ -496,11 +504,13 @@ Mojo::Weixin - A Weixin Client Framework base on Mojolicious
     方法:
     dump            #打印对象结构
     group           #返回群成员对应的群组对象
+    make_friend     #发送好友请求
 
     my $group = $client->search_group(displayname=>"红包群");
     my $group_member = $group->search_group_member(displayname=>"小灰");
     $group_member->dump;
     $group_member->group->displayname;
+    $group_member->make_friend("你好，加个好友吧");
 
 =head2 消息对象
 
@@ -631,6 +641,16 @@ Mojo::Weixin - A Weixin Client Framework base on Mojolicious
 
     $client->on(lose_group_member=>sub{my ($client,$member,$group)=@_});
 
+=head2 friend_request 好友验证申请 
+
+    $client->on(friend_request=>sub{
+        my ($client,$id,$displayname,$verify,$ticket) = @_;
+        # $id           发送好友验证请求的用户id
+        # $displayname  发送好友验证请求的用户名称
+        # $verify       发送好友验证请求的验证内容
+        # $ticket       ticket在同意好友验证请求时会用到，参见 accept_friend_request 方法
+    });
+
 =head1 关于插件
 
 =head2 load
@@ -714,6 +734,12 @@ Mojo::Weixin - A Weixin Client Framework base on Mojolicious
     保存的效果:
     /home/test/20150505/20150505123456.jpg
     /home/test/20150505/20150505124356.jpg
+
+=head2 Mojo::Weixin::Plugin::AutoVerify
+
+收到好友验证请求时自动批准同意
+
+    $client->load("AutoVerify");
 
 =head2 Mojo::Weixin::Plugin::IRCShell
 

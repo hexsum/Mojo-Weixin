@@ -1,11 +1,20 @@
+use Mojo::Util ();
 sub Mojo::Weixin::_webwxverifyuser {
     my $self = shift;
-    my $member = shift;
+    my $id = shift;
     my $content = shift;
+    my $opcode = shift;
+    my $ticket = shift;
+
+    $content = "" if not defined $content;
+    $opcode = 2 if not defined $opcode;
+    $ticket = "" if not defined $ticket;
+
     my $api = 'https://' . $self->domain . '/cgi-bin/mmwebwx-bin/webwxverifyuser';
     my @query_string = (
         r => $self->now(),
-    );
+    ); 
+    push @query_string,(pass_ticket=>Mojo::Util::url_escape($self->pass_ticket)) if $self->pass_ticket;
     my $post = {
         BaseRequest =>  {
             Uin         =>  $self->wxuin,
@@ -13,10 +22,10 @@ sub Mojo::Weixin::_webwxverifyuser {
             Skey        =>  $self->skey,
             DeviceID    =>  $self->deviceid,
         },
-        Opcode => 2,
+        Opcode => $opcode || 2,
         VerifyUserListSize => 1,
         VerifyUserList=>[{
-            Value => $member->id,
+            Value => $id,
             VerifyUserTicket => "",
         }],
         VerifyContent => $content || "",

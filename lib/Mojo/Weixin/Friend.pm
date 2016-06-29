@@ -1,6 +1,7 @@
 package Mojo::Weixin::Friend;
 use Mojo::Weixin::Base 'Mojo::Weixin::Model::Base';
 use Mojo::Weixin::Const qw(%FACE_MAP_QQ %FACE_MAP_EMOJI);
+use List::Util qw(first);
 has name => '昵称未知';
 has [qw( 
     account
@@ -12,6 +13,7 @@ has [qw(
     display
     markname
 )];
+has 'category' => '好友'; #系统帐号|公众号|好友
 
 sub new {
     my $self = shift;
@@ -23,6 +25,9 @@ sub new {
             $name=~s/<span class="emoji emoji$_"><\/span>/exists $map{$_}?"[$map{$_}]":"[未知表情]"/eg;
             $self->name($name);
         }
+    }
+    if(first { $self->id eq $_ } qw(fmessage weixin)){
+        $self->category("系统帐号");
     }
     $self;
 }
