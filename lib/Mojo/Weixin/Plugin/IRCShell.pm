@@ -15,8 +15,9 @@ sub call{
     my $client = shift;
     my $data = shift;
     $client->die("请先安装模块 Mojo::IRC::Server::Chinese") if not $Mojo::Weixin::Plugin::IRCShell::has_mojo_irc_server;
-    my $master_irc_user = $data->{master_irc_user} || $client->user->account;
-    my $image_api = $data->{image_api}; # ||  'http://img.vim-cn.com/';
+    my $master_irc_user = $data->{master_irc_user} || $client->account;
+    #my $image_api = $data->{image_api}; # ||  'http://img.vim-cn.com/';
+    my $image_api = $data->{image_api} ||  'http://img.vim-cn.com/';
     my $is_load_friend = defined $data->{load_friend}?$data->{load_friend}:1;
     my @groups = ref($data->{group}) eq "ARRAY"?@{$data->{group}}:();
     my %mode = ref($data->{mode}) eq "HASH"?%{$data->{mode}}:();
@@ -72,17 +73,8 @@ sub call{
                 });
             }
             else{
-                my $member = $client->search_group_member(id=>$u->id);
-                if(defined $member){
-                    $member->send($content,sub{
-                        $_[1]->from("irc");
-                        $_[1]->cb(sub{
-                            my($client,$msg,$status)=@_;
-                            return if $status->is_success;
-                            $user->send($user->ident,"PRIVMSG",$nick,$content . "[发送失败]");
-                        });
-                    });
-                }
+                $user->send($user->ident,"PRIVMSG",$nick,$content . "[发送失败]");
+                $user->send($user->ident,"PRIVMSG",$nick,"你和 [$nick] 并非好友关系");
             } 
         }
     });
@@ -190,6 +182,15 @@ sub call{
             #else{
             #    #$user->join_channel($channel) if not $user->is_join_channel($channel);
             #}
+
+            #接收的图片上传到图床
+            $client->http_post($image_api,form=>{image=>{content=>$msg->media_data}},sub{
+                my($link,$ua,$tx)=@_;
+                return unless defined $link;
+                return unless $link=~/https?:\/\//;
+                $channel->broadcast($user->ident,"PRIVMSG",$channel->name,"图片链接: $link");
+            }) if defined $image_api and $msg->format eq 'media';
+
             for(grep {!$_->is_virtual} $channel->users){
                 my @content = split /\r?\n/,$msg->content;
                 if($content[0]=~/^\@([^\s]+?) /){
@@ -226,6 +227,14 @@ sub call{
             elsif($user->is_virtual){
                 $user->join_channel($channel)  if not $user->is_join_channel($channel);
             }
+            #接收的图片上传到图床
+            $client->http_post($image_api,form=>{image=>{content=>$msg->media_data}},sub{
+                my($link,$ua,$tx)=@_;
+                return unless defined $link;
+                return unless $link=~/https?:\/\//;
+                $channel->broadcast($user->ident,"PRIVMSG",$channel->name,"图片链接: $link");
+            }) if defined $image_api and $msg->format eq 'media';
+
             for(
                 grep {$_->user eq $master_irc_user or $_->is_localhost} 
                 grep {!$_->is_virtual} $ircd->users

@@ -15,10 +15,10 @@ a. 单进程多账号模式
     use Mojo::Weixin;
     my $client1 = Mojo::Weixin->new(account=>"abc"); 
     my $client2 = Mojo::Weixin->new(account=>"def");
-    $client1->login();
-    $client2->login();
     $client1->load("ShowMsg");
     $client2->load("ShowMsg");
+    $client1->ready();
+    $client2->ready();
     Mojo::Weixin->multi_run();
     
 把上述代码保存成xxx.pl，直接使用perl xxx.pl执行即可
@@ -31,7 +31,6 @@ b. 多进程多账号模式
 
     use Mojo::Weixin;
     my $client = Mojo::Weixin->new(account=>"abc"); 
-    $client->login();
     $client->load("ShowMsg");
     $client->run();
     
@@ -39,7 +38,6 @@ b. 多进程多账号模式
 
     use Mojo::Weixin;
     my $client = Mojo::Weixin->new(account=>"def"); 
-    $client->login();
     $client->load("ShowMsg");
     $client->run();
     
@@ -76,7 +74,6 @@ $port = 3000;      #发送消息接口监听端口，修改为自己希望监听
 #$post_api = 'http://xxxx';  #接收到的消息上报接口，如果不需要接收消息上报，可以删除或注释此行
 
 my $client = Mojo::Weixin->new(log_level=>"info",ua_debug=>0);
-$client->login();
 $client->load("ShowMsg");
 $client->load("Openwx",data=>{listen=>[{host=>$host,port=>$port}], post_api=>$post_api});
 $client->run();

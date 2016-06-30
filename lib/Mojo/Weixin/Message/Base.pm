@@ -18,6 +18,7 @@ sub to_json_hash{
             $json->{sender_account} = $self->sender->account;
         }
         elsif($key eq "receiver"){
+            next if $self->type eq 'group_message' and $self->class eq 'send';
             $json->{receiver} = decode_utf8($self->receiver->displayname);
             $json->{receiver_account} = $self->receiver->account;
         }
@@ -91,6 +92,9 @@ sub dump{
         elsif($_ eq "member" and ref($self->{$_}) eq "ARRAY"){
             my $member_count = @{$self->{$_}};
             $clone->{$_} = [ "$member_count of Object(${obj_name}::Member)" ];
+        }
+        elsif($_ eq 'media_data'){
+            $clone->{$_} = '[binary data not shown]';
         }
         else{
             $clone->{$_} = $self->{$_};

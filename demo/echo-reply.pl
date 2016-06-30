@@ -5,9 +5,6 @@ my $client = Mojo::Weixin->new(
     log_level => "info",  #日志打印级别，debug|info|warn|error|fatal
 );
 
-#客户端进行登录
-$client->login();
-
 #客户端加载ShowMsg插件，用于打印发送和接收的消息到终端
 $client->load("ShowMsg");
 

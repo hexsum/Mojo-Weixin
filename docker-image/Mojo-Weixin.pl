@@ -12,7 +12,6 @@ my $client = Mojo::Weixin->new(
     (defined $ENV{LOG_PATH}?(log_path =>  $ENV{LOG_PATH}):()),
     (defined $ENV{QRCODE_PATH}?(qrcode_path =>  $ENV{QRCODE_PATH}):()),
 );
-$client->login();
 $client->load("ShowMsg");
 $client->load("Openwx",data=>{listen=>[{host=>$host,port=>$port}], post_api=>$post_api});
 $client->run();

@@ -14,6 +14,7 @@ use base qw(Mojo::Weixin::Request);
 
 sub login{
     my $self = shift;
+    return if $self->login_state eq 'success';
     if($self->is_first_login == -1){
         $self->is_first_login(1);
     }
@@ -81,6 +82,7 @@ sub ready {
         $self->call($_);
     }
     $self->emit("after_load_plugin");
+    $self->login() if $self->login_state ne 'success';
     #接收消息
     $self->on(synccheck_over=>sub{ 
         my $self = shift;
