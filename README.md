@@ -1,4 +1,4 @@
-Mojo-Weixin v1.1.4 [![Build Status](https://travis-ci.org/sjdy521/Mojo-Weixin.svg?branch=master)](https://travis-ci.org/sjdy521/Mojo-Weixin) [![Join the chat at https://gitter.im/sjdy521/Mojo-Weixin](https://badges.gitter.im/sjdy521/Mojo-Weixin.svg)](https://gitter.im/sjdy521/Mojo-Weixin?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+Mojo-Weixin v1.1.5 [![Build Status](https://travis-ci.org/sjdy521/Mojo-Weixin.svg?branch=master)](https://travis-ci.org/sjdy521/Mojo-Weixin) [![Join the chat at https://gitter.im/sjdy521/Mojo-Weixin](https://badges.gitter.im/sjdy521/Mojo-Weixin.svg)](https://gitter.im/sjdy521/Mojo-Weixin?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 ========================
 
 

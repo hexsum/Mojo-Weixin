@@ -1,3 +1,18 @@
+2016-06-30 Mojo::Weixin v1.1.5
+1）修复当群成员超过40人数时，无法正常邀请好友入群的问题 感谢 @斌 的反馈
+2）Openwx插件新增好友请求接口：/openwx/make_friend?id=xxx&verify=xxx
+3）Openwx插件新增login事件上报,修复发送的群消息上报产生错误的bug
+4）新增$client->make_friend()方法，发送好友请求
+5）日志信息中增加cookie加载路径
+6）http请求json数据的方式进行了调整，对于获取json数据失败的情况进行日志警告
+7）ShowMsg插件的完善，现在会把加群/退群 好友申请等信息也打印出来
+8）新增accept_friend_request方法和friend_request事件 用于支持处理好友验证申请
+9）新增AutoVerify插件实现收到好友申请自动批准同意
+10）二维码input_qrcode事件取消携带url参数
+11）去掉显式的login调用
+12）IRCShell的bug修复，增加图片自动上传图床的功能
+13）相关文档完善
+
 2016-06-18 Mojo::Weixin v1.1.4
 1）修复Translate插件不可用的bug 感谢 @丶Seven
 2）Openwx插件支持发送消息上报，原来只支持接收消息上报 感谢 @斌 的建议
