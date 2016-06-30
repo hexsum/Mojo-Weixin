@@ -755,7 +755,7 @@ Mojo::Weixin - A Weixin Client Framework base on Mojolicious
     #支持的参数包括：
     host                #默认0.0.0.0
     port                #默认6667
-    master_irc_user     #和微信帐号匹配的irc user帐号，默认按照和微信帐号相同的user或者客户端ip是本机地址作为识别规则
+    master_irc_user     #和微信帐号匹配的irc user帐号，默认按照new方法中的account参数或者客户端ip是本机地址作为识别规则
     load_friend         #0|1 默认是1 是否初始为每个好友生成irc虚拟帐号并加入频道 #我的好友
     image_api           #兼容elimage图床api地址，将微信图片转为连接，方便在irc上查看图片，默认没有启用
                         #推荐依云的elimage http://img.vim-cn.com/
