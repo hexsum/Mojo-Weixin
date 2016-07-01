@@ -30,6 +30,11 @@ Mojo-Weixin v1.1.5 [![Build Status](https://travis-ci.org/sjdy521/Mojo-Weixin.sv
 
 
 ###效果展示
+
+敲一行命令就能启动一个智能聊天机器人，Perl 和你都如此优雅
+
+    perl -MMojo::Weixin -e "Mojo::Weixin->new->load('ShowMsg')->load('SmartReply')->run()"
+    
 ```
 [16/01/19 23:10:49] [info] 客户端准备登录...
 [16/01/19 23:10:50] [info] 清除残留的历史二维码图片
