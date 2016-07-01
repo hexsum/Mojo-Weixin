@@ -170,12 +170,12 @@ sub is_group{
 }
 sub code2sex{
     my $c = shift;
-    my %h = qw(
-        0   none
-        1   male
-        2   female
+    my %h = (
+        0 => "",
+        1 => "male",
+        2 => "female",
     );
-    return $h{$c} || "none";
+    return $h{$c} || "";
 }
 
 sub each_friend{

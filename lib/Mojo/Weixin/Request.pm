@@ -53,7 +53,7 @@ sub _http_request{
                 $self->print("-- Non-blocking request (@{[$tx->req->url->to_abs]})\n");
                 $self->print("-- Client >>> Server (@{[$tx->req->url->to_abs]})\n@{[$tx->req->to_string]}\n");
                 my $content_type = eval {$tx->res->headers->content_type};
-                if(defined $content_type and $content_type =~m#^image/|^application/octet-stream#){
+                if(defined $content_type and $content_type =~m#^image/|^application/octet-stream|^multipart/form-data#){
                     $self->print("-- Server >>> Client (@{[$tx->req->url->to_abs]})\n@{[$tx->res->build_start_line . $tx->res->build_headers]}\n");
                 }
                 else{
