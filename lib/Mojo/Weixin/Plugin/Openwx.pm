@@ -18,13 +18,15 @@ sub call{
                 $post_json->{post_type} = "event";
                 $post_json->{event} = $event;
                 $post_json->{params} = [@args];
-                my($data,$ua,$tx) = $client->http_post($post_api,json=>$post_json);
-                if($tx->success){
-                    $client->debug("插件[".__PACKAGE__ ."]事件[".$event . "](@args)上报成功");
-                }
-                else{
-                    $client->warn("插件[".__PACKAGE__ . "]事件[".$event."](@args)上报失败:" . encode("utf8",$tx->error->{message}));
-                } 
+                $client->http_post($post_api,json=>$post_json,sub{
+                    my($data,$ua,$tx) = @_;
+                    if($tx->success){
+                        $client->debug("插件[".__PACKAGE__ ."]事件[".$event . "](@args)上报成功");
+                    }
+                    else{
+                        $client->warn("插件[".__PACKAGE__ . "]事件[".$event."](@args)上报失败:" . encode("utf8",$tx->error->{message}));
+                    } 
+                });
             }
             elsif($event =~ /^new_group|lose_group|new_friend|lose_friend|new_group_member|lose_group_member$/){
                 my $post_json = {};
