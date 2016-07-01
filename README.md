@@ -33,7 +33,7 @@ Mojo-Weixin v1.1.5 [![Build Status](https://travis-ci.org/sjdy521/Mojo-Weixin.sv
 
 敲一行命令就能启动一个智能聊天机器人，Perl 和你都如此优雅. Enjoy!
 
-    perl -MMojo::Weixin -e "Mojo::Weixin->new->load('ShowMsg')->load('SmartReply')->run()"
+    cpanm Mojo::Weixin && perl -MMojo::Weixin -e "Mojo::Weixin->new->load('ShowMsg')->load('SmartReply')->run()"
     
 ```
 [16/01/19 23:10:49] [info] 客户端准备登录...
