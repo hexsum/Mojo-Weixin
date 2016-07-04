@@ -118,7 +118,7 @@ Mojo-Weixin v1.1.5 [![Build Status](https://travis-ci.org/sjdy521/Mojo-Weixin.sv
     
     这种情况下可以尝试按如下方式手动指定国内的镜像站点
     
-        $ cpanm --mirror http://mirrors.163.com/cpan/ Mojo::Webqq
+        $ cpanm --mirror http://mirrors.163.com/cpan/ Mojo::Weixin
 
 3. *安装失败可能有帮助的解决方法*
         
