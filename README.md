@@ -113,6 +113,12 @@ Mojo-Weixin v1.1.5 [![Build Status](https://travis-ci.org/sjdy521/Mojo-Weixin.sv
 2. *使用cpanm在线安装 Mojo::Weixin 模块*（如果系统已经安装了该模块，执行此步骤会对模块进行升级）
 
         $ cpanm Mojo::Weixin
+    
+    如果安装过程中一直提示下载失败，很可能是因为访问到国外服务器网络比较差
+    
+    这种情况下可以尝试按如下方式手动指定国内的镜像站点
+    
+        $ cpanm --mirror http://mirrors.163.com/cpan/ Mojo::Webqq
 
 3. *安装失败可能有帮助的解决方法*
         
