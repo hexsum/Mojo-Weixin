@@ -275,6 +275,8 @@ Server: Mojolicious (Perl)
 
 ```
 
+则表示希望通过post_api响应的内容来直接回复该消息，会直接对上报的该条消息进行回复，回复的内容为 "你好"
+
 如果想要对消息回复图片内容，可以使用 media 参数，举例:
 
 ```
@@ -284,8 +286,6 @@ Server: Mojolicious (Perl)
 {"reply":"给你发个图片","media":"http://www.baidu.com/test.jpg","code":0}   #文本和图片同时发送
 
 ```
-
-则表示希望通过post_api响应的内容来直接回复该消息，会直接对上报的该条消息进行回复，回复的内容为 "你好"
 
 #### 事件上报
 
