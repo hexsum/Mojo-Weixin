@@ -272,6 +272,17 @@ Content-Length: 27
 Server: Mojolicious (Perl)
 
 {"reply":"你好","code":0} #要回复消息，必须包含reply的属性，其他属性有无并不重要
+
+```
+
+如果想要对消息回复图片内容，可以使用 media 参数，举例:
+
+```
+
+{"media":"http://www.baidu.com/test.jpg","code":0}                          #使用url地址形式
+{"media":"/tmp/test.jpg","code":0}                                          #使用本地文件地址形式
+{"reply":"给你发个图片","media":"http://www.baidu.com/test.jpg","code":0}   #文本和图片同时发送
+
 ```
 
 则表示希望通过post_api响应的内容来直接回复该消息，会直接对上报的该条消息进行回复，回复的内容为 "你好"

@@ -374,10 +374,34 @@ sub reply_message{
     }
     elsif($msg->class eq "send"){
         if($msg->type eq "group_message"){
-            $self->send_message($msg->group,$content);
+            $self->send_message($msg->group,$content,$callback);
         }
         elsif($msg->type eq "friend_message"){
-            $self->send_message($msg->receiver,$content);
+            $self->send_message($msg->receiver,$content,$callback);
+        }
+
+    }
+}
+
+sub reply_media_message {
+    my $self = shift;
+    my $msg = shift;
+    my $media = shift;
+    my $callback = shift; 
+    if($msg->class eq "recv"){
+        if($msg->type eq "group_message"){
+            $self->send_media($msg->group,$media,$callback);
+        }
+        elsif($msg->type eq "friend_message"){
+            $self->send_media($msg->sender,$media,$callback);
+        }
+    }
+    elsif($msg->class eq "send"){
+        if($msg->type eq "group_message"){
+            $self->send_media($msg->group,$media,$callback);
+        }
+        elsif($msg->type eq "friend_message"){
+            $self->send_media($msg->receiver,$callback);
         }
 
     }

@@ -69,9 +69,14 @@ sub group{
     return $s->client->search_group(id=>$s->group_id,_check_remote=>1) || _defaut_group(id=>$s->group_id);
 }
 
-sub  reply{
+sub reply{
     my $s = shift;
     $s->client->reply_message($s,@_);
+}
+
+sub reply_media {
+    my $s = shift;
+    $s->client->reply_media_message($s,@_);
 }
 
 1;

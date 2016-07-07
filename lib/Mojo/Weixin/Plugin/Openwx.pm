@@ -83,10 +83,14 @@ sub call{
                         eval{$json = $tx->res->json};
                         if($@){$client->warn($@);return}
                         if(defined $json){
+                            #暂时先不启用format的属性
                             #{code=>0,reply=>"回复的消息",format=>"text"}
-                            if((!defined $json->{format}) or (defined $json->{format} and $json->{format} eq "text")){
-                                $msg->reply(Encode::encode("utf8",$json->{reply})) if defined $json->{reply};
-                            }
+                            #if((!defined $json->{format}) or (defined $json->{format} and $json->{format} eq "text")){
+                            #    $msg->reply(Encode::encode("utf8",$json->{reply})) if defined $json->{reply};
+                            #}
+
+                            $msg->reply(Encode::encode("utf8",$json->{reply})) if defined $json->{reply};
+                            $msg->reply_media(Encode::encode("utf8",$json->{media})) if defined $json->{media} and $json->{media} =~ /^https?:\/\//;
                         }
                     }
                     #elsif($tx->res->headers->content_type =~ m#image/#){
