@@ -7,8 +7,8 @@ sub Mojo::Weixin::_sync {
     my @query_string = (
         sid     => $self->wxsid,
     );
-    push @query_string,(skey    => url_escape($self->skey)) if defined $self->skey;
-    push @query_string,(skey    => url_escape($self->pass_ticket)) if defined $self->pass_ticket;
+    push @query_string,(skey    => url_escape($self->skey)) if $self->skey;
+    push @query_string,(pass_ticket    => url_escape($self->pass_ticket)) if $self->pass_ticket;
     my $post = {
         BaseRequest =>  {Uin => $self->wxuin,Sid=>$self->wxsid,},
         SyncKey     =>  $self->sync_key,
