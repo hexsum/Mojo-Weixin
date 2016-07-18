@@ -70,7 +70,7 @@ sub call{
         my($client,$msg) = @_;
         return if not $msg->allow_plugin;
         return if $msg->class eq "send" and $msg->from ne "api" and $msg->from ne "irc" and $msg->source ne 'outer';
-        return if $msg->type !~ /^message|group_message$/;
+        return if $msg->type !~ /^friend_message|group_message$/;
         if($msg->type eq 'group_message'){
             return if $data->{is_need_at} and $msg->type eq "group_message" and !$msg->is_at;
             return if ref $data->{ban_group}  eq "ARRAY" and first {$msg->group->displayname eq $_} @{$data->{ban_group}};
@@ -92,7 +92,7 @@ sub call{
                 $space = '__全局__';
             }
             else{
-                $space = $msg->type eq "message"?"__我的好友__":$msg->group->displayname;
+                $space = $msg->type eq "friend_message"?"__我的好友__":$msg->group->displayname;
             }
             $q=~s/^\s+|\s+$//g;
             $a=~s/^\s+|\s+$//g;
@@ -118,7 +118,7 @@ sub call{
                 $space = '__全局__';
             }
             else{
-                $space = $msg->type eq "message"?"__我的好友__":$msg->group->displayname;
+                $space = $msg->type eq "friend_message"?"__我的好友__":$msg->group->displayname;
             }
             delete $base->{$space}{$q}; 
             store_db($client,$base,$file);
@@ -129,7 +129,7 @@ sub call{
             #return if $msg->msg_class eq "send" and $msg->from ne "api" and $msg->from ne "irc" and $msg->source ne 'outer';
             my $content = $msg->content;
             $content =~s/^[a-zA-Z0-9_]+: ?// if $msg->from eq "irc";
-            my $space = $msg->type eq "message"?"__我的好友__":$msg->group->displayname;
+            my $space = $msg->type eq "friend_message"?"__我的好友__":$msg->group->displayname;
             #return unless exists $base->{$space}{$content};
             if($data->{mode} eq 'regex'){
                 my @match_keyword;
