@@ -1,3 +1,11 @@
+2016-07-18 Mojo::Weixin v1.1.6
+1）修复Xiaoice插件提示找不到小冰的bug 感谢 @斌
+2）Openwx插件修复启动时会触发大量无意义的group_member_property_change事件的问题
+3）Openwx插件消息上报接口支持对消息回复图片
+4）新增$msg->reply_media方法
+5）插件完善 KnowledgeBase/KnowledgeBase2
+6）针对【收到无法识别消息】刷屏的情况进行了优化
+
 2016-06-30 Mojo::Weixin v1.1.5
 1）修复当群成员超过40人数时，无法正常邀请好友入群的问题 感谢 @斌 的反馈
 2）Openwx插件新增好友请求接口：/openwx/make_friend?id=xxx&verify=xxx
