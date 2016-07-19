@@ -141,6 +141,14 @@ sub call{
     use Encode;
     use Mojo::IOLoop;
     use Mojolicious::Lite;
+    app->hook(after_render=>sub{
+        my ($c, $output, $format) = @_;
+        my $datatype =  $c->param("datatype");
+        return if defined $datatype and $datatype ne 'jsonp';
+        my $jsoncallback = $c->param("callback") || 'jsoncallback' . time;
+        return if not defined $jsoncallback;
+        $$output = "$jsoncallback($$output)";
+    });
     under sub {
         my $c = shift;
         if(ref $data eq "HASH" and ref $data->{auth} eq "CODE"){
