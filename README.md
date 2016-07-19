@@ -18,7 +18,7 @@ Mojo-Weixin v1.1.5 [![Build Status](https://travis-ci.org/sjdy521/Mojo-Weixin.sv
 
 ###插件列表
 
-|名称                | 优先级  |当前状态    |github作者   | 功能说明  |使用状态               
+|名称                | 优先级  |当前状态    |github作者   | 功能说明  | 使用状态               
 |:-------------------|:--------|:-----------|:------------|:----------------------------
 |[ShowMsg](https://metacpan.org/pod/distribution/Mojo-Weixin/lib/Mojo/Weixin.pod#Mojo::Weixin::Plugin::ShowMsg)             |100      |已发布      |sjdy521      |打印客户端接收和发送的消息
 |[ImageStore](https://metacpan.org/pod/distribution/Mojo-Weixin/lib/Mojo/Weixin.pod#Mojo::Weixin::Plugin::ImageStore)             |100      |已发布      |sjdy521      |按日期目录保存发送和接收的图片
