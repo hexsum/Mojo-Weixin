@@ -760,7 +760,7 @@ Mojo::Weixin - A Weixin Client Framework base on Mojolicious
 
 需要依赖模块 L<Mojo::IRC::Server::Chinese>
 
-    $client->load("IRCShell",data=>{host=>"127.0.0.1",port=>6667,});#开启本地的irc server
+    $client->load("IRCShell",data=>{listen=>[ {host=>"127.0.0.1",port=>6667} ] } );#开启本地的irc server
     #支持的参数包括：
     host                #默认0.0.0.0
     port                #默认6667

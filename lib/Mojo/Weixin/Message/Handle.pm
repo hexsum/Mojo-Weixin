@@ -209,6 +209,15 @@ sub _parse_sync_data {
                 $msg->{format} = "media";
                 $msg->{media_id} = $msg->{id};
             }
+            elsif($e->{MsgType} == 47){#动态表情或图片
+
+            }
+            elsif($e->{MsgType} == 43){#视频
+
+            }
+            elsif($e->{MsgType} == 34){#语音
+
+            }
             elsif($e->{MsgType} == 37){#好友推荐消息
                 $msg->{format} = "text";
                 #$msg->{class} = "recv";

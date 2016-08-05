@@ -7,6 +7,7 @@
 sub https_test{
     use Mojo::UserAgent;
     my $ua = Mojo::UserAgent->new;
+    $ua->proxy->detect;
     $ua->transactor->name("Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.65");
     my $tx = $ua->get('https://wx.qq.com/');
     if (my $res = $tx->success) { return $res->code }

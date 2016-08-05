@@ -31,7 +31,10 @@ sub Mojo::Weixin::_get_media {
                     :   $mime=~/^text\/html/i          ?   ".html"
                     :   $mime=~/^text\/json/i          ?   ".json"
                     :   $mime=~/^application\/json/i   ?   ".json"
-                    :                           ".dat"
+                    :   $mime=~/^video\/mp4/i          ?   ".mp4"
+                    :   $mime=~/^audio\/mp3/i          ?   ".mp3"
+                    :   $mime=~/^application\/json/i   ?   ".json"
+                    :                                      ".dat"
         ; 
         return unless defined $type;
         $mime=~s/\s*;.*$//g;

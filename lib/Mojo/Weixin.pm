@@ -60,8 +60,10 @@ has login_state             => 'init';
 has ua                      => sub {
     #local $ENV{MOJO_USERAGENT_DEBUG} = $_[0]->ua_debug;
     require Mojo::UserAgent;
+    require Mojo::UserAgent::Proxy;
     require Storable if $_[0]->keep_cookie;
     Mojo::UserAgent->new(
+        proxy              => sub{ my $proxy = Mojo::UserAgent::Proxy->new;$proxy->detect;$proxy}->(),
         max_redirects      => 7,
         request_timeout    => 120,
         inactivity_timeout => 120,
