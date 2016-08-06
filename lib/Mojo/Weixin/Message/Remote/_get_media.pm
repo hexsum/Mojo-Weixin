@@ -9,14 +9,31 @@ sub Mojo::Weixin::_get_media {
     my $type = shift;
 
     my $media_id = $msg->media_id; 
-    my $api = 'https://'.$self->domain . '/cgi-bin/mmwebwx-bin/webwxgetmsgimg';
-    my @query_string = (
-        '' => '',
-        MsgID => $media_id,
-    );
-    push @query_string,(skey=>Mojo::Util::url_escape($self->skey)) if $self->skey;
-    push @query_string,(type => "slave") if $type;
-    $self->http_get($self->gen_url($api,@query_string), {Referer=>'https://' . $self->domain .'/'},sub{
+    my $api;
+    my @query_string;
+    my $headers = {};
+    if($msg->media_type eq "image"){
+        $api = 'https://'.$self->domain . '/cgi-bin/mmwebwx-bin/webwxgetmsgimg';
+        @query_string = ('' => '',MsgID => $media_id,);
+        push @query_string,(skey=>Mojo::Util::url_escape($self->skey)) if $self->skey;
+        push @query_string,(type => "slave") if $type;
+    }
+    elsif($msg->media_type eq "voice"){
+        $api = 'https://'.$self->domain . '/cgi-bin/mmwebwx-bin/webwxgetvoice';
+        @query_string = (msgid=>$media_id);
+        push @query_string,(skey=>Mojo::Util::url_escape($self->skey)) if $self->skey;
+    }
+    elsif($msg->media_type eq "video"){
+        $api = 'https://'.$self->domain . '/cgi-bin/mmwebwx-bin/webwxgetvideo';
+        @query_string = (msgid=>$media_id);
+        push @query_string,(skey=>Mojo::Util::url_escape($self->skey)) if $self->skey;
+        $headers = {Range => 'bytes=0-'};
+    }
+    else{
+        $self->error("获取media错误：不支持的media类型");
+        return;
+    }
+    $self->http_get($self->gen_url($api,@query_string),$headers, {Referer=>'https://' . $self->domain .'/'},sub{
         my ($data,$ua,$tx) = @_;
         if(not defined $data){
             $self->warn("media[ " . $msg->media_id . " ]下载失败");
@@ -62,7 +79,7 @@ sub Mojo::Weixin::_get_media {
             $msg->media_size(length($data));
             $callback->($tmp->filename,$data,$msg) if ref $callback eq "CODE";
         };
-        $self->die("[ ". __PACKAGE__ . " ] $@") if $@;
+        $self->error("[ ". __PACKAGE__ . " ] $@") if $@;
     });
 }
 1;

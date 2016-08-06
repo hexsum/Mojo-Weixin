@@ -1,6 +1,7 @@
 package Mojo::Weixin::User;
 use Mojo::Weixin::Base 'Mojo::Weixin::Model::Base';
-has [qw(    
+has [qw(
+    avatar    
     name
     account
     province
@@ -11,6 +12,12 @@ has [qw(
     display
     markname
 )];
+
+sub get_avatar{
+    my $self = shift;
+    $self->client->get_avatar($self,@_);
+}
+
 sub displayname {
     my $self = shift;
     return $self->display || $self->markname || $self->name;

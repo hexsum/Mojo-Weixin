@@ -5,8 +5,13 @@ use Mojo::Weixin::Const qw(%FACE_MAP_QQ %FACE_MAP_EMOJI);
 
 has 'id';
 has name => '';
+has avatar => '';
 has member => sub{[]};
 
+sub get_avatar{
+    my $self = shift;
+    $self->client->get_avatar($self,@_);
+}
 sub displayname { 
     my $self = shift;
     return $self->name if $self->name;

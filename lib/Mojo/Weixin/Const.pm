@@ -11,6 +11,7 @@ our %KEY_MAP_USER = qw(
     id          UserName
     name        NickName
     account     Alias
+    avatar      HeadImgUrl
     province    Province
     city        City
     signature   Signature
@@ -21,7 +22,8 @@ our %KEY_MAP_USER = qw(
 our %KEY_MAP_FRIEND = qw(
     id          UserName
     name        NickName
-    account       Alias
+    avatar      HeadImgUrl
+    account     Alias
     province    Province
     city        City
     signature   Signature
@@ -32,12 +34,14 @@ our %KEY_MAP_FRIEND = qw(
 );
 our %KEY_MAP_GROUP = qw(
     id      UserName
+    avatar  HeadImgUrl
     name    NickName
 );
 our %KEY_MAP_GROUP_MEMBER = qw(
     id          UserName
     name        NickName
-    account       Alias
+    avatar      HeadImgUrl
+    account     Alias
     province    Province
     city        City
     signature   Signature

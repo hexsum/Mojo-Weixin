@@ -10,6 +10,7 @@ use Mojo::Weixin::Model::Remote::_webwxcreatechatroom;
 use Mojo::Weixin::Model::Remote::_webwxupdatechatroom;
 use Mojo::Weixin::Model::Remote::_webwxoplog;
 use Mojo::Weixin::Model::Remote::_webwxverifyuser;
+use Mojo::Weixin::Model::Remote::_webwxgetheadimg;
 use Mojo::Weixin::User;
 use Mojo::Weixin::Group;
 use Mojo::Weixin::Const;
@@ -358,6 +359,21 @@ sub accept_friend_request{
         $self->info("[ " . $displayname . " ]的好友请求接受失败");
         return 0;
     }
+}
+
+sub get_avatar {
+    my $self = shift;
+    my $object =  shift;
+    my $callback = shift;
+    if(ref($object) !~ /Mojo::Weixin::User|Mojo::Weixin::Group|Mojo::Weixin::Groupp::Member/){
+        $self->die("不支持的数据类型");
+        return;
+    }
+    elsif(ref $callback ne "CODE"){
+        $self->warn("未设置回调函数");
+        return;
+    }
+    $self->_webwxgetheadimg($object,$callback);
 }
 
 1;

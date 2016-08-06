@@ -5,6 +5,7 @@ use Mojo::Weixin::Const qw(%FACE_MAP_QQ %FACE_MAP_EMOJI);
 has name => '昵称未知';
 has [qw(
     account
+    avatar
     province
     city
     sex
@@ -27,6 +28,11 @@ sub new {
         }
     }
     $self;
+}
+
+sub get_avatar{
+    my $self = shift;
+    $self->client->get_avatar($self,@_);
 }
 sub displayname{
     my $self = shift;

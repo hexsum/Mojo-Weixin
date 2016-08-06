@@ -56,15 +56,15 @@ sub Mojo::Weixin::_upload_media {
                 gif     => 'image/gif',
                 bmp     => 'image/bmp',
                 png     => 'image/png',
+                mp3     => 'audio/mp3',
+                mp4     => 'video/mp4',
             );
             my $mime_reg = join "|",keys %mime_map;
             eval{
-                open my $file,"<",$msg->media_path or die $!;
                 my $data = Mojo::Util::slurp $msg->media_path;
                 my $name = File::Basename::basename($msg->media_path);
                 my $mtime = (stat($msg->media_path))[9];
                 my $size = length($data);
-                close $file;
                 my $mime = 'application/octet-stream';
                 if($name=~/\.($mime_reg)$/) {
                     $mime = $mime_map{$1};

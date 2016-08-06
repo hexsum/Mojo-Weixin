@@ -24,7 +24,7 @@ sub gen_message_queue{
             if($msg->format eq "media"){
                 $self->_get_media($msg,sub{
                     my ($path,$data,$msg) = @_;
-                    $msg->content("[media](". $msg->media_path . ")");
+                    $msg->content( $msg->content. "(". $msg->media_path . ")");
                     $self->emit(receive_media=>$path,$data,$msg);
                     $self->emit(receive_message=>$msg);
                 });
@@ -37,7 +37,7 @@ sub gen_message_queue{
                 if($msg->format eq "media"){
                     $self->_get_media($msg,sub{
                         my ($path,$data,$msg) = @_;
-                        $msg->content("[media](". $msg->media_path . ")");
+                        $msg->content( $msg->content. "(". $msg->media_path . ")");
                         $self->emit(send_media=>$path,$data,$msg);
                         if(ref $msg->cb eq 'CODE'){
                             $msg->cb->($self,$msg,$status);
@@ -207,16 +207,21 @@ sub _parse_sync_data {
             }
             elsif($e->{MsgType} == 3){#图片消息
                 $msg->{format} = "media";
+                $msg->{media_type} = "image";
                 $msg->{media_id} = $msg->{id};
             }
             elsif($e->{MsgType} == 47){#动态表情或图片
 
             }
-            elsif($e->{MsgType} == 43){#视频
-
+            elsif($e->{MsgType} == 62){#小视频
+                $msg->{format} = "media";
+                $msg->{media_type} = "video";
+                $msg->{media_id} = $msg->{id};
             }
             elsif($e->{MsgType} == 34){#语音
-
+                $msg->{format} = "media";
+                $msg->{media_type} = "voice";
+                $msg->{media_id} = $msg->{id};
             }
             elsif($e->{MsgType} == 37){#好友推荐消息
                 $msg->{format} = "text";
@@ -237,7 +242,7 @@ sub _parse_sync_data {
             #    $msg->{format} = "text";
             #}
             else{next;}
-            if($e->{MsgType} == 1 or $e->{MsgType} == 3){
+            if($e->{MsgType} == 1 or $e->{MsgType} == 3 or $e->{MsgType} == 34 or $e->{MsgType} == 62){
                 if(defined $msg->{content}){
                     eval{
                         $msg->{content} = Mojo::Util::html_unescape($msg->{content});
@@ -274,7 +279,9 @@ sub _parse_sync_data {
                         $msg->{sender_id} = $e->{FromUserName};
                     }
                 }
-                $msg->{content} = '[media]' if $msg->{format} eq "media";
+                $msg->{content} = '[图片]' if $msg->{format} eq "media" and $msg->{media_type} eq "image";
+                $msg->{content} = '[语音]' if $msg->{format} eq "media" and $msg->{media_type} eq "voice";
+                $msg->{content} = '[视频]' if $msg->{format} eq "media" and $msg->{media_type} eq "video";
                 $self->message_queue->put(Mojo::Weixin::Message->new($msg)); 
             }
         }
