@@ -1,7 +1,14 @@
 package Mojo::Weixin::Const;
 use Exporter 'import';
 our @EXPORT = qw(%KEY_MAP_USER %KEY_MAP_FRIEND %KEY_MAP_GROUP %KEY_MAP_MESSAGE %KEY_MAP_GROUP_MEMBER);
-our @EXPORT_OK = qw(%FACE_MAP_QQ %FACE_MAP_EMOJI);
+our @EXPORT_OK = qw(%FACE_MAP_QQ %FACE_MAP_EMOJI %KEY_MAP_MEDIA_CODE);
+our %KEY_MAP_MEDIA_CODE = qw(
+    file        6
+    video       62      
+    image       3
+    emoticon    47
+    voicce      34
+);
 our %KEY_MAP_MESSAGE = qw(
     time        CreateTime
     content     Content

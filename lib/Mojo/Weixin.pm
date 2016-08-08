@@ -20,6 +20,8 @@ has cookie_path         => sub {File::Spec->catfile($_[0]->tmpdir,join('','mojo_
 has qrcode_path         => sub {File::Spec->catfile($_[0]->tmpdir,join('','mojo_weixin_qrcode_',$_[0]->account || 'default','.jpg'))};
 has ioloop              => sub {Mojo::IOLoop->singleton};
 has keep_cookie         => 1;
+has fix_media_loop      => 1;
+has synccheck_interval  => 1;
 
 has user    => sub {+{}};
 has friend  => sub {[]};
@@ -149,6 +151,17 @@ sub new {
         my ($self, $err) = @_;
         $self->error(Carp::longmess($err));
     });
+    if($self->fix_media_loop){
+        $self->on(receive_message=>sub{
+            my($self,$msg) = @_;
+            $self->synccheck_interval($msg->format eq "media"?3:1);
+        });
+        $self->on(send_message=>sub{
+            my($self,$msg,$status) = @_;
+            $self->synccheck_interval($msg->format eq "media"?3:1);
+            $msg->reply(" ") if $self->fix_media_loop == 2;
+        });
+    }
     $Mojo::Weixin::_CLIENT = $self;
     $self;
 }

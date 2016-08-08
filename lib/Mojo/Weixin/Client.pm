@@ -88,7 +88,7 @@ sub ready {
         my $self = shift;
         my($retcode,$selector) = @_;
         $self->_parse_synccheck_data($retcode,$selector);
-        $self->timer(1,sub{$self->_synccheck()});
+        $self->timer($self->synccheck_interval,sub{$self->_synccheck()});
     });
     $self->on(sync_over=>sub{
         my $self = shift;

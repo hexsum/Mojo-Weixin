@@ -1,6 +1,6 @@
 package Mojo::Weixin;
 use strict;
-use Mojo::Weixin::Const qw(%KEY_MAP_USER %KEY_MAP_GROUP %KEY_MAP_GROUP_MEMBER %KEY_MAP_FRIEND);
+use Mojo::Weixin::Const qw(%KEY_MAP_USER %KEY_MAP_GROUP %KEY_MAP_GROUP_MEMBER %KEY_MAP_FRIEND %KEY_MAP_MEDIA_CODE);
 use List::Util qw(first);
 use Mojo::Util qw(encode);
 use Mojo::Weixin::Message;
@@ -24,7 +24,12 @@ sub gen_message_queue{
             if($msg->format eq "media"){
                 $self->_get_media($msg,sub{
                     my ($path,$data,$msg) = @_;
-                    $msg->content( $msg->content. "(". $msg->media_path . ")");
+                    if($msg->media_type eq "emoticon" and $msg->media_size == 0){
+                        $msg->content("[表情](需要手机查看)");
+                    }
+                    else{
+                        $msg->content( $msg->content. "(". $msg->media_path . ")");
+                    }
                     $self->emit(receive_media=>$path,$data,$msg);
                     $self->emit(receive_message=>$msg);
                 });
@@ -37,7 +42,12 @@ sub gen_message_queue{
                 if($msg->format eq "media"){
                     $self->_get_media($msg,sub{
                         my ($path,$data,$msg) = @_;
-                        $msg->content( $msg->content. "(". $msg->media_path . ")");
+                        if($msg->media_type eq "emoticon" and $msg->media_size == 0){
+                            $msg->content("[表情](需要手机查看)");
+                        }
+                        else{
+                            $msg->content( $msg->content. "(". $msg->media_path . ")");
+                        }
                         $self->emit(send_media=>$path,$data,$msg);
                         if(ref $msg->cb eq 'CODE'){
                             $msg->cb->($self,$msg,$status);
@@ -208,19 +218,25 @@ sub _parse_sync_data {
             elsif($e->{MsgType} == 3){#图片消息
                 $msg->{format} = "media";
                 $msg->{media_type} = "image";
+                $msg->{media_code} = $e->{MsgType};
                 $msg->{media_id} = $msg->{id};
             }
-            elsif($e->{MsgType} == 47){#动态表情或图片
-
+            elsif($e->{MsgType} == 47){#表情或gif图片
+                $msg->{format} = "media";
+                $msg->{media_type} = "emoticon";
+                $msg->{media_code} = $e->{MsgType};
+                $msg->{media_id} = $msg->{id};
             }
             elsif($e->{MsgType} == 62){#小视频
                 $msg->{format} = "media";
                 $msg->{media_type} = "video";
+                $msg->{media_code} = $e->{MsgType};
                 $msg->{media_id} = $msg->{id};
             }
             elsif($e->{MsgType} == 34){#语音
                 $msg->{format} = "media";
                 $msg->{media_type} = "voice";
+                $msg->{media_code} = $e->{MsgType};
                 $msg->{media_id} = $msg->{id};
             }
             elsif($e->{MsgType} == 37){#好友推荐消息
@@ -242,7 +258,7 @@ sub _parse_sync_data {
             #    $msg->{format} = "text";
             #}
             else{next;}
-            if($e->{MsgType} == 1 or $e->{MsgType} == 3 or $e->{MsgType} == 34 or $e->{MsgType} == 62){
+            if($e->{MsgType} == 1 or $e->{MsgType} == 3 or $e->{MsgType} == 34 or $e->{MsgType} == 62 or $e->{MsgType} == 47){
                 if(defined $msg->{content}){
                     eval{
                         $msg->{content} = Mojo::Util::html_unescape($msg->{content});
@@ -282,6 +298,7 @@ sub _parse_sync_data {
                 $msg->{content} = '[图片]' if $msg->{format} eq "media" and $msg->{media_type} eq "image";
                 $msg->{content} = '[语音]' if $msg->{format} eq "media" and $msg->{media_type} eq "voice";
                 $msg->{content} = '[视频]' if $msg->{format} eq "media" and $msg->{media_type} eq "video";
+                $msg->{content} = '[表情]' if $msg->{format} eq "media" and $msg->{media_type} eq "emoticon";
                 $self->message_queue->put(Mojo::Weixin::Message->new($msg)); 
             }
         }
@@ -353,10 +370,13 @@ sub send_media {
     elsif(ref $media eq "HASH"){
         $media_info = $media;
     }
+    
     my $msg = Mojo::Weixin::Message->new(
         id => $self->now(),
         media_id   => $media_info->{media_id},
         media_name => $media_info->{media_name},
+        media_type => $media_info->{media_type},
+        media_code => $media_info->{media_code},
         media_path => $media_info->{media_path},
         media_data => $media_info->{media_data},
         media_mime => $media_info->{media_mime},

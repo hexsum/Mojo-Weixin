@@ -1,5 +1,6 @@
 use strict;
 use Mojo::Util ();
+use Mojo::Weixin::Const ();
 sub Mojo::Weixin::_send_media_message {
     my $self = shift;
     my $msg = shift; 
@@ -19,6 +20,7 @@ sub Mojo::Weixin::_send_media_message {
             if(ref $msg->cb eq 'CODE'){
                 $msg->cb->($self, $msg,$status,);
             }
+            $self->emit(send_media => $msg->media_path,$msg->media_data,$msg);
             $self->emit(send_message => $msg,$status);
         }
     };
@@ -45,26 +47,40 @@ sub Mojo::Weixin::_send_media_message {
                 f   => 'json',
                 $self->pass_ticket?(pass_ticket => Mojo::Util::url_escape($self->pass_ticket)):()
             );
-            my $post;
             my $t = sub{my $r = sprintf "%.3f", rand();$r=~s/\.//g;return $self->now() . $r;}->();
-            if($msg->media_mime=~/^image/){
-                $api = 'https://' . $self->domain . '/cgi-bin/mmwebwx-bin/webwxsendmsgimg';
-                $post = {
-                    BaseRequest =>  {
-                        DeviceID    => $self->deviceid,
-                        Sid         => $self->wxsid,
-                        Skey        => $self->skey,
-                        Uin         => $self->wxuin, 
-                    },
-                    Msg             => {
-                        ClientMsgId     =>  $t,
-                        FromUserName    =>  $msg->sender_id,
-                        MediaId         =>  $msg->media_id,
-                        LocalID         =>  $t,
-                        ToUserName      =>  ($msg->type eq "group_message"?$msg->group_id:$msg->receiver_id),
-                        Type            =>  3,
-                    },
-                };
+            my $post = {
+                BaseRequest =>  {
+                    DeviceID    => $self->deviceid,
+                    Sid         => $self->wxsid,
+                    Skey        => $self->skey,
+                    Uin         => $self->wxuin, 
+                },
+                Msg             => {
+                    ClientMsgId     =>  $t,
+                    FromUserName    =>  $msg->sender_id,
+                    MediaId         =>  $msg->media_id,
+                    LocalID         =>  $t,
+                    ToUserName      =>  ($msg->type eq "group_message"?$msg->group_id:$msg->receiver_id),
+                    Type            =>  $Mojo::Weixin::Const::KEY_MAP_MEDIA_CODE{$msg->media_type} || 6,
+                },
+                Scene           => 0,
+            };
+            if($msg->media_type eq "image"){
+                $api =  'https://' . $self->domain . '/cgi-bin/mmwebwx-bin/webwxsendmsgimg';
+            }
+            elsif($msg->media_type eq "video"){
+                $api =  'https://' . $self->domain . '/cgi-bin/mmwebwx-bin/webwxsendvideomsg';
+            }
+            #elsif($msg->media_type eq "voice"){
+            # 
+            #}
+            elsif($msg->media_type eq "emoticon"){
+                $api =  'https://' . $self->domain . '/cgi-bin/mmwebwx-bin/webwxsendemoticon';
+                @query_string = (
+                    fun=>'sys',
+                    $self->pass_ticket?(pass_ticket => Mojo::Util::url_escape($self->pass_ticket)):()    
+                );
+                $post->{Msg}{EmojiFlag} = 2;
             }
             else{
                 $api = 'https://' . $self->domain . '/cgi-bin/mmwebwx-bin/webwxsendappmsg';
@@ -84,22 +100,7 @@ sub Mojo::Weixin::_send_media_message {
                     "</appattach>" .
                     "<extinfo></extinfo>" . 
                 "</appmsg>";
-                $post = {
-                    BaseRequest =>  {
-                        DeviceID    => $self->deviceid,
-                        Sid         => $self->wxsid,
-                        Skey        => $self->skey,
-                        Uin         => $self->wxuin, 
-                    },
-                    Msg             => {
-                        ClientMsgId     =>  $t,
-                        FromUserName    =>  $msg->sender_id,
-                        Content         =>  $content,
-                        LocalID         =>  $t,
-                        ToUserName      =>  ($msg->type eq "group_message"?$msg->group_id:$msg->receiver_id),
-                        Type            =>  6,
-                    },
-                };     
+                $post->{Msg}{Content} = $content;
             }
             $post->{Msg}{Content} =~ s#/#__SLASH__#g if exists $post->{Msg}{Content};
             my $json = $self->encode_json($post);

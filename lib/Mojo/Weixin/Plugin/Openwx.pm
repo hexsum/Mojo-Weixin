@@ -144,6 +144,7 @@ sub call{
     app->hook(after_render=>sub{
         my ($c, $output, $format) = @_;
         my $datatype =  $c->param("datatype");
+        return if not defined $datatype;
         return if defined $datatype and $datatype ne 'jsonp';
         my $jsoncallback = $c->param("callback") || 'jsoncallback' . time;
         return if not defined $jsoncallback;

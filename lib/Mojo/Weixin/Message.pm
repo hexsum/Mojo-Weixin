@@ -12,7 +12,7 @@ has 'cb';
 has from => 'none';
 has allow_plugin => 1;
 has [qw(sender_id receiver_id group_id content type id class format)];
-has [qw( media_id media_type media_mime media_name media_size media_data media_mtime media_ext media_path)];
+has [qw( media_id media_type media_code media_mime media_name media_size media_data media_mtime media_ext media_path)];
 has data => undef;
 
 sub new {

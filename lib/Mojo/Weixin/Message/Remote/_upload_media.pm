@@ -3,6 +3,7 @@ use File::Temp;
 use File::Basename ();
 use Mojo::Util ();
 use POSIX ();
+use Mojo::Weixin::Const qw();
 sub Mojo::Weixin::_upload_media {
     my $self = shift;
     my $msg = shift; 
@@ -35,6 +36,23 @@ sub Mojo::Weixin::_upload_media {
                 return if not defined $body;
                 my($mtime,$mime,$size) = ($tx->res->headers->last_modified || time, $tx->res->headers->content_type|| 'application/octet-stream',$tx->res->headers->content_length || length($body));
                 $mime=~s/;.*$//;
+                if(not $ext){
+                    $ext =          $mime=~/^image\/jpe?g/i        ?   "jpg"
+                                :   $mime=~/^image\/png/i          ?   "png"
+                                :   $mime=~/^image\/bmp/i          ?   "bmp"
+                                :   $mime=~/^image\/gif/i          ?   "gif"
+                                :   $mime=~/^text\/plain/i         ?   "txt"
+                                :   $mime=~/^text\/html/i          ?   "html"
+                                :   $mime=~/^text\/json/i          ?   "json"
+                                :   $mime=~/^application\/json/i   ?   "json"
+                                :   $mime=~/^video\/mp4/i          ?   "mp4"
+                                :   $mime=~/^audio\/mp3/i          ?   "mp3"
+                                :   $mime=~/^audio\/mpeg/i         ?   "mp3"
+                                :   $mime=~/^application\/json/i   ?   "json"
+                                :                                      "dat"
+                    ;
+                 }
+
                 $msg->media_name($name) if not defined $msg->media_name;
                 $msg->media_size($size) if not defined $msg->media_size;
                 $msg->media_mime($mime) if not defined $msg->media_mime;
@@ -71,6 +89,8 @@ sub Mojo::Weixin::_upload_media {
                 }
                 my $ext = '';
                 $ext = $1 if $name =~ /\.([^\.]+)$/;
+                $ext = 'dat' if not $ext;
+
                 $msg->media_name($name) if not defined $msg->media_name;
                 $msg->media_size($size) if not defined $msg->media_size;
                 $msg->media_mime($mime) if not defined $msg->media_mime;
@@ -98,6 +118,24 @@ sub Mojo::Weixin::_upload_media {
             DataLen   => $msg->media_size,
             MediaType => 4,
         };
+
+        my $media_type = $msg->media_mime=~/^image\/gif/i         ?   "emoticon"
+                    :    $msg->media_mime=~/^video\/mp4/i         ?   "video"
+        #           :    $msg->media_mime=~/^audio\/mp3/i         ?   "voice"
+                    :    $msg->media_mime=~/^image\//             ?   "image"
+                    :                                                 "file"
+        ;
+        $msg->media_code($Mojo::Weixin::Const::KEY_MAP_MEDIA_CODE{$msg->media_type} || 6);
+        $msg->media_type($media_type);
+        my $msg_content =   $msg->media_type eq "image"       ?  "[图片]"
+                        :   $msg->media_type eq "emoticon"  ?  "[表情]"
+                        :   $msg->media_type eq "video"     ?  "[视频]"
+                        :   $msg->media_type eq "voicce"    ?  "[语音]"
+                        :   $msg->media_type eq "file"      ?  "[文件]"
+                        :   "[文件]"
+        ;
+        $msg->content($msg_content . "(" . $msg->media_path . ")");
+
         $self->http_post(
             'https://' . ($self->domain eq "wx2.qq.com"?'file2.wx.qq.com':'file.wx.qq.com') .'/cgi-bin/mmwebwx-bin/webwxuploadmedia?f=json',
             {json=>1,Referer=>'https://' . $self->domain . '/'},
@@ -107,7 +145,11 @@ sub Mojo::Weixin::_upload_media {
                 type=>$msg->media_mime,
                 lastModifiedDate=>POSIX::strftime('%a, %d %b %Y %H:%M:%S GMT+0800',gmtime($msg->media_mtime)),
                 size=>$msg->media_size,
-                mediatype=>($msg->media_mime =~ /^image/?"pic":"doc"),
+                mediatype=>(
+                        $msg->media_type eq "image"     ?   "pic"
+                    :   $msg->media_type eq "video"     ?   "video"
+                    :                                       "doc"
+                ),
                 uploadmediarequest=>$self->encode_json($uploadmediarequest),
                 webwx_data_ticket=>$self->search_cookie("webwx_data_ticket"),
                 pass_ticket => $self->pass_ticket,
