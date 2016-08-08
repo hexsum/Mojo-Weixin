@@ -24,8 +24,8 @@ sub gen_message_queue{
             if($msg->format eq "media"){
                 $self->_get_media($msg,sub{
                     my ($path,$data,$msg) = @_;
-                    if($msg->media_type eq "emoticon" and $msg->media_size == 0){
-                        $msg->content("[表情](需要手机查看)");
+                    if($msg->media_size == 0){
+                        $msg->content("[表情](获取数据为空，可能需要手机查看)");
                     }
                     else{
                         $msg->content( $msg->content. "(". $msg->media_path . ")");
@@ -42,8 +42,8 @@ sub gen_message_queue{
                 if($msg->format eq "media"){
                     $self->_get_media($msg,sub{
                         my ($path,$data,$msg) = @_;
-                        if($msg->media_type eq "emoticon" and $msg->media_size == 0){
-                            $msg->content("[表情](需要手机查看)");
+                        if($msg->media_size == 0){
+                            $msg->content("[表情](获取数据为空，可能需要手机查看)");
                         }
                         else{
                             $msg->content( $msg->content. "(". $msg->media_path . ")");
