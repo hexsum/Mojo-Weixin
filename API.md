@@ -592,3 +592,29 @@ Server: Mojolicious (Perl)
 }
 
 ```
+
+### 15. 获取用户或群组头像
+
+|   API  |获取用户或群组头像
+|--------|:------------------------------------------|
+|uri     |/openwx/get_avatar|
+|请求方法|GET\|POST|
+|请求参数|**id**: 用户或群组的id|
+|数据格式|image/jpg、image/png|
+|调用示例|http://127.0.0.1:3000/openwx/get_avatar?id=xxxxxx|
+
+返回图片原始数据:
+
+```
+GET /openwx/get_avatar?id=xxxxx HTTP/1.1
+User-Agent: curl/7.29.0
+Host: 127.0.0.1:3000
+Accept: */*
+
+HTTP/1.1 200 OK
+Content-Type: image/jpg
+Date: Tue, 09 Aug 2016 01:49:14 GMT
+Content-Length: 1104
+Server: Mojolicious (Perl)
+
+```
