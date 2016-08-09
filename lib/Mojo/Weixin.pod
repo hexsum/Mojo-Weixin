@@ -433,11 +433,15 @@ Mojo::Weixin - A Weixin Client Framework base on Mojolicious
 
     方法：
     dump        #打印对象结构
+    get_avatar  #获取用户头像
     
     成功登录后，可以通过 $client->user 来获取到个人对象
 
     $client->user->name;   #获取个人昵称
     $client->user->dump(); 
+    $client->get_avatar(sub{
+        my($path,$data,$mime) = @_; #传递给回调参数的分别是头像文件路径，原始数据，Content-Type
+    });
 
 =head2 好友对象
 
@@ -457,11 +461,15 @@ Mojo::Weixin - A Weixin Client Framework base on Mojolicious
     send        #给该好友发送消息
     send_media  #发送图片
     set_markname #设置备注名称
+    get_avatar  #获取用户头像
 
     my $friend = $client->search_friend(name=>"小灰");
     $friend->dump();
     $friend->send("hello world"); 
     $friend->set_markname("测试");
+    $friend->get_avatar(sub{
+        my($path,$data,$mime) = @_; #传递给回调参数的分别是头像文件路径，原始数据，Content-Type
+    });
 
 
 =head2 群组对象
@@ -481,6 +489,7 @@ Mojo::Weixin - A Weixin Client Framework base on Mojolicious
     invite_friend        #邀请好友入群
     kick_group_member    #移除群成员
     set_displayname      #设置群聊显示名称
+    get_avatar           #获取用户头像
 
     my $group = $client->search_group(displayname=>"红包群");
     $group->send("大家好");
@@ -489,6 +498,9 @@ Mojo::Weixin - A Weixin Client Framework base on Mojolicious
     $group->invite_friend($friend1,$friend2,...);
     $group->kick_group_member($member);
     $group->set_displayname("测试");
+    $group->get_avatar(sub{
+        my($path,$data,$mime) = @_; #传递给回调参数的分别是头像文件路径，原始数据，Content-Type
+    });
 
 =head2 群成员对象
 
@@ -507,12 +519,16 @@ Mojo::Weixin - A Weixin Client Framework base on Mojolicious
     dump            #打印对象结构
     group           #返回群成员对应的群组对象
     make_friend     #发送好友请求
+    get_avatar      #获取用户头像
 
     my $group = $client->search_group(displayname=>"红包群");
     my $group_member = $group->search_group_member(displayname=>"小灰");
     $group_member->dump;
     $group_member->group->displayname;
     $group_member->make_friend("你好，加个好友吧");
+    $group_member->get_avatar(sub{
+        my($path,$data,$mime) = @_; #传递给回调参数的分别是头像文件路径，原始数据，Content-Type
+    });
 
 =head2 消息对象
 

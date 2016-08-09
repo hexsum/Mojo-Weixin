@@ -365,7 +365,7 @@ sub get_avatar {
     my $self = shift;
     my $object =  shift;
     my $callback = shift;
-    if(ref($object) !~ /Mojo::Weixin::User|Mojo::Weixin::Group|Mojo::Weixin::Groupp::Member/){
+    if(ref($object) !~ /Mojo::Weixin::User|Mojo::Weixin::Friend|Mojo::Weixin::Group|Mojo::Weixin::Groupp::Member/){
         $self->die("不支持的数据类型");
         return;
     }

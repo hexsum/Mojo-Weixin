@@ -13,7 +13,11 @@ sub Mojo::Weixin::_webwxgetheadimg {
             $self->debug("获取对象[ " . $object->displayname . " ]头像失败");
             return;
         }
-        my $mime = $tx->res->headers->content_type;
+        my $mime =  $data=~/^GIF8/          ?   'image/gif'
+                :   $data=~/^PNG|\x89PNG/   ?   'image/png'
+                :                               $tx->res->headers->content_type
+        ;
+        $mime=~s/;.*$//;
         my $type =      $mime=~/^image\/jpe?g/i        ?   ".jpg"
                     :   $mime=~/^image\/png/i          ?   ".png"
                     :   $mime=~/^image\/bmp/i          ?   ".bmp"
@@ -44,7 +48,7 @@ sub Mojo::Weixin::_webwxgetheadimg {
             print $tmp $data;
             close $tmp;
             $self->debug("获取对象[ " . $object->displayname . " ]头像成功: " . $tmp->filename);
-            $callback->($tmp->filename,$data) if ref $callback eq "CODE";
+            $callback->($tmp->filename,$data,$mime) if ref $callback eq "CODE";
         };
         $self->error("[ ". __PACKAGE__ . " ] $@") if $@;
     });

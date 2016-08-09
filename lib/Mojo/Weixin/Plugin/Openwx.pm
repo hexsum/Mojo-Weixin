@@ -528,6 +528,25 @@ sub call{
             $c->render(json=>{code=>201,status=>"failure"});
         }
     };
+    any [qw(GET POST)] => '/openwx/get_avatar' => sub{
+        my $c = shift;
+        my($id,$account,$displayname,$markname) = map {defined $_?Encode::encode("utf8",$_):$_} ($c->param("id"),$c->param("account"),$c->param("displayname"),$c->param("markname"),);
+        my $object =    (defined $id and $id eq $client->user->id) ? $client->user 
+                :       $client->is_group($id)   ? $client->search_group(id=>$id,displayname=>$displayname)
+                :       $client->search_friend(id=>$id,account=>$account,displayname=>$displayname,markname=>$markname)
+        ;
+       
+        if(defined $object){
+            $c->render_later;
+            $object->get_avatar(sub{
+                my ($path,$data,$mime) = @_;
+                $c->res->headers->content_type($mime || 'image/jpg');
+                $c->render(data=>$data,);  
+            });
+        }
+        else{$c->render(json=>{msg_id=>undef,code=>100,status=>"object not found"});}
+
+    };
     any '/*whatever'  => sub{whatever=>'',$_[0]->render(text=>"api not found",status=>403)};
     package Mojo::Weixin::Plugin::Openwx;
     $server = Mojo::Weixin::Server->new();   

@@ -5,6 +5,7 @@ use List::Util qw(first);
 has name => '昵称未知';
 has [qw( 
     account
+    avatar
     province
     city
     sex
@@ -31,6 +32,11 @@ sub new {
     }
     $self;
 }
+sub get_avatar{
+    my $self = shift;
+    $self->client->get_avatar($self,@_);
+}
+
 sub displayname{
     my $self = shift;
     return $self->display || $self->markname || $self->name;
