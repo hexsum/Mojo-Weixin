@@ -532,7 +532,7 @@ sub call{
         my $c = shift;
         my($id,$account,$displayname,$markname) = map {defined $_?Encode::encode("utf8",$_):$_} ($c->param("id"),$c->param("account"),$c->param("displayname"),$c->param("markname"),);
         my $object =    (defined $id and $id eq $client->user->id) ? $client->user 
-                :       $client->is_group($id)   ? $client->search_group(id=>$id,displayname=>$displayname)
+                :       $client->is_group($id)? $client->search_group(id=>$id,displayname=>$displayname)
                 :       $client->search_friend(id=>$id,account=>$account,displayname=>$displayname,markname=>$markname)
         ;
        
