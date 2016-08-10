@@ -1,3 +1,13 @@
+2016-08-10 Mojo::Weixin v1.1.7
+1）修复KnowledgeBase2插件好友消息不生效的bug
+2）Openwx插件参数中datatype=jsonp的方式支持跨域访问
+3）input_qrcode事件参数增加二维码原始数据
+4）支持自动检测系统的代理设置（通过环境变量 HTTP_PROXY/HTTPS_PROXY)
+5）下载的媒体文件支持识别更多文件类型来定义扩展名
+6）支持发送和接收文本、图片、语音、短视频、表情消息类型
+7）缓解由于发送媒体消息时会出现接收消息进入死循环的官方问题
+8）添加获取头像方法，Openwx插件添加/openwx/get_avatar获取头像api接口
+
 2016-07-18 Mojo::Weixin v1.1.6
 1）修复Xiaoice插件提示找不到小冰的bug 感谢 @斌
 2）Openwx插件修复启动时会触发大量无意义的group_member_property_change事件的问题
