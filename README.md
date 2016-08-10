@@ -18,7 +18,7 @@ Mojo-Weixin v1.1.6 [![Build Status](https://travis-ci.org/sjdy521/Mojo-Weixin.sv
 
 ###插件列表
 
-|名称                | 优先级  |当前状态    |github作者   | 功能说明                 
+|名称                | 优先级  |当前状态    |github作者   | 功能说明  | 使用状态               
 |:-------------------|:--------|:-----------|:------------|:----------------------------
 |[ShowMsg](https://metacpan.org/pod/distribution/Mojo-Weixin/lib/Mojo/Weixin.pod#Mojo::Weixin::Plugin::ShowMsg)             |100      |已发布      |sjdy521      |打印客户端接收和发送的消息
 |[ImageStore](https://metacpan.org/pod/distribution/Mojo-Weixin/lib/Mojo/Weixin.pod#Mojo::Weixin::Plugin::ImageStore)             |100      |已发布      |sjdy521      |按日期目录保存发送和接收的图片
@@ -29,7 +29,7 @@ Mojo-Weixin v1.1.6 [![Build Status](https://travis-ci.org/sjdy521/Mojo-Weixin.sv
 |[Beauty](https://metacpan.org/pod/distribution/Mojo-Weixin/lib/Mojo/Weixin.pod#Mojo::Weixin::Plugin::Beauty)              |95       |已发布      |sjdy521      |识别指定关键字发送美女图片
 |[Translation](https://metacpan.org/pod/distribution/Mojo-Weixin/lib/Mojo/Weixin.pod#Mojo::Weixin::Plugin::Translation)         |93       |已发布      |sjdy521      |多国语言翻译功能
 |[Riddle](https://metacpan.org/pod/distribution/Mojo-Weixin/lib/Mojo/Weixin.pod#Mojo::Weixin::Plugin::Riddle)              |92       |已发布      |limengyu1990 |输入"猜谜"关键字进行猜谜游戏
-|[Weather](https://metacpan.org/pod/distribution/Mojo-Weixin/lib/Mojo/Weixin.pod#Mojo::Weixin::Plugin::Weather)             |91       |已发布      |autodataming |输入"北京天气"查询指定地区天气
+|[Weather](https://metacpan.org/pod/distribution/Mojo-Weixin/lib/Mojo/Weixin.pod#Mojo::Weixin::Plugin::Weather)             |91       |已发布      |autodataming |输入"北京天气"查询指定地区天气|不可用
 |[KnowledgeBase](https://metacpan.org/pod/distribution/Mojo-Weixin/lib/Mojo/Weixin.pod#Mojo::Weixin::Plugin::KnowledgeBase)       |2        |已发布      |sjdy521      | 通过微信消息自定义问答知识库
 |[FuckDaShen](https://metacpan.org/pod/distribution/Mojo-Weixin/lib/Mojo/Weixin.pod#Mojo::Weixin::Plugin::FuckDaShen)          |1        |已发布      |sjdy521      |对消息中的"大神"关键词进行鄙视
 |[AutoVerify](https://metacpan.org/pod/distribution/Mojo-Weixin/lib/Mojo/Weixin.pod#Mojo::Weixin::Plugin::AutoVerify)          |1        |已发布      |sjdy521      |收到好友验证请求时自动批准同意
