@@ -14,15 +14,15 @@ sub Mojo::Weixin::_get_qrcode_image{
         return 0;
     }
     $self->clean_qrcode();
+    $self->die("未设置二维码保存路径") if not defined $self->qrcode_path;
     eval{
-        $self->die("未设置二维码保存路径") if not defined $self->qrcode_path;
-        open(my $fh,">",$self->qrcode_path) or $self->die($!);
+        open(my $fh,">",$self->qrcode_path) or die "$!\n";
         binmode $fh;
         print $fh $data;
         close $fh;
     };
     if($@){
-        $self->error("二维码写入文件失败: $@");
+        $self->error("二维码写入文件[ " . $self->qrcode_path . " ]失败: $@");
         return 0;
     }
 
