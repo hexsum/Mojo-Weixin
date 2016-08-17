@@ -241,6 +241,12 @@ Mojo-Weixin v1.1.7 [![Build Status](https://travis-ci.org/sjdy521/Mojo-Weixin.sv
 *Python*
 * [WeixinBot](https://github.com/Urinx/WeixinBot) 网页版微信API，包含终端版微信及微信机器人
 
+###捐赠奖励
+
+可以通过扫描支付宝付款二维码进行捐助，感谢您的支持和鼓励
+
+![donate](screenshot/donate.jpg)
+
 ###COPYRIGHT 和 LICENCE
 
 Copyright (C) 2014 by sjdy521
