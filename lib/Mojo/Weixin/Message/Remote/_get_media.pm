@@ -60,7 +60,7 @@ sub Mojo::Weixin::_get_media {
         return unless defined $type;
         $mime=~s/\s*;.*$//g;
         $msg->media_mime($mime);
-        $msg->media_ext(substr($type,1));
+        $msg->media_ext($type);
         $msg->media_data($data);
         $msg->media_mtime(time);
         $msg->media_size(length($data));
