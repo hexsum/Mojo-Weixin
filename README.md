@@ -101,13 +101,19 @@ Mojo-Weixin v1.1.8 [![Build Status](https://travis-ci.org/sjdy521/Mojo-Weixin.sv
 
   |平台   |推荐选择|下载地址
   |-------|--------|-------------|
-  |Windows|1. **StrawberryPerl**<br>2. ActivePerl<br>|[StrawberryPerl下载地址](http://strawberryperl.com/)<br>[ActivePerl下载地址](http://www.activestate.com/activeperl/downloads)|
-  |Linux  |1. **ActivePerl**<br>2. 官方源码<br>3. yum/apt等包管理器<br>4. Mojo-ActivePerl|[ActivePerl下载地址](http://www.activestate.com/activeperl/downloads)<br>[Mojo-ActivePerl下载地址](https://github.com/sjdy521/Mojo-ActivePerl)|
-  |Mac    |1. **ActivePerl**|[ActivePerl下载地址](http://www.activestate.com/activeperl/downloads)
+  |Windows|1. **StrawberryPerl**<br>2. ActivePerl<br>3. **Mojo-StrawberryPerl**|[StrawberryPerl下载地址](http://strawberryperl.com/)<br>[ActivePerl下载地址](http://www.activestate.com/activeperl/downloads)<br>[Mojo-StrawberryPerl下载地址](https://github.com/sjdy521/Mojo-StrawberryPerl)|
+  |Linux  |1. **系统自带**<br>2. **yum/apt等包管理器**<br>3. **官方源码**<br>4. ActivePerl<br>5. Mojo-ActivePerl|[ActivePerl下载地址](http://www.activestate.com/activeperl/downloads)<br>[Mojo-ActivePerl下载地址](https://github.com/sjdy521/Mojo-ActivePerl)|
+  |Mac    |1. **系统自带**<br>2. ActivePerl|[ActivePerl下载地址](http://www.activestate.com/activeperl/downloads)
   
-    注意：[Mojo-ActivePerl](https://github.com/sjdy521/Mojo-ActivePerl)是我基于ActivePerl打包的而成
+    注意：
+    
+    [Mojo-ActivePerl](https://github.com/sjdy521/Mojo-ActivePerl)是我基于ActivePerl打包的而成
   
     已经包含perl-5.22+cpanm+Mojo-Webqq+Mojo-Weixin的完整运行环境，适用于linux x86_64系统，并且系统glibc 2.15+
+    
+    [Mojo-StrawberryPerl](https://github.com/sjdy521/Mojo-StrawberryPerl)是网友 **@那谁** 基于StrawberryPerl精简打包而成
+    
+    已经包含perl-5.24+cpanm+Mojo-Webqq+Mojo-Weixin的完整运行环境，适用于windows 32位/64位系统
 
 2. *安装cpanm工具*（如果系统已经安装了cpanm可以忽略此步骤）
 
