@@ -88,6 +88,7 @@ has domain => 'wx.qq.com';
 has _sync_running => 0;
 has _synccheck_running => 0;
 has _synccheck_error_count => 0;
+has _synccheck_connection_id => undef;
 sub gen_deviceid {
     my $self=shift;
     my $n = "e";for(my $m = 0;15 > $m;$m++){$n .= POSIX::floor(10 * rand());} 

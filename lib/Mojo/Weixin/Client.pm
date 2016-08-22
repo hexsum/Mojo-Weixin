@@ -40,6 +40,14 @@ sub relogin{
     my $self = shift;
     my $retcode = shift;
     $self->info("正在重新登录...\n");
+    if(defined $self->_synccheck_connection_id){
+        eval{
+            $self->ioloop->remove($self->_synccheck_connection_id);
+            $self->_synccheck_running(0);
+            $self->info("停止接收消息...");
+        };
+        $self->info("停止接收消息失败: $@") if $@;
+    }
     $self->logout($retcode);
     $self->login_state("relogin");
     $self->ua->cookie_jar->empty;
@@ -57,6 +65,9 @@ sub relogin{
     $self->data(+{});
 
     $self->login();
+    $self->info("重新开始接收消息...");
+    $self->_synccheck();
+    $self->emit("relogin");
 }
 sub logout{
     my $self = shift;

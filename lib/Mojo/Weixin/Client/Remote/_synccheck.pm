@@ -23,6 +23,7 @@ sub Mojo::Weixin::_synccheck{
         synckey     =>  join("|",map {$_->{Key} . "_" . $_->{Val};} @{$self->sync_key->{List}}),
         _           =>  $self->now(),
     );
-    $self->http_get($self->gen_url2($api,@query_string),{Referer=>"https://" .$self->domain . "/"},$callback);
+    my $id = $self->http_get($self->gen_url2($api,@query_string),{Referer=>"https://" .$self->domain . "/"},$callback);
+    $self->_synccheck_connection_id($id);
 }
 1;
