@@ -14,4 +14,5 @@ my $client = Mojo::Weixin->new(
 );
 $client->load("ShowMsg");
 $client->load("Openwx",data=>{listen=>[{host=>$host,port=>$port}], post_api=>$post_api});
+$client->load("UploadQRcode");
 $client->run();
