@@ -28,6 +28,7 @@ sub login{
 
     my $ret = $self->_login();
     if($self->login_state eq "success"){
+        $self->clean_qrcode();
         $self->model_init();
         $self->emit("login"=>($ret==2?1:0));
     }
