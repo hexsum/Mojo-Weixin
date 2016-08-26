@@ -1,11 +1,31 @@
 package Mojo::Weixin::Util;
 use Carp qw();
+use Mojo::Util ();
 use Mojo::JSON qw();
-use Encode qw(encode_utf8 encode decode);
 use Time::HiRes;
 sub now {
     my $self = shift;
     return int Time::HiRes::time() * 1000;
+}
+sub encode{
+    my $self = shift;
+    return Mojo::Util::encode(@_);
+}
+sub decode{
+    my $self = shift;
+    return Mojo::Util::decode(@_);
+}
+sub encode_utf8{
+    my $self = shift;
+    return Mojo::Util::encode("utf8",@_);
+}
+sub url_escape{
+    my $self = shift;
+    return Mojo::Util::url_escape(@_);
+}
+sub slurp {
+    my $self = shift;
+    return Mojo::Util::slurp(@_);
 }
 sub decode_json{
     my $self = shift;
