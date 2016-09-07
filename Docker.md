@@ -12,7 +12,7 @@
 
 2. ***运行镜像***
 
-        docker run -it --env LOG_ENCODING=utf8 --env PORT=5000 -p 5000:5000 -v /tmp:/tmp sjdy521/mojo-weixin 
+        docker run -it --env LOG_ENCODING=utf8 --env PORT=3000 -p 3000:3000 -v /tmp:/tmp sjdy521/mojo-weixin 
 
   为了能够方便查看日志，获取容器中下载的二维码文件等，建议把宿主的/tmp目录挂载到docker的/tmp上，同时设置容器的端口映射
 
@@ -20,7 +20,7 @@
   
   | 环境变量     | 作用          | 默认值 |
   | ------------ |:-------------------------| :-------------------------------|
-  | PORT         | openwx插件api地址监听端口| 5000                            |
+  | PORT         | openwx插件api地址监听端口| 3000                            |
   | POST_API     | openwx插件消息上报地址   | 无                              |
   | UA_DEBUG     | 是否打印调试日志         | 0                               |
   | LOG_PATH     | 日志保存路径             | STDERR                          |
