@@ -181,6 +181,8 @@ $client->load("Openwx",data=>{
 
 当接收到消息时，会把消息通过JSON格式数据POST到该接口
 
+普通好友消息或群消息上报
+
 ```
 connect to 127.0.0.1 port 4000
 POST /post_api
@@ -199,6 +201,30 @@ Content-Type: application/json
     "sender":"灰灰",
     "id":"10856",
     "type":"group_message",
+    "format": "text",
+    "post_type": "receive_message"
+}
+
+```
+
+群提示消息上报
+
+```
+connect to 127.0.0.1 port 4000
+POST /post_api
+Accept: */*
+Content-Length: xxx
+Content-Type: application/json
+
+{   "receiver":"小灰",
+    "time":"1442542632",
+    "content":"你邀请灰太狼加入了群聊",
+    "class":"recv",
+    "receiver_id":"@4072574066",
+    "group":"PERL学习交流",
+    "group_id":"@@2617047292",
+    "id":"10856",
+    "type":"group_notice",
     "format": "text",
     "post_type": "receive_message"
 }
@@ -233,7 +259,7 @@ Content-Type: application/json
 
 ```
 
-图片消息上报
+#### 图片消息上报
 
 ```
 {   "receiver":"小灰",
