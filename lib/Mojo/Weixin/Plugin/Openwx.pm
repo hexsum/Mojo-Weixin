@@ -69,7 +69,7 @@ sub call{
         }) if $data->{post_event};
         $client->on(receive_message=>sub{
             my($client,$msg) = @_;
-            return if $msg->type !~ /^friend_message|group_message$/;
+            return if $msg->type !~ /^friend_message|group_message|group_notice$/;
             my $post_json = $msg->to_json_hash;
             delete $post_json->{media_data} if ($post_json->{format} eq "media" and ! $data->{post_media_data});
             $post_json->{post_type} = "receive_message";

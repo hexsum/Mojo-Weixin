@@ -24,6 +24,7 @@ has ioloop              => sub {Mojo::IOLoop->singleton};
 has keep_cookie         => 1;
 has fix_media_loop      => 1;
 has synccheck_interval  => 1;
+has emoji_to_text       => 0;
 
 has user    => sub {+{}};
 has friend  => sub {[]};

@@ -163,6 +163,8 @@ Mojo::Weixin - A Weixin Client Framework base on Mojolicious
     pic_dir         #图片接收默认地址，默认为 tmpdir 参数所设置的目录
 
     qrcode_path     #二维码保存路径，默认是 tmpdir 目录下固定文件名
+    emoji_to_text   #默认为1，是否把emoji表情字符转为 "[微笑]" 形式的文本
+                    #如果你的输出设备支持显示原生emoji表情字符，可以把该参数设置为0
 
 =head4 login 客户端登录
 
@@ -534,7 +536,7 @@ Mojo::Weixin - A Weixin Client Framework base on Mojolicious
 
     属性：
     id          #消息id
-    type        #消息类型 friend_message|group_message 好友消息或群消息
+    type        #消息类型 friend_message|group_message|group_notice 好友消息或群消息或者群提示消息
     class       #消息类别 send|recv 发送消息或接收消息
     time        #消息发送或接收的时间
     ttl         #发送消息的ttl，默认是5，当ttl为0 会被消息队列丢弃
@@ -562,6 +564,10 @@ Mojo::Weixin - A Weixin Client Framework base on Mojolicious
             my $sender = $msg->sender;  #获取到发送该消息的群成员对象
 
             print $sender->displayname . "在群：", $group->displayname . "中发了一条消息，消息的内容是：" . $msg->content;
+        }
+        elsif($msg->type eq "group_notice"){
+            my $group = $msg->group;    #获取到消息对应的群组对象
+            print "在群：", $group->displayname . "中收到了一条群提示消息，消息的内容是：" . $msg->content;
         }
     
         $msg->reply("消息已收到"); #回复该消息(文本形式)
@@ -834,6 +840,8 @@ Mojo::Weixin - A Weixin Client Framework base on Mojolicious
         to      =>  'xxxx', #收件人
         user    =>  'xxxx', #smtp登录帐号
         pass    =>  'xxxx', #smtp登录密码
+        tls     =>  0,      #可选，是否使用SMTPS协议，默认为0                            
+                            #在没有设置的情况下，如果使用的端口为465，则该选项会自动被设置为1
     });
     ...;
 
@@ -1023,6 +1031,8 @@ Mojo::Weixin - A Weixin Client Framework base on Mojolicious
 
     #接收到消息后，插件会通过HTTP POST请求的方式将json格式的消息上报到http://127.0.0.1:4000/post_api
 
+    普通好友消息或群消息上报
+
     connect to 127.0.0.1 port 4000
     POST /post_api
     Accept: */*
@@ -1043,7 +1053,78 @@ Mojo::Weixin - A Weixin Client Framework base on Mojolicious
         "post_type": "receive_message"
     }
 
-    #支持好友消息、群消息 上报
+    群提示消息上报
+    
+    connect to 127.0.0.1 port 4000
+    POST /post_api
+    Accept: */*
+    Content-Length: xxx
+    Content-Type: application/json
+
+    {   "receiver":"小灰",
+        "time":"1442542632",
+        "content":"你邀请灰太狼加入了群聊",
+        "class":"recv",
+        "receiver_id":"@4072574066",
+        "group":"PERL学习交流",
+        "group_id":"@@2617047292",
+        "id":"10856",
+        "type":"group_notice",
+        "format": "text",
+        "post_type": "receive_message"
+    }
+    
+    发送消息上报（包括从手机或其他设备上发送的消息）
+
+    发送的消息会通过JSON格式数据POST到该接口
+
+    connect to 127.0.0.1 port 4000
+    POST /post_api
+    Accept: */*
+    Content-Length: xxx
+    Content-Type: application/json
+
+    {   "receiver":"小灰",
+        "time":"1442542632",
+        "content":"测试一下",
+        "class":"send",
+        "sender_id":"@2372835507",
+        "receiver_id":"@4072574066",
+        "group":"PERL学习交流",
+        "group_id":"@@2617047292",
+        "sender":"灰灰",
+        "id":"10856",
+        "type":"group_message",
+        "format": "text",
+        "post_type": "send_message"
+    }
+
+    图片消息上报
+
+    {   "receiver":"小灰",
+        "time":"1442542632",
+        "content":"[media](\/tmp\/mojo_weixin_media_Ja9l.jpg)",
+        "media_path": "\/tmp\/mojo_weixin_media_Ja9l.jpg",
+        "media_id": "2273934420223351581",
+        "media_mime":"image\/jpg",
+        "media_name": "mojo_weixin_media_Ja9l.jpg",
+        "media_size": "1234567",
+        "media_mtime": "1462763788",
+        "media_ext": "jpg",
+        "media_data": "%87%60M%B4A%E1%EB%A0%13%E4%C4%5C2%C4%0B%DFV%B7%0B...", #对图片原始二进制数据，使用url encode编码
+        "class":"recv",
+        "sender_id":"@2372835507",
+        "receiver_id":"@4072574066",
+        "group":"PERL学习交流",
+        "group_id":"@@2617047292",
+        "sender":"灰灰",
+        "id":"10856",
+        "type":"group_message",
+        "format": "media",
+        "post_type": "receive_message"
+    }
+
+    #支持好友消息、群消息、群提示消息 上报
 
     一般情况下，post_api接口返回的响应内容可以是随意，会被忽略
     post_api接口返回的数据类型如果是 text/json 或者 application/json，并且json格式形式如下：

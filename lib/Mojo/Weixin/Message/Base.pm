@@ -14,6 +14,7 @@ sub to_json_hash{
     for my $key ( ( (keys %$self),qw(sender receiver group ) ) ){
         next if substr($key,0,1) eq "_";
         if($key eq "sender"){
+            next if $self->type eq "group_notice";
             $json->{sender} = decode_utf8($self->sender->displayname);
             $json->{sender_account} = $self->sender->account;
         }

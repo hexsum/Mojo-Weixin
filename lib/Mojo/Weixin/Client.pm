@@ -107,10 +107,14 @@ sub ready {
         my $json = shift;
         $self->_parse_sync_data($json);
     });
-    $self->info("开始接收消息...\n");
-    $self->_synccheck();
+    $self->on(run=>sub{
+        my $self = shift;
+        $self->info("开始接收消息...\n");
+        $self->_synccheck();
+    });
     $self->is_ready(1);
     $self->emit("ready");
+    return $self;
 }
 sub run{
     my $self = shift;

@@ -18,13 +18,16 @@ has data => undef;
 sub new {
     my $s = shift;
     $s = $s->Mojo::Weixin::Base::new(@_);
-    if(defined $s->{content} and  my @code = $s->{content}=~/<span class="emoji emoji([a-zA-Z0-9]+)"><\/span>/g){
-        my %map = reverse %FACE_MAP_EMOJI;
-        for(@code){
-            $s->{content}=~s/<span class="emoji emoji$_"><\/span>/exists $map{$_}?"[$map{$_}]":"[未知表情]"/eg
+    if(defined $s->{content}){
+        if($s->client->emoji_to_text){
+            my %map = reverse %FACE_MAP_EMOJI;
+            $s->{content}=~s/<span class="emoji emoji([a-zA-Z0-9]+)"><\/span>/exists $map{$1}?"[$map{$1}]":"[未知表情]"/eg 
         }
+        else{
+            $s->{content}=~s/<span class="emoji emoji([a-zA-Z0-9]+)"><\/span>/$s->client->encode_utf8(chr(hex($1)))/ge;
+        }
+        $s->{content}=~s/<br\/>/\n/g;
     }
-    $s->{content}=~s/<br\/>/\n/g if defined $s->{content};
     $s;
 }
 
@@ -45,6 +48,9 @@ sub sender{
         return $group->me if $s->class eq "send";
         return $group->search_group_member(id=>$s->sender_id,_check_remote=>1) || _default_group_member(id=>$s->sender_id);
     }
+    elsif($s->type eq "group_notice"){
+        my $s->client->search_group(id=>$s->group_id,_check_remote=>1) || _defaut_group(id=>$s->group_id);
+    }
     return;
 }
 sub receiver {
@@ -60,22 +66,30 @@ sub receiver {
         return $group->me if $s->class eq "recv";
         return $group->search_group_member(id=>$s->receiver_id,_check_remote=>1) || _default_group_member(id=>$s->receiver_id);
     }
+    elsif($s->type eq "group_notice"){
+        my $group = $s->client->search_group(id=>$s->group_id,_check_remote=>1);
+        return _default_group_member(id=>$s->receiver_id) if not defined $group;
+        return $group->me if $s->class eq "recv";
+        return $group->search_group_member(id=>$s->receiver_id,_check_remote=>1) || _default_group_member(id=>$s->receiver_id);
+    }
     return;
 }
 sub group{
     my $s =  shift;
     return if not defined $s->group_id;
-    return if $s->type ne "group_message";
+    return if ($s->type ne "group_message" and $s->type ne "group_notice");
     return $s->client->search_group(id=>$s->group_id,_check_remote=>1) || _defaut_group(id=>$s->group_id);
 }
 
 sub reply{
     my $s = shift;
+    return if $s->type eq "group_notice";
     $s->client->reply_message($s,@_);
 }
 
 sub reply_media {
     my $s = shift;
+    return if $s->type eq "group_notice";
     $s->client->reply_media_message($s,@_);
 }
 

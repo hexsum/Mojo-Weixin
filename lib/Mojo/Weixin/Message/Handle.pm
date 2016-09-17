@@ -253,54 +253,61 @@ sub _parse_sync_data {
                 #$msg->{content} = "收到[ " . $displayname  . " ]好友验证请求：" . ($verify?$verify:"(验证内容为空)");
                 $self->_webwxstatusnotify($e->{FromUserName},1);
                 $self->emit("friend_request",$id,$displayname,$verify,$ticket);
+                next;
+            }
+            elsif($e->{MsgType} == 10000){
+                $msg->{format} = "text";
             }
             #elsif($e->{MsgType} == 51){#系统通知
             #    $msg->{format} = "text";
             #}
             else{next;}
-            if($e->{MsgType} == 1 or $e->{MsgType} == 3 or $e->{MsgType} == 34 or $e->{MsgType} == 62 or $e->{MsgType} == 47){
-                if(defined $msg->{content}){
-                    eval{
-                        $msg->{content} = Mojo::Util::html_unescape($msg->{content});
-                    };
-                    if($@){$self->warn("html entities unescape fail: $@")}
+            if(defined $msg->{content}){
+                eval{
+                    $msg->{content} = Mojo::Util::html_unescape($msg->{content});
+                };
+                if($@){$self->warn("html entities unescape fail: $@")}
+            }
+            if($e->{FromUserName} eq $self->user->id){#发送的消息
+                $msg->{source} = 'outer';
+                $msg->{class} = "send";
+                $msg->{sender_id} = $self->user->id;
+                if($self->is_group($e->{ToUserName})){
+                    $msg->{type} = "group_message";
+                    $msg->{group_id} = $e->{ToUserName};
                 }
-                if($e->{FromUserName} eq $self->user->id){#发送的消息
-                    $msg->{source} = 'outer';
-                    $msg->{class} = "send";
-                    $msg->{sender_id} = $self->user->id;
-                    if($self->is_group($e->{ToUserName})){
-                        $msg->{type} = "group_message";
-                        $msg->{group_id} = $e->{ToUserName};
-                    }
-                    else{
-                        $msg->{type} = "friend_message";
-                        $msg->{receiver_id} = $e->{ToUserName};
-                    }
+                else{
+                    $msg->{type} = "friend_message";
+                    $msg->{receiver_id} = $e->{ToUserName};
                 }
-                elsif($e->{ToUserName} eq $self->user->id){#接收的消息
-                    $msg->{class} = "recv";
-                    $msg->{receiver_id} = $self->user->id;
-                    if($self->is_group($e->{FromUserName})){#接收到群组消息
+            }
+            elsif($e->{ToUserName} eq $self->user->id){#接收的消息
+                $msg->{class} = "recv";
+                $msg->{receiver_id} = $self->user->id;
+                if($self->is_group($e->{FromUserName})){#接收到群组消息
+                    $msg->{group_id} = $e->{FromUserName};
+                    if( $e->{MsgType} == 1 and $msg->{content}=~/^(\@.+):<br\/>(.*)$/s ){
                         $msg->{type} = "group_message";
-                        $msg->{group_id} = $e->{FromUserName};
-                        my ($member_id,$content) = $msg->{content}=~/^(\@.+):<br\/>(.*)/g;
+                        my ($member_id,$content) = ($1,$2);
                         if(defined $member_id and defined $content){
                                 $msg->{sender_id} = $member_id;
                                 $msg->{content} = $content;
                         }
                     }
-                    else{
-                        $msg->{type} = "friend_message";
-                        $msg->{sender_id} = $e->{FromUserName};
+                    elsif($e->{MsgType} == 10000){#群提示信息
+                        $msg->{type} = "group_notice";
                     }
                 }
-                $msg->{content} = '[图片]' if $msg->{format} eq "media" and $msg->{media_type} eq "image";
-                $msg->{content} = '[语音]' if $msg->{format} eq "media" and $msg->{media_type} eq "voice";
-                $msg->{content} = '[视频]' if $msg->{format} eq "media" and $msg->{media_type} eq "video";
-                $msg->{content} = '[表情]' if $msg->{format} eq "media" and $msg->{media_type} eq "emoticon";
-                $self->message_queue->put(Mojo::Weixin::Message->new($msg)); 
+                else{#接收到的好友消息
+                    $msg->{type} = "friend_message";
+                    $msg->{sender_id} = $e->{FromUserName};
+                }
             }
+            $msg->{content} = '[图片]' if $msg->{format} eq "media" and $msg->{media_type} eq "image";
+            $msg->{content} = '[语音]' if $msg->{format} eq "media" and $msg->{media_type} eq "voice";
+            $msg->{content} = '[视频]' if $msg->{format} eq "media" and $msg->{media_type} eq "video";
+            $msg->{content} = '[表情]' if $msg->{format} eq "media" and $msg->{media_type} eq "emoticon";
+            $self->message_queue->put(Mojo::Weixin::Message->new($msg)); 
         }
     }
 

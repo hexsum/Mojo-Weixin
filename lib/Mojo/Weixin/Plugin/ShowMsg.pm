@@ -48,6 +48,10 @@ sub call{
                 my $sender_nick = $msg->sender->displayname;
                 $client->info({time=>$msg->time,level=>"群消息",title=>"$sender_nick|$gname :"},$msg->content);
             }
+            elsif($msg->type eq 'group_notice'){
+                my $gname = $msg->group->displayname;
+                $client->info({time=>$msg->time,level=>"群提示",title=>"$gname :"},$msg->content);
+            }
         },
         send_message=>sub{
             my($client,$msg,$status)=@_;
