@@ -284,18 +284,18 @@ sub _parse_sync_data {
             elsif($e->{ToUserName} eq $self->user->id){#接收的消息
                 $msg->{class} = "recv";
                 $msg->{receiver_id} = $self->user->id;
+                $msg->{type} = "group_message";
                 if($self->is_group($e->{FromUserName})){#接收到群组消息
                     $msg->{group_id} = $e->{FromUserName};
-                    if( $e->{MsgType} == 1 and $msg->{content}=~/^(\@.+):<br\/>(.*)$/s ){
-                        $msg->{type} = "group_message";
+                    if($e->{MsgType} == 10000){#群提示信息
+                        $msg->{type} = "group_notice";
+                    }
+                    elsif( $msg->{content}=~/^(\@.+):<br\/>(.*)$/s ){
                         my ($member_id,$content) = ($1,$2);
                         if(defined $member_id and defined $content){
                                 $msg->{sender_id} = $member_id;
                                 $msg->{content} = $content;
                         }
-                    }
-                    elsif($e->{MsgType} == 10000){#群提示信息
-                        $msg->{type} = "group_notice";
                     }
                 }
                 else{#接收到的好友消息

@@ -2,6 +2,7 @@ package Mojo::Weixin::Plugin::Openwx;
 our $PRIORITY = 98;
 use strict;
 use Encode;
+use Mojo::Util qw();
 use Mojo::Weixin::Server;
 my $server;
 sub call{
@@ -13,7 +14,7 @@ sub call{
     if(defined $post_api){
         $client->on(all_event => sub{
             my($client,$event,@args) =@_;
-            if($event eq  'login'){
+            if($event eq  'login' or $event eq 'stop'){
                 my $post_json = {};
                 $post_json->{post_type} = "event";
                 $post_json->{event} = $event;
@@ -27,6 +28,25 @@ sub call{
                         $client->warn("插件[".__PACKAGE__ . "]事件[".$event."](@args)上报失败:" . encode("utf8",$tx->error->{message}));
                     } 
                 });
+            }
+            elsif($event eq 'input_qrcode'){
+                my ($qrcode_path,$qrcode_data) = @args;
+                eval{ $qrcode_data = Mojo::Util::b64_encode($qrcode_data);};
+                if($@){
+                    $client->warn("插件[".__PACKAGE__ . "]事件[".$event."]上报失败: $@");
+                    return;
+                }
+                my $post_json = {};
+                $post_json->{post_type} = "event";
+                $post_json->{event} = $event;
+                $post_json->{params} = [$qrcode_path,$qrcode_data];
+                my($data,$ua,$tx) = $client->http_post($post_api,json=>$post_json);
+                if($tx->success){
+                    $client->debug("插件[".__PACKAGE__ ."]事件[".$event . "]上报成功");
+                }
+                else{
+                    $client->warn("插件[".__PACKAGE__ . "]事件[".$event."]上报失败:" . encode("utf8",$tx->error->{message}));
+                }
             }
             elsif($event =~ /^new_group|lose_group|new_friend|lose_friend|new_group_member|lose_group_member$/){
                 my $post_json = {};

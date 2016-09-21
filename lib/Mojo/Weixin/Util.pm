@@ -23,6 +23,10 @@ sub url_escape{
     my $self = shift;
     return Mojo::Util::url_escape(@_);
 }
+sub b64_encode {
+    my $self = shift;
+    return Mojo::Util::b64_encode(@_);
+}
 sub slurp {
     my $self = shift;
     return Mojo::Util::slurp(@_);
