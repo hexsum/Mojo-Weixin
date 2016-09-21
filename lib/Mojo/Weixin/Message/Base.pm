@@ -24,7 +24,7 @@ sub to_json_hash{
             $json->{receiver_account} = $self->receiver->account;
         }
         elsif($key eq "group"){
-            next if $self->type ne "group_message";
+            next if ($self->type ne "group_message" and $self->type ne "group_notice");
             $json->{group} = decode_utf8($self->group->displayname);
         }
         elsif($key eq "media_data"){
