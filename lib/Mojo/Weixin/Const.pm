@@ -16,6 +16,7 @@ our %KEY_MAP_MESSAGE = qw(
 );
 our %KEY_MAP_USER = qw(
     id          UserName
+    uid         Uin
     name        NickName
     account     Alias
     avatar      HeadImgUrl
@@ -28,6 +29,7 @@ our %KEY_MAP_USER = qw(
 );
 our %KEY_MAP_FRIEND = qw(
     id          UserName
+    uid         Uin
     name        NickName
     avatar      HeadImgUrl
     account     Alias
@@ -41,11 +43,13 @@ our %KEY_MAP_FRIEND = qw(
 );
 our %KEY_MAP_GROUP = qw(
     id      UserName
+    uid     Uin
     avatar  HeadImgUrl
     name    NickName
 );
 our %KEY_MAP_GROUP_MEMBER = qw(
     id          UserName
+    uid         Uin
     name        NickName
     avatar      HeadImgUrl
     account     Alias

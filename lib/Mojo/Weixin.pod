@@ -972,11 +972,11 @@ Mojo::Weixin - A Weixin Client Framework base on Mojolicious
         file => './KnowledgeBase2.txt', #数据库保存路径，纯文本形式，可以编辑
         learn_command  => 'learn',     #可选，自定义学习指令关键字
         delete_command =>'del',      #可选，自定义删除指令关键字
-        learn_operator => ["张三","李四"], #允许学习权限的操作人qq号
-        delete_operator => ["王五"], #允许删除权限的操作人qq号
+        learn_operator => ["张三","李四"], #允许学习权限的操作人显示名称
+        delete_operator => ["王五"], #允许删除权限的操作人显示名称
         mode => 'fuzzy', # fuzzy|regex|exact 分别表示模糊|正则|精确, 默认模糊
         check_time => 10, #默认10秒检查一次文件变更
-        show_keyword => 1, #消息是否包含触发关键字信息，默认开启
+        show_keyword => 1, #消息是否包含触发关键字信息，默认为0
     });
     
 =head2 Mojo::Weixin::Plugin::Openwx
