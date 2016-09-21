@@ -272,7 +272,7 @@ Content-Type: application/json
     "media_size": "1234567",
     "media_mtime": "1462763788",
     "media_ext": "jpg",
-    "media_data": "%87%60M%B4A%E1%EB%A0%13%E4%C4%5C2%C4%0B%DFV%B7%0B...", #对图片原始二进制数据，使用url encode编码
+    "media_data": "pXA88GiUcCncmxUgt2JbJxRVu2\/1j0U2xJH\/\/2Q==\n", #对图片原始二进制数据，使用base64默认方式编码
     "class":"recv",
     "sender_id":"@2372835507",
     "receiver_id":"@4072574066",
@@ -320,6 +320,7 @@ Server: Mojolicious (Perl)
 |  事件名称                    |事件说明    |上报参数列表
 |------------------------------|:-----------|:-----------------------------------------|
 |login                         |客户端登录  | *1*：表示经过二维码扫描，好友等id可能会发生变化<br>*0*： 表示未经过二维码扫描，好友等id不会发生变化
+|input_qrcode                  |扫描二维码  | 二维码本地下载路径，二维码原始数据的base64编码
 |new_group                     |新加入群聊  | 对应群对象
 |new_friend                    |新增好友    | 对应好友对象
 |new_group_member              |新增群聊成员| 对应成员对象，对应的群对象
@@ -330,6 +331,8 @@ Server: Mojolicious (Perl)
 |group_member_property_change  |成员属性变化| 成员对象，属性，原始值，更新值
 |friend_property_change        |好友属性变化| 好友对象，属性，原始值，更新值
 |user_property_change          |帐号属性变化| 账户对象，属性，原始值，更新值
+
+新增好友事件举例
 
 ```
 connect to 127.0.0.1 port 4000
@@ -352,6 +355,29 @@ Content-Type: application/json
             "province":"北京",
             "displayname":"小冰",
             "id":"@75b9db5ae52c87361d1800eaaf307f4d"
+        }
+    ],
+
+}
+
+```
+
+扫描二维码事件举例
+
+```
+connect to 127.0.0.1 port 4000
+POST /post_api
+Accept: */*
+Content-Length: xxx
+Content-Type: application/json
+
+{
+    "post_type":"event",
+    "event":"input_qrcode",
+    "params":[
+        {
+            "\/tmp\/qrcode.jpg", #二维码本地路径
+            "\/9j\/4AAQSkZJRgABAQAAAQABAAD\...UUUUUUUUUUUV\/\/Z\n", #二维码原始数据经过base64默认方式编码
         }
     ],
 
