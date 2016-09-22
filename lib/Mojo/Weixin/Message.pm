@@ -11,8 +11,9 @@ has source => 'local';
 has 'cb';
 has from => 'none';
 has allow_plugin => 1;
-has [qw(sender_id receiver_id group_id content type id class format)];
+has [qw( sender_id receiver_id group_id content type id class format)];
 has [qw( media_id media_type media_code media_mime media_name media_size media_data media_mtime media_ext media_path)];
+has [qw( app_id app_title app_url app_name app_desc)];
 has data => undef;
 
 sub new {

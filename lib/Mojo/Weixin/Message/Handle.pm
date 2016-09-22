@@ -258,16 +258,15 @@ sub _parse_sync_data {
             elsif($e->{MsgType} == 10000){
                 $msg->{format} = "text";
             }
+            elsif($e->{MsgType} == 49) {#应用分享
+                $msg->{format} = "app";
+                $msg->{app_title} = encode("utf8",$e->{FileName});
+                $msg->{app_url}   = encode("utf8",$e->{Url});
+            }
             #elsif($e->{MsgType} == 51){#系统通知
             #    $msg->{format} = "text";
             #}
             else{next;}
-            if(defined $msg->{content}){
-                eval{
-                    $msg->{content} = Mojo::Util::html_unescape($msg->{content});
-                };
-                if($@){$self->warn("html entities unescape fail: $@")}
-            }
             if($e->{FromUserName} eq $self->user->id){#发送的消息
                 $msg->{source} = 'outer';
                 $msg->{class} = "send";
@@ -303,10 +302,39 @@ sub _parse_sync_data {
                     $msg->{sender_id} = $e->{FromUserName};
                 }
             }
-            $msg->{content} = '[图片]' if $msg->{format} eq "media" and $msg->{media_type} eq "image";
-            $msg->{content} = '[语音]' if $msg->{format} eq "media" and $msg->{media_type} eq "voice";
-            $msg->{content} = '[视频]' if $msg->{format} eq "media" and $msg->{media_type} eq "video";
-            $msg->{content} = '[表情]' if $msg->{format} eq "media" and $msg->{media_type} eq "emoticon";
+            if($msg->{format} eq "media"){
+                $msg->{content} = '[图片]' if $msg->{media_type} eq "image";
+                $msg->{content} = '[语音]' if $msg->{media_type} eq "voice";
+                $msg->{content} = '[视频]' if $msg->{media_type} eq "video";
+                $msg->{content} = '[表情]' if $msg->{media_type} eq "emoticon";
+            }
+            elsif(defined $msg->{content}){
+                eval{$msg->{content} = Mojo::Util::html_unescape($msg->{content});};
+                $self->warn("html entities unescape fail: $@") if $@;
+            }
+            if($msg->{format} eq "app"){
+                eval{
+                    $msg->{content}=~s/<br\/>/\n/g;
+                    require Mojo::DOM;
+                    my $dom = Mojo::DOM->new($msg->{content});
+                    $msg->{app_id} = $dom->at('msg > appmsg')->attr->{appid};
+                    $msg->{app_title} = $dom->at('msg > appmsg > title')->content;
+                    $msg->{app_desc} = $dom->at('msg > appmsg > des')->content;
+                    $msg->{app_url} = $dom->at('msg > appmsg > url')->content;
+                    $msg->{app_name} = $dom->at('msg > appinfo > appname')->content;
+                    for( ($msg->{app_title},$msg->{app_desc},$msg->{app_url},$msg->{app_name}) ){
+                        if($_=~/^<!\[CDATA\[.*\]\]>$/){
+                            s/^<!\[CDATA\[//g;
+                            s/\]\]>//g;
+                        }
+                    }
+                    $msg->{content} = "[应用分享]标题：@{[$msg->{app_title} || '未知']}\n[应用分享]描述：@{[$msg->{app_desc} || '未知']}\n[应用分享]应用：@{[$msg->{app_name} || '未知']}\n[应用分享]链接：@{[$msg->{app_url} || '未知']}";
+                };
+                if($@){
+                    $self->warn("app message xml parse fail: $@") if $@;
+                    $msg->{content} = "[应用分享]标题：$msg->{app_title}\n[应用分享]链接：$msg->{app_url}";
+                }
+            }
             $self->message_queue->put(Mojo::Weixin::Message->new($msg)); 
         }
     }

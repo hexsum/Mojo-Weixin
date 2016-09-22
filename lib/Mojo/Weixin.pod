@@ -542,7 +542,30 @@ Mojo::Weixin - A Weixin Client Framework base on Mojolicious
     ttl         #发送消息的ttl，默认是5，当ttl为0 会被消息队列丢弃
     cb          #消息发送完成后的回调函数，会在消息发送完之后执行
     content     #消息内容
-    format      #消息格式，当前仅支持文本格式 text
+    format      #消息格式，包括 text|media|app 三类
+
+    sender_id   #群消息中发送对象的id
+    receiver_id #消息接收对象的id
+    group_id    #群消息的群对象id
+    
+    #媒体类消息专用属性
+    media_id    #媒体id
+    media_type  #媒体类型 image|voice|video|emoticon
+    media_code  #媒体类型代码
+    media_mime  #媒体文件的MIME，比如 image/jpg
+    media_name  #媒体文件名称
+    media_size  #媒体文件大小
+    media_data  #媒体文件原始二进制数据
+    media_mtime #媒体文件的修改时间
+    media_ext   #媒体文件的扩展名
+    media_path  #媒体文件的本地路径
+
+    #应用分享类消息专用属性
+    app_id      #应用id
+    app_title   #分享标题
+    app_url     #分享链接
+    app_name    #应用名称
+    app_desc    #分享描述
 
     方法：
     sender      #消息的发送者对象
