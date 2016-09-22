@@ -286,6 +286,32 @@ Content-Type: application/json
 }
 
 ```
+
+#### 应用分享消息上报
+
+```
+{   "receiver":"小灰",
+    "time":"1442542632",
+    "content":"[应用分享]标题：饿了么给你发红包",
+    "app_name":"饿了么",
+    "app_id":"wx123456",
+    "app_title":"饿了么给你发红包",
+    "app_desc":"撩拨你的深夜味蕾，第2份半价！"
+    "app_url":"https:\/\/h.ele.me\/hongbao", 
+    "class":"recv",
+    "sender_id":"@2372835507",
+    "receiver_id":"@4072574066",
+    "group":"PERL学习交流",
+    "group_id":"@@2617047292",
+    "sender":"灰灰",
+    "id":"10856",
+    "type":"group_message",
+    "format": "app",
+    "post_type": "receive_message"
+}
+
+```
+
 一般情况下，post_api接口返回的响应内容可以是随意，会被忽略，上报完不做其他操作
 如果post_api接口返回的数据类型是 text/json 或者 application/json，并且json格式形式如下:
 
