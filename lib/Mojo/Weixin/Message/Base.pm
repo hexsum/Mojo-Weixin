@@ -55,7 +55,7 @@ sub is_at{
             $displayname = $object->displayname;
         }
     }
-    return $self->content =~/\@\Q$displayname\E(|"\xe2\x80\x85")/;
+    return $self->content =~/\@\Q$displayname\E( |"\xe2\x80\x85"|)/;
 }
 
 sub remove_at{
@@ -77,7 +77,7 @@ sub remove_at{
         }
     }
     my $content = $self->content;
-    $content=~s/\@\Q$displayname\E(|"\xe2\x80\x85")//g;
+    $content=~s/\@\Q$displayname\E( |"\xe2\x80\x85"|)//g;
     $self->content($content);
     return $self;
 }

@@ -28,6 +28,7 @@ sub new {
             $s->{content}=~s/<span class="emoji emoji([a-zA-Z0-9]+)"><\/span>/$s->client->encode_utf8(chr(hex($1)))/ge;
         }
         $s->{content}=~s/<br\/>/\n/g;
+        $s->{content}=~s/(\@.*?)\xe2\x80\x85/$1 /g;
     }
     $s;
 }
