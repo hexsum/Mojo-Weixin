@@ -696,3 +696,54 @@ Content-Length: 1104
 Server: Mojolicious (Perl)
 
 ```
+
+### 16. 获取程序运行信息
+
+|   API  |获取进程运行信息
+|--------|:------------------------------------------|
+|uri     |/openwx/get_client_info|
+|请求方法|GET\|POST|
+|请求参数|无|
+|调用示例|http://127.0.0.1:3000/openwx/get_client_info|
+
+返回JSON结果:
+
+```
+{
+    "code":0,
+    "account":"default",
+    "log_encoding":null,
+    "log_level":"debug",
+    "log_path":null,
+    "os":"linux",
+    "pid":15497,
+    "runtime":3096,
+    "starttime":1475135588,
+    "status":"success",
+    "ua_debug":"0",
+    "version":"1.2.0"
+ }
+ ```
+ 
+### 17. 终止程序运行
+
+|   API  |终止程序运行
+|--------|:------------------------------------------|
+|uri     |/openwx/stop_client|
+|请求方法|GET\|POST|
+|请求参数|无|
+|调用示例|http://127.0.0.1:3000/openwx/stop_client|
+
+返回JSON结果:
+
+```
+{
+    "code":0,
+    "account":"default",
+    "pid":15972,
+    "runtime":30,
+    "starttime":1475136637,
+    "status":"success, client(15972) will stop after 3 seconds"
+}
+```
+ 
