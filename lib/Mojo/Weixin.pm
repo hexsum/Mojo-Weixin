@@ -16,6 +16,7 @@ has log_path            => undef;
 has log_encoding        => undef;      #utf8|gbk|...
 
 has account             => 'default';
+has start_time          => time;
 has tmpdir              => sub {File::Spec->tmpdir();};
 has media_dir           => sub {$_[0]->tmpdir};
 has cookie_path         => sub {File::Spec->catfile($_[0]->tmpdir,join('','mojo_weixin_cookie_',$_[0]->account || 'default','.dat'))};

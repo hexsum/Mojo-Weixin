@@ -567,6 +567,35 @@ sub call{
         else{$c->render(json=>{msg_id=>undef,code=>100,status=>"object not found"});}
 
     };
+    any [qw(GET POST)] => '/openwx/get_client_info' => sub{
+        my $c = shift;
+        $c->render(json=>{
+            code=>0,
+            pid=>$$,
+            account=>$client->account,
+            os=>$^O,
+            version=>$client->version,
+            starttime=>$client->start_time,
+            runtime=>int(time - $client->start_time),
+            ua_debug=>$client->ua_debug,
+            log_encoding=>$client->log_encoding,
+            log_path=>Mojo::Util::decode("utf8",$client->log_path),
+            log_level=>$client->log_level,
+            status=>"success",
+        });
+    };
+    any [qw(GET POST)] => '/openwx/stop_client' => sub{
+        my $c = shift;
+        $c->render(json=>{
+            code=>0,
+            account=>$client->account,
+            pid=>$$,
+            starttime=>$client->start_time,
+            runtime=>int(time - $client->start_time),
+            status=>"success, client($$) will stop after 3 seconds",
+        });
+        $client->timer(3=>sub{$client->stop()});#3秒后再执行，让客户端可以收到该api的响应
+    };
     any '/*whatever'  => sub{whatever=>'',$_[0]->render(text=>"api not found",status=>403)};
     package Mojo::Weixin::Plugin::Openwx;
     $server = Mojo::Weixin::Server->new();   

@@ -166,6 +166,9 @@ Mojo::Weixin - A Weixin Client Framework base on Mojolicious
     emoji_to_text   #默认为1，是否把emoji表情字符转为 "[微笑]" 形式的文本
                     #如果你的输出设备支持显示原生emoji表情字符，可以把该参数设置为0
 
+    qrcode_count_max #每个二维码都有一个过期时间，过期后会重新下载一个二维码继续等待扫描
+                     #如果等待扫码次数超过 qrcode_count_max 客户端会停止运行，默认10次
+
 =head4 login 客户端登录
 
 =head4 relogin 客户端重新登录
