@@ -62,6 +62,8 @@ has is_stop                 => 0;
 has ua_retry_times          => 5;
 has is_first_login          => -1;
 has login_state             => 'init';
+has qrcode_count            => 0;
+has qrcode_count_max        => 10;
 has ua                      => sub {
     #local $ENV{MOJO_USERAGENT_DEBUG} = $_[0]->ua_debug;
     require Mojo::UserAgent;
@@ -154,6 +156,14 @@ sub new {
     $self->on(error=>sub{
         my ($self, $err) = @_;
         $self->error(Carp::longmess($err));
+    });
+    $self->on(qrcode_expire=>sub{
+        my($self) = @_;
+        my $count = $self->qrcode_count;
+        $self->qrcode_count(++$count);
+        if($self->qrcode_count >= $self->qrcode_count_max){
+            $self->stop();
+        }
     });
     if($self->fix_media_loop){
         $self->on(receive_message=>sub{

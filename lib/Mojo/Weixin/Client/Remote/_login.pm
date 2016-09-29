@@ -40,6 +40,7 @@ sub Mojo::Weixin::_login {
         if($data{code} == 408){
             select undef,undef,undef,0.5;
             if($i==5){
+                $self->emit("qrcode_expire");
                 $self->info("登录二维码已失效，重新获取二维码");
                 $qrcode_uuid = $self->_get_qrcode_uuid();
                 $self->_get_qrcode_image($qrcode_uuid);
