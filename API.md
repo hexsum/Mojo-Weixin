@@ -141,26 +141,39 @@
 |--------|:------------------------------------------|
 |uri     |/openwx/send_friend_message|
 |请求方法|GET\|POST|
-|请求参数|**id**: 好友的id<br>**account**: 好友的帐号<br>**displayname**: 好友显示名称<br>**markname**: 好友备注名称<br>**media_path**:媒体路径(可以是文件路径或url，需要做urlencode)|
+|请求参数|**id**: 好友的id<br>**account**: 好友的帐号<br>**displayname**: 好友显示名称<br>**markname**: 好友备注名称<br>**content**:发送的文本内容(中文需要做urlencode)<br>**media_id**:媒体id(发送媒体消息返回的媒体id，需要做urlencode)<br>**media_path**:媒体路径(可以是文件路径或url，需要做urlencode)|
 |数据格式|application/x-www-form-urlencoded|
-|调用示例|http://127.0.0.1:3000/openwx/send_friend_message?id=xxxx&content=hello<br>http://127.0.0.1:3000/openwx/send_friend_message?markname=xxx&content=%e4%bd%a0%e5%a5%bd<br>http://127.0.0.1:3000/openwx/send_friend_message?id=xxx&media_path=https%3a%2f%2fss0.bdstatic.com%2f5aV1bjqh_Q23odCf%2fstatic%2fsuperman%2fimg%2flogo%2fbd_logo1_31bdc765.png|
+|调用示例|http://127.0.0.1:3000/openwx/send_friend_message?id=xxxx&content=hello<br>http://127.0.0.1:3000/openwx/send_friend_message?markname=xxx&content=%e4%bd%a0%e5%a5%bd<br>http://127.0.0.1:3000/openwx/send_friend_message?id=xxx&media_path=https%3a%2f%2fss0.bdstatic.com%2flogo.png<br>http://127.0.0.1:3000/openwx/send_friend_message?id=xxx&media_id=%40crypt_1eb0ba44_cb3de736e6ccd5ae8%3a3|
 特殊处理：id=@all 表示群发消息给所有的好友
-返回JSON数组:
+
+####文本消息返回JSON数据格式:
 ```
 {"status":"发送成功","msg_id":23910327,"code":0} #code为 0 表示发送成功
 ```
+####媒体消息返回的JSON数据格式：
+```
+{"status":"发送成功","msg_id":23910327,"media_id":"@crypt_1eb0ba44_cb3de736e6ccd5ae8:3","code":0} #code为 0 表示发送成功
+```
+注意：相同媒体消息转发给多个好友或群组时，可以直接拿之前发送消息返回的media_id作为发送对象，这样可以避免重复上传文件，提高发送效率
+
 ### 5. 发送群组消息
 |   API  |发送群组消息
 |--------|:------------------------------------------|
 |uri     |/openwx/send_group_message|
 |请求方法|GET\|POST|
-|请求参数|**id**: 群组的id<br>**displayname**: 群组显示名称<br>**media_path**:媒体路径(可以是文件路径或url，需要做urlencode)|
+|请求参数|**id**: 群组的id<br>**displayname**: 群组显示名称<br>**content**:发送的文本内容(中文需要做urlencode)<br>**media_id**:媒体id(发送媒体消息返回的媒体id，需要做urlencode)<br>**media_path**:媒体路径(可以是文件路径或url，需要做urlencode)|
 |数据格式|application/x-www-form-urlencoded|
-|调用示例|http://127.0.0.1:3000/openwx/send_group_message?id=xxxx&content=hello<br>http://127.0.0.1:3000/openwx/send_group_message?displayname=xxx&content=%e4%bd%a0%e5%a5%bd<br>http://127.0.0.1:3000/openwx/send_group_message?id=xxx&media_path=https%3a%2f%2fss0.bdstatic.com%2f5aV1bjqh_Q23odCf%2fstatic%2fsuperman%2fimg%2flogo%2fbd_logo1_31bdc765.png<br>http://127.0.0.1:3000/openwx/send_group_message?displayname=xxx&media_path=https%3a%2f%2fss0.bdstatic.com%2f5aV1bjqh_Q23odCf%2fstatic%2fsuperman%2fimg%2flogo%2fbd_logo1_31bdc765.png|
-返回JSON数组:
+|调用示例|http://127.0.0.1:3000/openwx/send_group_message?id=xxxx&content=hello<br>http://127.0.0.1:3000/openwx/send_group_message?displayname=xxx&content=%e4%bd%a0%e5%a5%bd<br>http://127.0.0.1:3000/openwx/send_group_message?id=xxx&media_path=https%3a%2f%2fss0.bdstatic.com%2flogo.png<br>http://127.0.0.1:3000/openwx/send_group_message?displayname=xxx&media_path=https%3a%2f%2fss0.bdstatic.com%2flogo.png<br>http://127.0.0.1:3000/openwx/send_group_message?id=xxx&media_id=%40crypt_1eb0ba44_cb3de736e6ccd5ae8%3a3|
+
+####文本消息返回JSON数据格式:
 ```
 {"status":"发送成功","msg_id":23910327,"code":0} #code为 0 表示发送成功
 ```
+####媒体消息返回的JSON数据格式：
+```
+{"status":"发送成功","msg_id":23910327,"media_id":"@crypt_1eb0ba44_cb3de736e6ccd5ae8:3","code":0} #code为 0 表示发送成功
+```
+注意：相同媒体消息转发给多个好友或群组时，可以直接拿之前发送消息返回的media_id作为发送对象，这样可以避免重复上传文件，提高发送效率
 ### 6. 自定义接收消息上报地址
 |   API  |接收消息上报（支持好友消息、群消息）
 |--------|:------------------------------------------|
