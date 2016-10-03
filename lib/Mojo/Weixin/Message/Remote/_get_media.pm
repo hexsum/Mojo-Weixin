@@ -21,7 +21,7 @@ sub Mojo::Weixin::_get_media {
         @query_string = (msgid=>$media_id);
         push @query_string,(skey=>Mojo::Util::url_escape($self->skey)) if $self->skey;
     }
-    elsif($msg->media_type eq "video"){
+    elsif($msg->media_type eq "video" or $msg->media_type eq "microvideo"){
         $api = 'https://'.$self->domain . '/cgi-bin/mmwebwx-bin/webwxgetvideo';
         @query_string = (msgid=>$media_id);
         push @query_string,(skey=>Mojo::Util::url_escape($self->skey)) if $self->skey;

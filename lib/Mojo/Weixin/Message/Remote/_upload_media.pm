@@ -119,17 +119,20 @@ sub Mojo::Weixin::_upload_media {
             MediaType => 4,
         };
 
-        my $media_type = $msg->media_mime=~/^image\/gif/i         ?   "emoticon"
-                    :    $msg->media_mime=~/^video\/mp4/i         ?   "video"
-        #           :    $msg->media_mime=~/^audio\/mp3/i         ?   "voice"
-                    :    $msg->media_mime=~/^image\//             ?   "image"
-                    :                                                 "file"
-        ;
+        if(not defined $msg->media_type){
+            my $media_type = $msg->media_mime=~/^image\/gif/i         ?   "emoticon"
+                        :    $msg->media_mime=~/^video\/mp4/i         ?   "video"
+            #           :    $msg->media_mime=~/^audio\/mp3/i         ?   "voice"
+                        :    $msg->media_mime=~/^image\//             ?   "image"
+                        :                                                 "file"
+            ;
+            $msg->media_type($media_type);
+        }
         $msg->media_code($Mojo::Weixin::Const::KEY_MAP_MEDIA_CODE{$msg->media_type} || 6);
-        $msg->media_type($media_type);
-        my $msg_content =   $msg->media_type eq "image"       ?  "[图片]"
+        my $msg_content =   $msg->media_type eq "image"     ?  "[图片]"
                         :   $msg->media_type eq "emoticon"  ?  "[表情]"
                         :   $msg->media_type eq "video"     ?  "[视频]"
+                        :   $msg->media_type eq "microvideo"?  "[小视频]"
                         :   $msg->media_type eq "voicce"    ?  "[语音]"
                         :   $msg->media_type eq "file"      ?  "[文件]"
                         :   "[文件]"
@@ -146,9 +149,9 @@ sub Mojo::Weixin::_upload_media {
                 lastModifiedDate=>POSIX::strftime('%a, %d %b %Y %H:%M:%S GMT+0800',gmtime($msg->media_mtime)),
                 size=>$msg->media_size,
                 mediatype=>(
-                        $msg->media_type eq "image"     ?   "pic"
-                    :   $msg->media_type eq "video"     ?   "video"
-                    :                                       "doc"
+                        $msg->media_type eq "image"                                             ?   "pic"
+                    :   ($msg->media_type eq "video" or $msg->media_type eq "microvideo")       ?   "video"
+                    :                                                                               "doc"
                 ),
                 uploadmediarequest=>$self->encode_json($uploadmediarequest),
                 webwx_data_ticket=>$self->search_cookie("webwx_data_ticket"),
@@ -161,7 +164,13 @@ sub Mojo::Weixin::_upload_media {
             },
             sub{
                 my $json = shift;
-                $callback->($json,$msg);
+                if(not defined $json){
+                    $self->warn("media [ ".$msg->media_path . " ] upload failure");
+                }
+                else{
+                    $msg->media_id($json->{MediaId}) if $json->{MediaId};
+                }
+                $callback->($msg,$json);
             }
         );
     }

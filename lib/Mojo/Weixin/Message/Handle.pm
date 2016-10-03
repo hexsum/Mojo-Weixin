@@ -229,6 +229,12 @@ sub _parse_sync_data {
             }
             elsif($e->{MsgType} == 62){#小视频
                 $msg->{format} = "media";
+                $msg->{media_type} = "microvideo";
+                $msg->{media_code} = $e->{MsgType};
+                $msg->{media_id} = $msg->{id};
+            }
+            elsif($e->{MsgType} == 43){#视频
+                $msg->{format} = "media";
                 $msg->{media_type} = "video";
                 $msg->{media_code} = $e->{MsgType};
                 $msg->{media_id} = $msg->{id};
@@ -306,6 +312,7 @@ sub _parse_sync_data {
                 $msg->{content} = '[图片]' if $msg->{media_type} eq "image";
                 $msg->{content} = '[语音]' if $msg->{media_type} eq "voice";
                 $msg->{content} = '[视频]' if $msg->{media_type} eq "video";
+                $msg->{content} = '[小视频]' if $msg->{media_type} eq "microvideo";
                 $msg->{content} = '[表情]' if $msg->{media_type} eq "emoticon";
             }
             elsif(defined $msg->{content}){
@@ -328,6 +335,7 @@ sub _parse_sync_data {
                             s/\]\]>//g;
                         }
                     }
+                    $msg->{app_url} = Mojo::Util::html_unescape($msg->{app_url});
                     $msg->{content} = "[应用分享]标题：@{[$msg->{app_title} || '未知']}\n[应用分享]描述：@{[$msg->{app_desc} || '未知']}\n[应用分享]应用：@{[$msg->{app_name} || '未知']}\n[应用分享]链接：@{[$msg->{app_url} || '未知']}";
                 };
                 if($@){
@@ -389,6 +397,7 @@ sub send_message{
     $self->message_queue->put($msg);
 
 }
+my %KEY_MAP_MEDIA_TYPE = reverse %KEY_MAP_MEDIA_CODE;
 sub send_media {
     my $self = shift;
     my $object = shift;
@@ -404,7 +413,25 @@ sub send_media {
     }
     elsif(ref $media eq "HASH"){
         $media_info = $media;
+        if(defined $media_info->{media_id}){#定义了media_id意味着不会上传文件，忽略media_path
+            my ($id,$code) = split(/:/,$media_info->{media_id},2);
+            $media_info->{media_id} = $id if $id;
+            $media_info->{media_code} = $code || 6 if not defined $media_info->{media_code} ;
+        }
+        if(defined $media_info->{media_code} and !defined $media_info->{media_type}){
+            $media_info->{media_type} = $KEY_MAP_MEDIA_TYPE{$media_info->{media_code}} || 'file';
+        }
+
     }
+
+    my $media_type =    $media_info->{media_type} eq "image"     ?  "[图片]"
+                    :   $media_info->{media_type} eq "emoticon"  ?  "[表情]"
+                    :   $media_info->{media_type} eq "video"     ?  "[视频]"
+                    :   $media_info->{media_type} eq "microvideo"?  "[小视频]"
+                    :   $media_info->{media_type} eq "voicce"    ?  "[语音]"
+                    :   $media_info->{media_type} eq "file"      ?  "[文件]"
+                    :   "[文件]"
+    ;
     
     my $msg = Mojo::Weixin::Message->new(
         id => $self->now(),
@@ -418,7 +445,7 @@ sub send_media {
         media_size => $media_info->{media_size},
         media_mtime => $media_info->{media_mtime},
         media_ext => $media_info->{media_ext},
-        content => "[media]($media_info->{media_path})",
+        content => "$media_type(" . ($media_info->{media_path} || $media_info->{media_id}) . ")",
         sender_id => $self->user->id,
         receiver_id => (ref $object eq "Mojo::Weixin::Friend"?$object->id : undef),
         group_id =>(ref $object eq "Mojo::Weixin::Group"?$object->id : undef),

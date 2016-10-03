@@ -4,7 +4,7 @@ use Mojo::Weixin::Const ();
 sub Mojo::Weixin::_send_media_message {
     my $self = shift;
     my $msg = shift; 
-    if($msg->format ne "media" or !defined $msg->media_path){
+    if($msg->format ne "media" or (!defined $msg->media_path and !defined $msg->media_id) ){
         $self->error("无效的 media msg");
         return;
     }
@@ -27,20 +27,18 @@ sub Mojo::Weixin::_send_media_message {
     $self->steps(
         sub{
             my $delay = shift;
-            $self->_upload_media($msg,$delay->begin(0,));
+            defined $msg->media_id ? $delay->begin(0)->($msg): $self->_upload_media($msg,$delay->begin(0,));
         },
         sub{
-            my($delay,$upload_json,$msg) = @_;
-            if(not defined $upload_json or $upload_json->{Ret}!=0 or !$upload_json->{MediaId}){
-                $self->warn("media [ ".$msg->media_path . " ] upload failure");
-                my $status = Mojo::Weixin::Message::SendStatus->new(code=>-1,msg=>"发送失败",info=>"media上传失败");
+            my($delay,$msg) = @_;
+            if(not defined $msg->media_id){
+                my $status = Mojo::Weixin::Message::SendStatus->new(code=>-1,msg=>"发送失败",info=>"media_id无效");
                 if(ref $msg->cb eq 'CODE'){
                     $msg->cb->($self, $msg,$status,);
                 }
                 $self->emit(send_message => $msg,$status);
                 return;
             }
-            $msg->media_id($upload_json->{MediaId}) if not defined $msg->media_id;
             my $api;
             my @query_string = (
                 fun => 'async',
@@ -61,14 +59,15 @@ sub Mojo::Weixin::_send_media_message {
                     MediaId         =>  $msg->media_id,
                     LocalID         =>  $t,
                     ToUserName      =>  ($msg->type eq "group_message"?$msg->group_id:$msg->receiver_id),
-                    Type            =>  $Mojo::Weixin::Const::KEY_MAP_MEDIA_CODE{$msg->media_type} || 6,
+                    #Type            =>  $Mojo::Weixin::Const::KEY_MAP_MEDIA_CODE{$msg->media_type} || 6,
+                    Type            =>  $msg->media_code || $Mojo::Weixin::Const::KEY_MAP_MEDIA_CODE{$msg->media_type} || 6,
                 },
                 Scene           => 0,
             };
             if($msg->media_type eq "image"){
                 $api =  'https://' . $self->domain . '/cgi-bin/mmwebwx-bin/webwxsendmsgimg';
             }
-            elsif($msg->media_type eq "video"){
+            elsif($msg->media_type eq "video" or $msg->media_type eq "microvideo"){
                 $api =  'https://' . $self->domain . '/cgi-bin/mmwebwx-bin/webwxsendvideomsg';
             }
             #elsif($msg->media_type eq "voice"){

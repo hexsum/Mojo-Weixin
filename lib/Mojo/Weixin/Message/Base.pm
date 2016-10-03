@@ -28,10 +28,10 @@ sub to_json_hash{
             $json->{group} = decode_utf8($self->group->displayname);
         }
         elsif($key eq "media_data"){
-            $json->{$key} = Mojo::Util::b64_encode($self->{$key});
+            $json->{$key} = defined $self->{$key}?Mojo::Util::b64_encode($self->{$key}):"";
         }
         elsif(ref $self->{$key} eq ""){
-            $json->{$key} = decode_utf8($self->{$key});
+            $json->{$key} = decode_utf8($self->{$key} || "");
         }
     }
     return $json;
