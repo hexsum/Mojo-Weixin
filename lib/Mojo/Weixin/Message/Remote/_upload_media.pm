@@ -140,7 +140,7 @@ sub Mojo::Weixin::_upload_media {
         $msg->content($msg_content . "(" . $msg->media_path . ")");
 
         $self->http_post(
-            'https://' . ($self->domain eq "wx2.qq.com"?'file2.wx.qq.com':'file.wx.qq.com') .'/cgi-bin/mmwebwx-bin/webwxuploadmedia?f=json',
+            'https://file.' . $self->domain .'/cgi-bin/mmwebwx-bin/webwxuploadmedia?f=json',
             {json=>1,Referer=>'https://' . $self->domain . '/'},
             form=>{
                 id=>'WU_FILE_0',

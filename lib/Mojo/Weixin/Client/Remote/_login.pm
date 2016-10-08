@@ -1,7 +1,7 @@
 sub Mojo::Weixin::_login {
     my $self = shift;
     $self->info("客户端准备登录...");
-    my $api = 'https://login.weixin.qq.com/cgi-bin/mmwebwx-bin/login';
+    my $api = 'https://login.'. $self->domain .'/cgi-bin/mmwebwx-bin/login';
     if(not $self->_is_need_login()){
         $self->info("检测到近期登录活动，尝试直接恢复登录");
         $self->wxuin($self->search_cookie("wxuin"));

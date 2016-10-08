@@ -1,7 +1,7 @@
 #一个简单的小程序，收到什么消息内容就原样发送什么消息内容给对方
 use Mojo::Weixin;
 my $client = Mojo::Weixin->new(
-    ua_debug  => 0,       #是否打印详细的debug信息
+    http_debug  => 0,     #是否打印详细的debug信息
     log_level => "info",  #日志打印级别，debug|info|warn|error|fatal
 );
 

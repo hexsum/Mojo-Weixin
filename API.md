@@ -733,7 +733,7 @@ Server: Mojolicious (Perl)
     "runtime":3096,
     "starttime":1475135588,
     "status":"success",
-    "ua_debug":"0",
+    "http_debug":"0",
     "version":"1.2.0"
  }
  ```

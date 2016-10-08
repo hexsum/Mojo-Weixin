@@ -1,6 +1,6 @@
 sub Mojo::Weixin::_get_qrcode_uuid {
     my $self = shift;
-    my $api = 'https://login.weixin.qq.com/jslogin';
+    my $api = 'https://login.'. $self->domain .  '/jslogin';
     my @query_string = (
         appid           =>  'wx782c26e4c19acffb',
         redirect_uri    =>  'https://'.$self->domain . '/cgi-bin/mmwebwx-bin/webwxnewloginpage',

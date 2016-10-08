@@ -8,7 +8,8 @@ use POSIX ();
 use Carp ();
 use base qw(Mojo::Weixin::Util Mojo::Weixin::Model Mojo::Weixin::Client Mojo::Weixin::Plugin Mojo::Weixin::Request);
 
-has ua_debug            => 0;
+has http_debug          => 0;
+has ua_debug            => sub{$_[0]->http_debug};
 has ua_debug_req_body   => sub{$_[0]->ua_debug};
 has ua_debug_res_body   => sub{$_[0]->ua_debug};
 has log_level           => 'info';     #debug|info|warn|error|fatal

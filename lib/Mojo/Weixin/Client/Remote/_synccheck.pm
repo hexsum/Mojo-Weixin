@@ -6,7 +6,7 @@ sub Mojo::Weixin::_synccheck{
         return;
     }
     $self->_synccheck_running(1);
-    my $api = "https://". ($self->domain eq "wx2.qq.com"?"webpush2.weixin.qq.com":"webpush.weixin.qq.com") . "/cgi-bin/mmwebwx-bin/synccheck";
+    my $api = "https://webpush.". $self->domain . "/cgi-bin/mmwebwx-bin/synccheck";
     my $callback = sub {
         my $data = shift;
         #window.synccheck={retcode:"0",selector:"0"}

@@ -560,9 +560,9 @@ sub call{
             version=>$client->version,
             starttime=>$client->start_time,
             runtime=>int(time - $client->start_time),
-            ua_debug=>$client->ua_debug,
+            http_debug=>$client->http_debug,
             log_encoding=>$client->log_encoding,
-            log_path=>Mojo::Util::decode("utf8",$client->log_path),
+            log_path=>Mojo::Util::decode("utf8",$client->log_path||""),
             log_level=>$client->log_level,
             status=>"success",
         });
