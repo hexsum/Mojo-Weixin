@@ -4,7 +4,6 @@ use Mojo::Weixin::Base 'Mojo::Weixin::Model::Base';
 has name => '昵称未知';
 has [qw(
     account
-    avatar
     province
     city
     sex
@@ -13,6 +12,7 @@ has [qw(
     display
     markname
     _group_id
+    _avatar
 )];
 
 sub new {

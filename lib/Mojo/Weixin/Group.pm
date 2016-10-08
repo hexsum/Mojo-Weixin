@@ -4,8 +4,8 @@ use Mojo::Weixin::Group::Member;
 
 has 'id';
 has name => '';
-has avatar => '';
 has member => sub{[]};
+has _avatar => '';
 
 sub get_avatar{
     my $self = shift;

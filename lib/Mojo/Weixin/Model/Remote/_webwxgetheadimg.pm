@@ -6,7 +6,7 @@ sub Mojo::Weixin::_webwxgetheadimg {
     my $self = shift;
     my $object = shift;
     my $callback = shift;
-    my $url = 'https://' . $self->domain . $object->avatar;
+    my $url = 'https://' . $self->domain . $object->_avatar;
     $self->http_get($url,{Referer=>'https://' . $self->domain .'/'},sub{
         my ($data,$ua,$tx) = @_;
         if(not defined $data){

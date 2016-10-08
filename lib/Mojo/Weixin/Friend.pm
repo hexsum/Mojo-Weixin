@@ -4,7 +4,6 @@ use List::Util qw(first);
 has name => '昵称未知';
 has [qw( 
     account
-    avatar
     province
     city
     sex
@@ -12,15 +11,22 @@ has [qw(
     signature
     display
     markname
+    _avatar
+    _verifyflag
 )];
 has 'category' => '好友'; #系统帐号|公众号|好友
+
+my %special_id = map {$_=>undef} ("filehelper","fmessage","newsapp","weibo", "qqmail", "tmessage", "qmessage", "qqsync", "floatbottle", "lbsapp", "shakeapp", "medianote", "qqfriend", "readerapp", "blogapp", "facebookapp", "masssendapp", "meishiapp", "feedsapp", "voip", "blogappweixin", "brandsessionholder", "weixinreminder", "wxid_novlwrv3lqwv11", "gh_22b87fa7cb3c", "officialaccounts", "notification_messages");
 
 sub new {
     my $self = shift;
     $self = $self->Mojo::Weixin::Base::new(@_);
     $self->client->emoji_convert(\$self->{name},$self->client->emoji_to_text);
-    if(first { $self->id eq $_ } qw(fmessage weixin filehelper)){
+    if(exists $special_id{$self->id}){
         $self->category("系统帐号");
+    }
+    elsif($self->_verifyflag & 8){
+        $self->category("公众号");
     }
     $self;
 }

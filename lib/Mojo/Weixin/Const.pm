@@ -1,7 +1,7 @@
 package Mojo::Weixin::Const;
 use Exporter 'import';
 our @EXPORT = qw(%KEY_MAP_USER %KEY_MAP_FRIEND %KEY_MAP_GROUP %KEY_MAP_MESSAGE %KEY_MAP_GROUP_MEMBER);
-our @EXPORT_OK = qw(%FACE_MAP_QQ %FACE_MAP_EMOJI %KEY_MAP_MEDIA_CODE);
+our @EXPORT_OK = qw(%FACE_MAP_QQ %FACE_MAP_EMOJI %KEY_MAP_MEDIA_CODE @SPECAL_ACCOUNT_ID);
 our %KEY_MAP_MEDIA_CODE = qw(
     file        6
     video       43      
@@ -20,19 +20,18 @@ our %KEY_MAP_USER = qw(
     uid         Uin
     name        NickName
     account     Alias
-    avatar      HeadImgUrl
     province    Province
     city        City
     signature   Signature
     sex         Sex
     display     DisplayName
     markname    RemarkName
+    _avatar      HeadImgUrl
 );
 our %KEY_MAP_FRIEND = qw(
     id          UserName
     uid         Uin
     name        NickName
-    avatar      HeadImgUrl
     account     Alias
     province    Province
     city        City
@@ -40,19 +39,20 @@ our %KEY_MAP_FRIEND = qw(
     sex         Sex
     display     DisplayName
     markname    RemarkName
+    _avatar      HeadImgUrl
+    _verifyflag VerifyFlag
 
 );
 our %KEY_MAP_GROUP = qw(
     id      UserName
     uid     Uin
-    avatar  HeadImgUrl
     name    NickName
+    _avatar  HeadImgUrl
 );
 our %KEY_MAP_GROUP_MEMBER = qw(
     id          UserName
     uid         Uin
     name        NickName
-    avatar      HeadImgUrl
     account     Alias
     province    Province
     city        City
@@ -60,6 +60,7 @@ our %KEY_MAP_GROUP_MEMBER = qw(
     sex         Sex
     display     DisplayName
     markname    RemarkName
+    _avatar      HeadImgUrl
 );
 
 our %FACE_MAP_QQ = qw(
@@ -345,4 +346,5 @@ our %FACE_MAP_EMOJI = qw(
     商标     2122 
     学校    1f3eb
 );
+
 1;

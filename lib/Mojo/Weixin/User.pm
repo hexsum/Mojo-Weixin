@@ -1,7 +1,6 @@
 package Mojo::Weixin::User;
 use Mojo::Weixin::Base 'Mojo::Weixin::Model::Base';
 has [qw(
-    avatar    
     name
     account
     province
@@ -11,6 +10,7 @@ has [qw(
     signature
     display
     markname
+    _avatar    
 )];
 
 sub new {
