@@ -756,7 +756,30 @@ Server: Mojolicious (Perl)
     "pid":15972,
     "runtime":30,
     "starttime":1475136637,
-    "status":"success, client(15972) will stop after 3 seconds"
+    "status":"success, client(15972) will stop in 3 seconds"
 }
 ```
- 
+
+### 18. 上传媒体文件
+
+|   API  |上传媒体文件，获取media_id, 用于稍后发送
+|--------|:------------------------------------------|
+|uri     |/openwx/upload_media|
+|请求方法|GET\|POST|
+|请求参数|**media_path**: 媒体的路径，可以是本地路径或url地址|
+|数据格式|application/x-www-form-urlencoded|
+|调用示例|http://127.0.0.1:3000/openwx/upload_media?media_path=%2ftmp%2ftest.mp4|
+
+返回JSON结果:
+
+```
+{
+    "media_ext":"mp4",
+    "media_id":"@crypt_5e8967c8_e637847b7d0b00xxxxxxcb82:43",
+    "media_mime":"video\/mp4",
+    "media_mtime":1470650887,
+    "media_name":"\/tmp\/test.mp4",
+    "media_path":"\/tmp\/test.mp4",
+    "media_size":66947
+}
+```
