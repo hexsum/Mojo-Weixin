@@ -29,6 +29,7 @@ sub login{
     my $ret = $self->_login();
     if($self->login_state eq "success"){
         $self->clean_qrcode();
+        sleep 2;
         $self->model_init();
         $self->emit("login"=>($ret==2?1:0));
     }
@@ -109,8 +110,10 @@ sub ready {
     });
     $self->on(run=>sub{
         my $self = shift;
-        $self->info("开始接收消息...\n");
-        $self->_synccheck();
+        $self->timer(2,sub{
+            $self->info("开始接收消息...");
+            $self->_synccheck()}
+        );
     });
     $self->is_ready(1);
     $self->emit("ready");

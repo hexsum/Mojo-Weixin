@@ -3,6 +3,22 @@ use Carp qw();
 use Mojo::Util ();
 use Mojo::JSON qw();
 use Time::HiRes;
+use Mojo::Weixin::Const qw(%FACE_MAP_QQ %FACE_MAP_EMOJI);
+my %emoji_to_text_map = reverse %FACE_MAP_EMOJI;
+sub emoji_convert {
+    my $self = shift; 
+    my $content_ref =  shift;
+    return $self if not $$content_ref;
+    my $is_emoji_to_text = shift; $is_emoji_to_text = 1 if not defined $is_emoji_to_text;
+    if($is_emoji_to_text){
+        $$content_ref=~s/<span class="emoji emoji([a-zA-Z0-9]+)"><\/span>/exists $emoji_to_text_map{$1}?"[$emoji_to_text_map{$1}]":"[未知表情]"/ge;
+    }
+    else{
+        use bigint;
+        $$content_ref=~s/<span class="emoji emoji([a-zA-Z0-9]+)"><\/span>/$self->encode_utf8(chr(hex($1)))/ge;
+    }
+    return $self;
+}
 sub now {
     my $self = shift;
     return int Time::HiRes::time() * 1000;

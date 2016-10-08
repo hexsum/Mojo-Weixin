@@ -457,6 +457,25 @@ sub send_media {
     $callback->($self,$msg) if ref $callback eq "CODE";
     $self->message_queue->put($msg);
 }
+
+sub upload_media {
+    my $self = shift;
+    my $opt = shift;
+    my $callback = pop;
+    my $msg = Mojo::Weixin::Message->new(%$opt);
+    $self->_upload_media($msg,sub{
+        my($msg,$json) = @_;
+        $callback->({
+            media_id    => join(":",$msg->media_id,$msg->media_code),
+            media_path  => $msg->media_path,
+            media_name  => $msg->media_name,
+            media_size  => $msg->media_size,
+            media_mime  => $msg->media_mime,
+            media_mtime => $msg->media_mtime,
+            media_ext   => $msg->media_ext,
+        }) if ref $callback eq "CODE";
+    });
+}
 sub reply_message{
     my $self = shift;
     my $msg = shift;
@@ -504,5 +523,6 @@ sub reply_media_message {
 
     }
 }
+
 
 1;

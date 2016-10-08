@@ -1,6 +1,5 @@
 package Mojo::Weixin::Group::Member;
 use Mojo::Weixin::Base 'Mojo::Weixin::Model::Base';
-use Mojo::Weixin::Const qw(%FACE_MAP_QQ %FACE_MAP_EMOJI);
 
 has name => '昵称未知';
 has [qw(
@@ -19,14 +18,7 @@ has [qw(
 sub new {
     my $self = shift;
     $self = $self->Mojo::Weixin::Base::new(@_);
-    if( my @code = $self->name=~/<span class="emoji emoji([a-zA-Z0-9]+)"><\/span>/g){
-        my %map = reverse %FACE_MAP_EMOJI;
-        for(@code){
-            my $name = $self->name;
-            $name=~s/<span class="emoji emoji$_"><\/span>/exists $map{$_}?"[$map{$_}]":"[未知表情]"/eg;
-            $self->name($name);
-        }
-    }
+    $self->client->emoji_convert(\$self->{name},$self->client->emoji_to_text);
     $self;
 }
 
@@ -43,6 +35,7 @@ sub update{
     my $hash = shift;
     for(grep {substr($_,0,1) ne "_"} keys %$hash){
         if(exists $hash->{$_}){
+            $self->client->emoji_convert(\$hash->{$_},$self->client->emoji_to_text) if $_ eq "name";
             if(defined $hash->{$_} and defined $self->{$_}){
                 if($hash->{$_} ne $self->{$_}){
                     my $old_property = $self->{$_};

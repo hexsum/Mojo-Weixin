@@ -185,6 +185,7 @@ our %FACE_MAP_EMOJI = qw(
     亲吻     1f61a
     脸红     1f633
     露齿笑     1f63c
+    飞吻     1f63d
     满意     1f60c
     戏弄     1f61c
     吐舌     1f445
@@ -342,5 +343,6 @@ our %FACE_MAP_EMOJI = qw(
     版权     a9
     注册商标     ae
     商标     2122 
+    学校    1f3eb
 );
 1;

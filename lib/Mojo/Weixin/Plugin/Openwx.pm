@@ -575,9 +575,38 @@ sub call{
             pid=>$$,
             starttime=>$client->start_time,
             runtime=>int(time - $client->start_time),
-            status=>"success, client($$) will stop after 3 seconds",
+            status=>"success, client($$) will stop in 3 seconds",
         });
         $client->timer(3=>sub{$client->stop()});#3秒后再执行，让客户端可以收到该api的响应
+    };
+    any [qw(GET POST)] => '/openwx/upload_media' => sub{
+        my $c = shift;
+        my($media_type,$media_mime,$media_name,$media_size,$media_data,$media_mtime,$media_ext,$media_path) =
+            map {defined $_?Encode::encode("utf8",$_):$_}
+        (
+            $c->param("media_type"),
+            $c->param("media_mime"),
+            $c->param("media_name"),
+            $c->param("media_size"),
+            $c->param("media_data"),
+            $c->param("media_mtime"),
+            $c->param("media_ext"),
+            $c->param("media_path"),
+        );
+        $c->render_later;
+        $client->upload_media({
+                media_type  => $media_type,
+                media_mime  => $media_mime,
+                media_name  => $media_name,
+                media_size  => $media_size,
+                media_data  => $media_data,
+                media_mtime => $media_mtime,
+                media_ext   => $media_ext,
+                media_path  => $media_path,
+            },
+            sub{my $json = shift;$client->reform_hash($json,1);$c->render(json=>$json) if defined $c}
+        );
+        
     };
     any '/*whatever'  => sub{whatever=>'',$_[0]->render(text=>"api not found",status=>403)};
     package Mojo::Weixin::Plugin::Openwx;

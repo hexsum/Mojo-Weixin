@@ -19,14 +19,9 @@ has data => undef;
 sub new {
     my $s = shift;
     $s = $s->Mojo::Weixin::Base::new(@_);
+    $s->client->emoji_convert($s->{content},$s->client->emoji_to_text);
     if(defined $s->{content}){
-        if($s->client->emoji_to_text){
-            my %map = reverse %FACE_MAP_EMOJI;
-            $s->{content}=~s/<span class="emoji emoji([a-zA-Z0-9]+)"><\/span>/exists $map{$1}?"[$map{$1}]":"[未知表情]"/eg 
-        }
-        else{
-            $s->{content}=~s/<span class="emoji emoji([a-zA-Z0-9]+)"><\/span>/$s->client->encode_utf8(chr(hex($1)))/ge;
-        }
+        $s->client->emoji_convert(\$s->{content},$s->client->emoji_to_text);
         $s->{content}=~s/<br\/>/\n/g;
         $s->{content}=~s/(\@.*?)\xe2\x80\x85/$1 /g;
     }
