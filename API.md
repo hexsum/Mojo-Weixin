@@ -36,6 +36,7 @@
     {#第一个好友
         "account": "wxzhifu",
         "name": "微信支付",
+        "category":"公众号",
         "markname": "",
         "sex": "none",
         "display": "",
@@ -47,15 +48,16 @@
     },
     {#第二个好友
         "account": "",
-        "name": "财付通",
+        "name": "小灰",
+        "category":"好友",
         "markname": "",
         "sex": "none",
         "display": "",
         "city": "深圳",
-        "signature": "会支付 会生活",
+        "signature": "小灰灰的个性签名",
         "province": "广东",
         "id": "@00227d73fa6b8326f69bca419db7a05c",
-        "displayname": "财付通"
+        "displayname": "小灰"
     }
 ]
 ```
