@@ -5,7 +5,7 @@ sub Mojo::Weixin::_get_qrcode_uuid {
         appid           =>  'wx782c26e4c19acffb',
         redirect_uri    =>  'https://'.$self->domain . '/cgi-bin/mmwebwx-bin/webwxnewloginpage',
         fun             =>  'new',
-        lang            =>  'zh_CN',
+        lang            =>  $self->lang || 'zh_CN',
         _               =>  $self->now(),
     );
     my $data = $self->http_get($self->gen_url2($api,@query_string));

@@ -1,15 +1,8 @@
 use Mojo::Util qw(url_escape);
-my %type = qw(
-    1100    0
-    1101    1
-    1102    1
-    1205    1
-);
 sub Mojo::Weixin::_logout {
     my $self = shift;
+    my $type = shift || 0;
     my $api = "https://". $self->domain ."/cgi-bin/mmwebwx-bin/webwxlogout";
-    my $retcode = shift;
-    my $type = exists $type{$retcode}?$type{$retcode}:0;
     my @query_string = (
         redirect    =>  1,
         type        =>  $type,
@@ -19,7 +12,6 @@ sub Mojo::Weixin::_logout {
         sid => $self->wxsid,
         uin => $self->wxuin,
     };
-    $self->info("客户端注销...");
-    $self->http_post($self->gen_url($api,@query_string),{Referer=>"https://". $self->domain . "/?&lang=zh_CN"},form=>$post,);
+    $self->http_post($self->gen_url($api,@query_string),{ua_debug_res_body=>0,Referer=>"https://". $self->domain . "/"},form=>$post,);
 }
 1;

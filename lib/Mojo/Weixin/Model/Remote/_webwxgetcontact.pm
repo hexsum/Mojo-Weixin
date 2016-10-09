@@ -5,14 +5,13 @@ sub Mojo::Weixin::_webwxgetcontact {
     my $self = shift;
     my $api = "https://".$self->domain . "/cgi-bin/mmwebwx-bin/webwxgetcontact";
     my @query_string = (
-        lang        =>  'zh_CN',
-        pass_ticket =>  $self->pass_ticket,
         r           =>  $self->now(),
         seq         =>  0,
         skey        =>  $self->skey,
     );
+    push @query_string,(pass_ticket=>Mojo::Util::url_escape($self->pass_ticket)) if $self->pass_ticket;
 
-    my $json = $self->http_post($self->gen_url($api,@query_string),{Referer=>'https://'.$self->domain . '/?&lang=zh_CN',json=>1},json=>{});
+    my $json = $self->http_post($self->gen_url($api,@query_string),{Referer=>'https://'.$self->domain . '/',json=>1},json=>{});
     return unless defined $json;
     return if $json->{BaseResponse}{Ret}!=0;
     return if $json->{MemberCount} == 0;

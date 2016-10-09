@@ -25,7 +25,7 @@ sub new {
     if(exists $special_id{$self->id}){
         $self->category("系统帐号");
     }
-    elsif($self->_verifyflag & 8){
+    elsif(defined $self->_verifyflag and $self->_verifyflag & 8){
         $self->category("公众号");
     }
     $self;

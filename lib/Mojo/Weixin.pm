@@ -27,6 +27,7 @@ has keep_cookie         => 1;
 has fix_media_loop      => 1;
 has synccheck_interval  => 1;
 has emoji_to_text       => 1;
+has stop_with_mobile    => 0;
 
 has user    => sub {+{}};
 has friend  => sub {[]};
@@ -89,18 +90,15 @@ has pass_ticket => '';
 has skey => '';
 has wxsid => '';
 has wxuin => '';
-has deviceid => sub{$_[0]->gen_deviceid()};
 has domain => 'wx.qq.com';
+has lang   => 'zh_CN';
 
 has _sync_running => 0;
 has _synccheck_running => 0;
 has _synccheck_error_count => 0;
 has _synccheck_connection_id => undef;
-sub gen_deviceid {
-    my $self=shift;
-    my $n = "e";for(my $m = 0;15 > $m;$m++){$n .= POSIX::floor(10 * rand());} 
-    $n;
-}
+
+sub deviceid { return "e" . substr(rand . ("0" x 15),2,15);}
 sub on {
     my $self = shift;
     my @return;

@@ -165,7 +165,8 @@ Mojo::Weixin - A Weixin Client Framework base on Mojolicious
     qrcode_path     #二维码保存路径，默认是 tmpdir 目录下固定文件名
     emoji_to_text   #默认为1，是否把emoji表情字符转为 "[微笑]" 形式的文本
                     #如果你的输出设备支持显示原生emoji表情字符，可以把该参数设置为0
-
+    
+    stop_with_mobile #设置为1则手机操作退出web微信时客户端也会停止运行，默认值为0，表示客户端不退出重新等待扫码
     qrcode_count_max #每个二维码都有一个过期时间，过期后会重新下载一个二维码继续等待扫描
                      #如果等待扫码次数超过 qrcode_count_max 客户端会停止运行，默认10次
 

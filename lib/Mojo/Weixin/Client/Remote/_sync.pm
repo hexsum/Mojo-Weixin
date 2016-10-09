@@ -7,7 +7,7 @@ sub Mojo::Weixin::_sync {
     my @query_string = (
         sid     => $self->wxsid,
     );
-    push @query_string,(skey    => url_escape($self->skey)) if $self->skey;
+    push @query_string,(skey => $self->skey) if $self->skey;
     push @query_string,(pass_ticket    => url_escape($self->pass_ticket)) if $self->pass_ticket;
     my $post = {
         BaseRequest =>  {Uin => $self->wxuin,Sid=>$self->wxsid,},
@@ -27,6 +27,6 @@ sub Mojo::Weixin::_sync {
             $self->emit("sync_over",$json);
         }
     };
-    $self->http_post($self->gen_url($api,@query_string),{json=>1},json=>$post,$callback);
+    $self->http_post($self->gen_url($api,@query_string),{Referer=>'https://' . $self->domain .  '/',json=>1},json=>$post,$callback);
 }
 1;

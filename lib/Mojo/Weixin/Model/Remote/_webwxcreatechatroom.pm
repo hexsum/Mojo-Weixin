@@ -15,7 +15,6 @@ sub Mojo::Weixin::_webwxcreatechatroom {
     my $api = 'https://' .$self->domain . '/cgi-bin/mmwebwx-bin/webwxcreatechatroom';
     my @query_string = (
         r => $self->now(),
-        lang => "zh_CN",
     );
     push @query_string,(pass_ticket =>  url_escape($self->pass_ticket)) if $self->pass_ticket;
     my $post = {
@@ -30,7 +29,7 @@ sub Mojo::Weixin::_webwxcreatechatroom {
         Topic           =>  (defined $chatroom_displayname?decode("utf8",$chatroom_displayname):""),
     };
     
-    my $json = $self->http_post($self->gen_url($api,@query_string),{json=>1,Referer=>'https://' . $self->domain . '/?&lang=zh_CN'},json=>$post);
+    my $json = $self->http_post($self->gen_url($api,@query_string),{json=>1,Referer=>'https://' . $self->domain . '/'},json=>$post);
     return if not defined $json;
     return if $json->{BaseResponse}{Ret}!=0;
     my $group = {id=>$json->{ChatRoomName},name=>$json->{Topic},member=>[]};

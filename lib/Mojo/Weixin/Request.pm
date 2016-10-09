@@ -148,5 +148,6 @@ sub search_cookie{
 sub clear_cookie{
     my $self = shift;
     $self->ua->cookie_jar->empty;
+    $self->save_cookie();
 }
 1;

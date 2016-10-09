@@ -3,9 +3,7 @@ sub Mojo::Weixin::_send_text_message {
     my $self = shift;
     my $msg = shift;
     my $api = "https://".$self->domain . "/cgi-bin/mmwebwx-bin/webwxsendmsg";
-    my @query_string =(
-        lang            => 'zh_CN',
-    );
+    my @query_string =();
     push @query_string,(pass_ticket     => url_escape($self->pass_ticket)) if $self->pass_ticket;
     my $r = sprintf "%.3f", rand();
     $r=~s/\.//g;

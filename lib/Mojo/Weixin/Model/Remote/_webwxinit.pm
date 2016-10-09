@@ -6,8 +6,7 @@ sub Mojo::Weixin::_webwxinit{
     my $self = shift;
     my $api = "https://". $self->domain . "/cgi-bin/mmwebwx-bin/webwxinit";
     my @query_string = (
-        r           =>  sub{use integer;~time}->(),
-        lang        =>  'zh_CN',
+        r           =>  sub{use integer;-1*~time}->(),
     );
     push @query_string,(pass_ticket =>  url_escape($self->pass_ticket)) if $self->pass_ticket;
     my $post = {
@@ -19,12 +18,9 @@ sub Mojo::Weixin::_webwxinit{
         },
     };
     
-    my $json = $self->http_post($self->gen_url($api,@query_string),{json=>1,Referer=>'https://'.$self->domain .'/?&lang=zh_CN'},json=>$post);
+    my $json = $self->http_post($self->gen_url($api,@query_string),{json=>1,Referer=>'https://'.$self->domain .'/'},json=>$post);
     return if not defined $json;
-    if($json->{BaseResponse}{Ret}!=0){
-        $self->relogin($json->{BaseResponse}{Ret});
-        return ;
-    }
+    return if $json->{BaseResponse}{Ret}!=0;
     $self->sync_key($json->{SyncKey}) if $json->{SyncKey}{Count} !=0;
     $self->skey($json->{Skey}) if $json->{Skey};
     my $user = {};

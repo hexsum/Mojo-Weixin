@@ -18,10 +18,9 @@ sub Mojo::Weixin::_webwxbatchgetcontact{
     my @query_string = (
         type        =>  "ex",
         r           =>  $self->now(),
-        lang        =>  'zh_CN',
-        pass_ticket =>  $self->pass_ticket,
     );
-    my $json = $self->http_post($self->gen_url($api,@query_string),{Referer=>'https://'.$self->domain . '/?&lang=zh_CN',json=>1},json=>$post);
+    push @query_string,(pass_ticket =>  $self->pass_ticket) if $self->pass_ticket;
+    my $json = $self->http_post($self->gen_url2($api,@query_string),{Referer=>'https://'.$self->domain . '/',json=>1},json=>$post);
     return unless defined $json;
     return if $json->{BaseResponse}{Ret}!=0;
     my @friends;

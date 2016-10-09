@@ -115,6 +115,9 @@ sub _parse_synccheck_data{
         elsif($retcode == 0 and $selector == 0){
             $self->_synccheck_error_count(0);
         }
+        elsif($retcode == 1101 and $self->stop_with_mobile){
+            $self->stop();
+        }
         elsif(first {$retcode == $_} @logout_code){
             $self->relogin($retcode);
             return;

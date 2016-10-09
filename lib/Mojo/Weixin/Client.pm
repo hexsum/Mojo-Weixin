@@ -14,7 +14,7 @@ use base qw(Mojo::Weixin::Request);
 
 sub login{
     my $self = shift;
-    return if $self->login_state eq 'success';
+    return 1 if $self->login_state eq 'success';
     if($self->is_first_login == -1){
         $self->is_first_login(1);
     }
@@ -25,17 +25,18 @@ sub login{
     if($self->is_first_login){
         $self->load_cookie();
     }
-
-    my $ret = $self->_login();
-    if($self->login_state eq "success"){
+    while(1){
+        my $ret = $self->_login();
         $self->clean_qrcode();
         sleep 2;
-        $self->model_init();
-        $self->emit("login"=>($ret==2?1:0));
-    }
-    else{
-        $self->error("登录失败");
-        $self->stop();
+        if($self->login_state eq "success" and $self->model_init()){
+            $self->emit("login"=>($ret==2?1:0));
+            return 1;
+        }
+        else{
+            $self->logout();
+            $self->error("登录结果异常，再次尝试...");
+        }
     }
 }
 sub relogin{
@@ -52,14 +53,13 @@ sub relogin{
     }
     $self->logout($retcode);
     $self->login_state("relogin");
-    $self->ua->cookie_jar->empty;
+    #$self->clear_cookie();
 
     $self->sync_key(+{});
     $self->pass_ticket('');
     $self->skey('');
     $self->wxsid('');
     $self->wxuin('');
-    $self->deviceid($self->gen_deviceid());
 
     $self->user(+{});
     $self->friend([]);
@@ -67,14 +67,25 @@ sub relogin{
     $self->data(+{});
 
     $self->login();
-    $self->info("重新开始接收消息...");
-    $self->_synccheck();
+    $self->timer(2,sub{
+        $self->info("重新开始接收消息...");
+        $self->_synccheck();
+    });
+
     $self->emit("relogin");
 }
 sub logout{
     my $self = shift;
     my $retcode = shift;
-    $self->_logout($retcode);
+    #my %type = qw(
+    #    1100    0
+    #    1101    1
+    #    1102    1
+    #    1205    1
+    #);
+    $self->info("客户端正在注销". (defined $retcode?"($retcode)":"") . "...");
+    $self->_logout(0);
+    $self->_logout(1);
 }
 sub steps {
     my $self = shift;
