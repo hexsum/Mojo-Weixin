@@ -1,3 +1,19 @@
+2016-10-10 Mojo::Weixin v1.2.1
+1）new中增加qrcode_count_max参数 二维码扫描超时达到一定次数就退出
+2）Openwx插件发送媒体消息支持直接以media_id作为发送对象，避免转发相同消息时重复上传文件，同时新增更多api接口：
+   获取客户端进程信息：/openwx/get_client_info
+   停止客户端运行：/openwx/stop_client
+   上传媒体文件： /openwx/upload_media
+3）新增start_time属性，用于记录程序启动时间和运行时间
+4）接收消息区分视频和小视频
+5）完善emoji表情处理
+6）好友对象的 category  属性现在可以区分普通好友、系统帐号和公众号类型 感谢 @海狼团队 的反馈
+7）ua_debug参数改名为 http_debug 更容易理解
+8）微信官方使用的主要api域名发送变化，跟进更新，并支持海外的web.wechat.com的登录
+9）修复在某些情况下出现登录死循环的问题 感谢 @Never 的反馈
+10）修正部分api请求提交参数格式错误问题
+11）new中增加 stop_with_mobile 参数，可以设置是否允许通过手机端强制客户端停止运行
+
 2016-09-28 Mojo::Weixin v1.2.0
 1）PostQRcode插件在使用465端口时自动开启tls支持
 2）新增group_notice类型消息，群提示信息，比如： xxx邀请xxx加入群聊
