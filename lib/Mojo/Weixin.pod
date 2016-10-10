@@ -857,6 +857,12 @@ Mojo::Weixin - A Weixin Client Framework base on Mojolicious
 
     $client->load("UploadQRcode");
 
+=head2 Mojo::Weixin::Plugin::ShowQRcode
+
+调用系统图片查看程序来示二维码（目前仅支持win）
+
+    $client->load("ShowQRcode");
+
 =head2 Mojo::Weixin::Plugin::PostQRcode
 
 登录过程如果需要手机扫描二维码，会将二维码以邮件附件的形式发送到指定邮箱，再通过手机微信扫描二维码

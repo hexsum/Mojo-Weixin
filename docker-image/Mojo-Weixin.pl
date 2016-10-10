@@ -9,6 +9,7 @@ my $client = Mojo::Weixin->new(
     log_encoding=>  $ENV{LOG_ENCODING} || "utf8",
     log_level   =>  $ENV{LOG_LEVEL} || "info",
     ua_debug    =>  $ENV{UA_DEBUG} || 0,
+    http_debug    =>  $ENV{HTTP_DEBUG} || 0,
     (defined $ENV{LOG_PATH}?(log_path =>  $ENV{LOG_PATH}):()),
     (defined $ENV{QRCODE_PATH}?(qrcode_path =>  $ENV{QRCODE_PATH}):()),
 );
