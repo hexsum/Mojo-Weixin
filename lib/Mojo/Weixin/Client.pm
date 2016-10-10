@@ -29,13 +29,15 @@ sub login{
         my $ret = $self->_login();
         $self->clean_qrcode();
         sleep 2;
-        if($self->login_state eq "success" and $self->model_init()){
+        if($ret and $self->login_state eq "success" and $self->model_init()){
             $self->emit("login"=>($ret==2?1:0));
             return 1;
         }
         else{
             $self->logout();
+            $self->login_state("init");
             $self->error("登录结果异常，再次尝试...");
+            next;
         }
     }
 }
