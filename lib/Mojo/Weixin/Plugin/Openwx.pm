@@ -2,6 +2,7 @@ package Mojo::Weixin::Plugin::Openwx;
 our $PRIORITY = 98;
 use strict;
 use Encode;
+use POSIX qw();
 use Mojo::Util qw();
 use Mojo::Weixin::Server;
 my $server;
@@ -543,6 +544,10 @@ sub call{
             $c->render_later;
             $object->get_avatar(sub{
                 my ($path,$data,$mime) = @_;
+                my $mtime = time;
+                $c->res->headers->cache_control('max-age=3600');
+                $c->res->headers->expires(POSIX::strftime("%a, %d %b %Y %H:%M:%S GMT",gmtime($mtime+3600)));
+                $c->res->headers->last_modified(POSIX::strftime("%a, %d %b %Y %H:%M:%S GMT",gmtime($mtime)));
                 $c->res->headers->content_type($mime || 'image/jpg');
                 $c->render(data=>$data,);  
             });
