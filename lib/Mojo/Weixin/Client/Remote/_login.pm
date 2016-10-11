@@ -30,7 +30,7 @@ sub Mojo::Weixin::_login {
             loginicon => 'true',
             uuid    =>  $qrcode_uuid,
             tip     =>  $show_tip ,
-            r       =>  sub{use integer;-1 * ~time}->(),
+            r       =>  sub{use integer;unpack 'i',~ pack 'l',$self->now() & 0xFFFFFFFF}->(),
             _       =>  $self->now(),
         );
         my $r = $self->http_get($self->gen_url($api,@query_string));

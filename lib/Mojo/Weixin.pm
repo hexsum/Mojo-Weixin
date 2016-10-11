@@ -22,6 +22,7 @@ has tmpdir              => sub {File::Spec->tmpdir();};
 has media_dir           => sub {$_[0]->tmpdir};
 has cookie_path         => sub {File::Spec->catfile($_[0]->tmpdir,join('','mojo_weixin_cookie_',$_[0]->account || 'default','.dat'))};
 has qrcode_path         => sub {File::Spec->catfile($_[0]->tmpdir,join('','mojo_weixin_qrcode_',$_[0]->account || 'default','.jpg'))};
+has pid_path            => sub {File::Spec->catfile($_[0]->tmpdir,join('','mojo_weixin_pid_',$_[0]->account || 'default','.pid'))};
 has ioloop              => sub {Mojo::IOLoop->singleton};
 has keep_cookie         => 1;
 has fix_media_loop      => 1;
@@ -157,6 +158,12 @@ sub new {
         my ($self, $err) = @_;
         $self->error(Carp::longmess($err));
     });
+    $self->check_pid();
+    $SIG{INT} = $SIG{KILL} = $SIG{TERM} = sub{
+        $self->clean_qrcode();
+        $self->clean_pid();
+        $self->stop();
+    };
     $self->on(qrcode_expire=>sub{
         my($self) = @_;
         my $count = $self->qrcode_count;

@@ -47,6 +47,10 @@ sub slurp {
     my $self = shift;
     return Mojo::Util::slurp(@_);
 }
+sub spurt {
+    my $self = shift;
+    return Mojo::Util::spurt(@_);
+}
 sub decode_json{
     my $self = shift;
     my $r = eval{
