@@ -20,18 +20,10 @@ sub call{
         \t6、export PKG_CONFIG_PATH=\"\$PKG_CONFIG_PATH:/usr/local/lib/pkgconfig\"
         \t7、cpanm Term::QRCode \n\e[0m") if not $has_term_qrcode;
 
-    $data->{max} =  10 if not defined $data->{max};
-    my $count = 0;
-    $client->on(login=>sub{$count = 0});
     $client->on(input_qrcode=>sub{
         my($client,$filename,$data,$qrcode_url) = @_;
-        if($count > $data->{max}){
-            $client->fatal("等待扫描二维码超时");
-            $client->stop();
-            return
-        }
         $client->info('请扫描屏幕二维码登陆！');
-        $client->info( Term::QRCode->new->plot($qrcode_url) );
+        print Term::QRCode->new->plot($qrcode_url) ;
         $count++;
     });
 }
