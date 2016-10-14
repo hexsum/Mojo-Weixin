@@ -8,12 +8,13 @@ WriteMakefile(
     DISTNAME            => 'Mojo-Weixin',
     LICENSE             => "perl",
     PREREQ_PM         => {
-        "Mojolicious"           => '6.11',
-        "IO::Socket::SSL"       => '1.94',
-        "Encode::Locale"        => 0,
         "Time::HiRes"           => 0,
         "Time::Piece"           => 0,
         "Time::Seconds"         => 0,
+        "Digest::MD5"           => 0,
+        "Encode::Locale"        => 0,
+        "IO::Socket::SSL"       => '1.94',
+        "Mojolicious"           => '6.11',
     }, # e.g., Module::Name => 1.1
     dist              => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
     clean               => { FILES => 'Mojo-Weixin-* MANIFEST' },
