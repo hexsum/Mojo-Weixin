@@ -29,7 +29,7 @@ sub Mojo::Weixin::_get_qrcode_image{
     my $filename_for_log = encode("utf8",decode(locale_fs,$self->qrcode_path));
     #$self->info("二维码已下载到本地[ $filename_for_log ]\n二维码原始下载地址[ $url ]");
     $self->info("二维码已下载到本地[ $filename_for_log ]");
-    $self->emit(input_qrcode=>$self->qrcode_path,$data);
+    $self->emit(input_qrcode=>$self->qrcode_path,$data,"https://login.weixin.qq.com/l/$qrcode_uuid");
     return 1;
 }
 1;

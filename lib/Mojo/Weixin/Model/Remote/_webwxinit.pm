@@ -55,7 +55,16 @@ sub Mojo::Weixin::_webwxinit{
             push @friends,$friend;
         }
     }
-
+    
+    my @id = $json->{ChatSet}?split /,/,$json->{ChatSet}:();
+    for(@id){
+        if($self->is_group($_)){
+            push @groups,{id=>$_}; 
+        }
+        else{
+            push @friends,{id=>$_};
+        }
+    }
     return [$user,\@friends,\@groups];
 }
 1

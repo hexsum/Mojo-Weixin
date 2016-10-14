@@ -159,7 +159,7 @@ sub new {
         $self->error(Carp::longmess($err));
     });
     $self->check_pid();
-    $SIG{INT} = $SIG{KILL} = $SIG{TERM} = sub{
+    $SIG{INT} = $SIG{KILL} = $SIG{TERM} = $SIG{HUP} = sub{
         $self->clean_qrcode();
         $self->clean_pid();
         $self->stop();
