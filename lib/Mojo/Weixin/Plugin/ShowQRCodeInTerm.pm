@@ -1,5 +1,5 @@
 package Mojo::Weixin::Plugin::ShowQRCodeInTerm;
-our $PRIORITY = 2;
+our $PRIORITY = 0;
 our $CALL_ON_LOAD = 1;
 BEGIN{
     our $has_term_qrcode = 0;
