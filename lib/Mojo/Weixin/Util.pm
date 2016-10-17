@@ -2,7 +2,6 @@ package Mojo::Weixin::Util;
 use Carp qw();
 use Mojo::Util ();
 use Mojo::JSON qw();
-use Time::HiRes;
 use Mojo::Weixin::Const qw(%FACE_MAP_QQ %FACE_MAP_EMOJI);
 my %emoji_to_text_map = reverse %FACE_MAP_EMOJI;
 sub emoji_convert {
@@ -199,13 +198,13 @@ sub debug{
 }
 sub print {
     my $self = shift;
-    my $flag = 1;
-    if($flag){
+    #my $flag = 1;
+    #if($flag){
         $self->log->info({time=>'',level=>'',},join (defined $,?$,:''),@_);
-    }
-    else{
-        $self->log->info(join (defined $,?$,:''),@_);
-    }
+    #}
+    #else{
+    #    $self->log->info(join (defined $,?$,:''),@_);
+    #}
     $self;
 }
 

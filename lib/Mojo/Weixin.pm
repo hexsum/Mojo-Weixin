@@ -15,6 +15,7 @@ has ua_debug_res_body   => sub{$_[0]->ua_debug};
 has log_level           => 'info';     #debug|info|warn|error|fatal
 has log_path            => undef;
 has log_encoding        => undef;      #utf8|gbk|...
+has log_head            => undef;
 
 has account             => 'default';
 has start_time          => time;
@@ -38,6 +39,7 @@ has data    => sub {+{}};
 has version => $Mojo::Weixin::VERSION;
 has plugins => sub{+{}};
 has log     => sub{
+    my $self = $_[0];
     Mojo::Weixin::Log->new(
         encoding    =>  $_[0]->log_encoding,
         path        =>  $_[0]->log_path,
@@ -45,17 +47,19 @@ has log     => sub{
         format      =>  sub{
             my ($time, $level, @lines) = @_;
             my $title = "";
+            my $head  = $self->log_head || "";
             if(ref $lines[0] eq "HASH"){
                 my $opt = shift @lines; 
                 $time = $opt->{"time"} if defined $opt->{"time"};
-                $title = $opt->{title} . " " if defined $opt->{"title"};
-                $level  = $opt->{level} if defined $opt->{"level"};
+                $title = $opt->{"title"} . " " if defined $opt->{"title"};
+                $level  = $opt->{"level"} if defined $opt->{"level"};
+                $head  = $opt->{"head"} if defined $opt->{"head"};
             }
             @lines = split /\n/,join "",@lines;
             my $return = "";
             $time = $time?POSIX::strftime('[%y/%m/%d %H:%M:%S]',localtime($time)):"";
             $level = $level?"[$level]":"";
-            for(@lines){$return .= $time . " " . $level . " " . $title . $_ . "\n";}
+            for(@lines){$return .= $head . $time . " " . $level . " " . $title . $_ . "\n";}
             return $return;
         }
     )
@@ -159,6 +163,7 @@ sub new {
         $self->error(Carp::longmess($err));
     });
     $self->check_pid();
+    $SIG{CHLD} = 'IGNORE';
     $SIG{INT} = $SIG{KILL} = $SIG{TERM} = $SIG{HUP} = sub{
         $self->clean_qrcode();
         $self->clean_pid();
