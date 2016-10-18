@@ -1,10 +1,10 @@
-## 微信多账号管理API
+### 微信多账号管理API
 
 * 支持多账号客户端的管理（启动、停止）
 * 支持统一的API来查询帐号信息、发送消息、上报接收消息
-* 兼容全部的单帐号API，仅在原有的单帐号API地址中增加 `client=xxx` 参数
+* 兼容全部的单帐号API，仅在原有的单帐号API地址中增加 `client=xxx` 参数来识别不同帐号客户端
 
-## 首先要启动一个API Server：
+### 首先要启动一个API Server：
 
 可以直接把如下代码保存成一个源码文件(必须使用UTF8编码)，使用 perl 解释器来运行
 
@@ -34,19 +34,67 @@
 
     $ perl xxxx.pl
 
-## API 列表
-
 ### 启动一个微信客户端 
 
 |   API  |启动一个微信客户端
 |--------|:------------------------------------------|
 |uri     |/openwx/start_client|
 |请求方法|GET|
-|请求参数|**client**:自定义微信帐号，用于唯一区分不同微信帐号客户端<br>**其他Mojo-Weixin new方法支持的参数**|
-|调用示例|http://127.0.0.1:6000/openwx/start_client?client=weixin_client_01|
+|请求参数|**client**: 自定义微信帐号，用于唯一区分不同微信帐号客户端<br>**其他Mojo-Weixin new方法支持的参数，比如log_level/log_encoding/tmpdir等等，详见 [Mojo::Weixin#new](https://metacpan.org/pod/distribution/Mojo-Weixin/doc/Weixin.pod#new)**|
+|调用示例|http://127.0.0.1:6000/openwx/start_client?client=weixin_client_01<br>http://127.0.0.1:6000/openwx/start_client?client=weixin_client_01&log_level=debug|
 
 返回JSON数据:
 ```
 {"client":"weixin_client_01","code":0,"pid":32294,"port":3000,"status":"success"}
 ```
+
+### 停止一个微信客户端 
+
+|   API  |停止一个微信客户端
+|--------|:------------------------------------------|
+|uri     |/openwx/stop_client|
+|请求方法|GET|
+|请求参数|**client**: 自定义微信帐号，用于唯一区分不同微信帐号客户端|
+|调用示例|http://127.0.0.1:6000/openwx/stop_client?client=weixin_client_01|
+
+返回JSON数据:
+```
+{"client":"weixin_client_01","code":0,"pid":32294,"port":3000,"status":"success"}
+```
+
+### 查询所有微信客户端列表
+
+|   API  |查询所有微信客户端列表
+|--------|:------------------------------------------|
+|uri     |/openwx/check_client|
+|请求方法|GET|
+|请求参数|无|
+|调用示例|http://127.0.0.1:6000/openwx/check_client|
+
+返回JSON数据:
+```
+[
+    {"client":"weixin_client_01","pid":32294,"port":3000,"status":"success"},
+    {"client":"weixin_client_02","pid":32294,"port":3000,"status":"success"},
+]
+```
+### 其他微信帐号控制（查询信息、发送消息、上报消息等）
+
+查询某个微信帐号的信息、发送消息、消息上报等和[单帐号模式API](API.md)相同，只是url中增加了一个 `client=xxx`的参数用于区分不同客户端，比如
+
+####查询某个微信帐号用户信息:
+
+http://127.0.0.1:6000/openwx/get_user_info?client=weixin_client_01
+
+####使用某个微信帐号发送好友消息： 
+
+http://127.0.0.1:6000/openwx/send_friend_message?client=weixin_client_01&id=filehelper&content=hello
+
+每个微信帐号会独立上报消息，比如设置了上报消息post_api地址为 http://127.0.0.1:80/post_message
+
+则每个帐号上报时会**自动带上client参数**用于区分不同客户端
+
+POST http://127.0.0.1:80/post_message?client=weixin_client_01
+
+POST http://127.0.0.1:80/post_message?client=weixin_client_02
 
