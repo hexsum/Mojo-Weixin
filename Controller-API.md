@@ -90,7 +90,7 @@ linux中使用`ps ef`命令可以方便的查看到进程的运行情况
 ```
 [
     {"client":"weixin_client_01","pid":32294,"port":3000,"status":"success"},
-    {"client":"weixin_client_02","pid":32294,"port":3000,"status":"success"},
+    {"client":"weixin_client_02","pid":32295,"port":3001,"status":"success"},
 ]
 ```
 ### 其他微信帐号控制（查询信息、发送消息、上报消息等）
