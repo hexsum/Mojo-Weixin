@@ -16,6 +16,7 @@ has log_level           => 'info';     #debug|info|warn|error|fatal
 has log_path            => undef;
 has log_encoding        => undef;      #utf8|gbk|...
 has log_head            => undef;
+has log_unicode         => 0;
 
 has account             => 'default';
 has start_time          => time;
@@ -44,6 +45,7 @@ has log     => sub{
         encoding    =>  $_[0]->log_encoding,
         path        =>  $_[0]->log_path,
         level       =>  $_[0]->log_level,
+        unicode_support => $_[0]->log_unicode,
         format      =>  sub{
             my ($time, $level, @lines) = @_;
             my $title = "";

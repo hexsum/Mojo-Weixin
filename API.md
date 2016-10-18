@@ -1,3 +1,26 @@
+## 本文档包含的API是针对单帐号的，如果需要多账号统一管理API，请移步到[Controller-API](Controller-API.md)
+
+## 首先要启动一个API Server：
+
+可以直接把如下代码保存成一个源码文件(必须使用UTF8编码)，使用 perl 解释器来运行
+
+    #!/usr/bin/env perl
+    use Mojo::Weixin;
+    my ($host,$port,$post_api);
+    
+    $host = "0.0.0.0"; #发送消息接口监听地址，修改为自己希望监听的地址
+    $port = 3000;      #发送消息接口监听端口，修改为自己希望监听的端口
+    #$post_api = 'http://xxxx';  #接收到的消息上报接口，如果不需要接收消息上报，可以删除或注释此行
+    
+    my $client = Mojo::Weixin->new(log_level=>"info",http_debug=>0);
+    $client->load("ShowMsg");
+    $client->load("Openwx",data=>{listen=>[{host=>$host,port=>$port}], post_api=>$post_api});
+    $client->run();
+
+上述代码保存成 xxxx.pl 文件，然后使用 perl 来运行，就会完成 微信 登录并在本机产生一个监听指定地址端口的 http server
+
+    $ perl xxxx.pl
+
 ### 1. 获取用户数据
 |   API  |获取用户数据
 |--------|:------------------------------------------|

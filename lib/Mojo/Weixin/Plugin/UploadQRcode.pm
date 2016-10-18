@@ -52,7 +52,7 @@ sub upload {
         return;
     }
     
-    my $url = $json->{data}{source_url};
+    my $url = Mojo::Util::encode("utf8",$json->{data}{source_url});
     $url=~s/(^https?:\/\/)([^\/]+)(.*)/$1$mydomain$3/ if (defined $url and defined $mydomain);
     if(not defined $url){
         $client->warn("二维码图片上传云存储失败：未获取到有效地址");

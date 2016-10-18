@@ -3,6 +3,7 @@ our $VERSION = '1.0.0';
 use strict;
 use warnings;
 use Carp;
+use File::Spec;
 use Mojo::Weixin::Base 'Mojo::EventEmitter';
 use Mojo::Weixin;
 use Mojo::Weixin::Server;
@@ -19,18 +20,20 @@ has ioloop  => sub {Mojo::IOLoop->singleton};
 has backend_start_port => 3000;
 has last_backend_port => undef;
 has post_api => undef;
-has server =>  sub {Mojo::Weixin::Server->new};
+has server =>  sub { Mojo::Weixin::Server->new };
+has listen => sub { [{host=>"0.0.0.0",port=>6000},] };
 #has ua  => sub {Mojo::UserAgent->new};
 
 has tmpdir              => sub {File::Spec->tmpdir();};
 has pid_path            => sub {File::Spec->catfile($_[0]->tmpdir,join('','mojo_weixin_controller_process','.pid'))};
-has backend_path         => sub {File::Spec->catfile($_[0]->tmpdir,join('','mojo_weixin_controller_backend','.dat'))};
+has backend_path        => sub {File::Spec->catfile($_[0]->tmpdir,join('','mojo_weixin_controller_backend','.dat'))};
+has check_interval      => 5;
 
 
 has log_level           => 'info';     #debug|info|warn|error|fatal
 has log_path            => undef;
 has log_encoding        => undef;      #utf8|gbk|...
-has log_head            => "[wxc] [$$]";
+has log_head            => "[wxc][$$]";
 
 has version             => sub{$Mojo::Weixin::Controller::VERSION};
 
@@ -82,7 +85,7 @@ sub new {
         $self->clean_pid();
         $self->stop();
     };
-    $0 = 'Mojo-Weixin-Controller';
+    $0 = 'wxcontroller';
     $Mojo::Weixin::Controller::_CONTROLLER = $self;
     $self;
 }
@@ -148,6 +151,9 @@ sub start_client {
     if(!$param->{client}){
         return {code => 1, status=>'client not found',};
     }
+    elsif(exists $self->backend->{$param->{client}} and kill(0,$self->backend->{$param->{client}}{pid})){
+        return {code=>0, status=>'client already exists',%{ $self->backend->{$param->{client}} }}
+    }
     my $backend_port = empty_port({host=>'127.0.0.1',port=>($self->last_backend_port?1+$self->last_backend_port:$self->backend_start_port),proto=>'tcp'});
     return {code => 2, status=>'no available port',client=>$param->{client}} if not defined $backend_port;
     my $post_api = $param->{post_api} || $self->post_api;
@@ -160,15 +166,17 @@ sub start_client {
     if($pid == 0) {#new process
         $self->server->stop;
         $self->ioloop->stop;
+        delete $self->server->{servers};
         $param->{account} = $param->{client};
         $param->{log_head} = $param->{log_head} || "[" . $param->{client} . "] [$$]";
         $self->reform_hash($param);
-        $0 = "Mojo-Weixin-Client-$param->{client}";
+        $0 = "wxclient($param->{client})";
         undef $self;
         my $weixin = Mojo::Weixin->new($param)->load(["ShowMsg","UploadQRcode"])->load("Openwx",data=>{
             listen => [{host=>"127.0.0.1",port=>$backend_port} ],
             post_api => $post_api,
         });
+        $SIG{INT} = 'IGNORE' if !-t;
         $weixin->run;
     }
     else{
@@ -217,9 +225,10 @@ sub run {
     $server->app->defaults(wxc=>$self);
     $server->app->secrets("hello world");
     $server->app->log($self->log);
-    $server->listen(["http://*:1234/"]);
+    $server->listen([ map { 'http://' . (defined $_->{host}?$_->{host}:"0.0.0.0") .":" . (defined $_->{port}?$_->{port}:6000)} @{ $self->listen } ]) ;
+    #$server->listen(['http://*:6000']);
     $server->start;
-    $self->ioloop->recurring(10,sub{
+    $self->ioloop->recurring($self->check_interval || 5,sub{
         $self->check_client();
         $self->save_backend();
     });
