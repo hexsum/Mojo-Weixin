@@ -3,6 +3,7 @@ our $VERSION = '1.0.0';
 use strict;
 use warnings;
 use Carp;
+use Config;
 use File::Spec;
 use Mojo::Weixin::Base 'Mojo::EventEmitter';
 use Mojo::Weixin;
@@ -76,6 +77,10 @@ sub new {
         my ($self, $err) = @_;
         $self->error(Carp::longmess($err));
     });
+    if($Config{d_pseudofork}){
+        $self->fatal("非常抱歉, Mojo-Weixin-Controller不支持您当前使用的系统");
+        $self->stop();
+    } 
     $self->check_pid();
     $self->load_backend(); 
     $self->check_client();
