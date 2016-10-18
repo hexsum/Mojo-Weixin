@@ -21,7 +21,7 @@ has backend_start_port => 3000;
 has last_backend_port => undef;
 has post_api => undef;
 has server =>  sub { Mojo::Weixin::Server->new };
-has listen => sub { [{host=>"0.0.0.0",port=>6000},] };
+has listen => sub { [{host=>"0.0.0.0",port=>2000},] };
 #has ua  => sub {Mojo::UserAgent->new};
 
 has tmpdir              => sub {File::Spec->tmpdir();};
@@ -225,8 +225,7 @@ sub run {
     $server->app->defaults(wxc=>$self);
     $server->app->secrets("hello world");
     $server->app->log($self->log);
-    $server->listen([ map { 'http://' . (defined $_->{host}?$_->{host}:"0.0.0.0") .":" . (defined $_->{port}?$_->{port}:6000)} @{ $self->listen } ]) ;
-    #$server->listen(['http://*:6000']);
+    $server->listen([ map { 'http://' . (defined $_->{host}?$_->{host}:"0.0.0.0") .":" . (defined $_->{port}?$_->{port}:2000)} @{ $self->listen } ]) ;
     $server->start;
     $self->ioloop->recurring($self->check_interval || 5,sub{
         $self->check_client();

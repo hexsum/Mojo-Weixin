@@ -7,12 +7,12 @@
 
 ### 架构设计
 
-采用多进程模型，主进程监听端口6000端口，对外提供统一的api请求服务，每个微信帐号是一个独立的子进程，分配一个单独的端口和主进程通信
+采用多进程模型，主进程监听端口2000端口，对外提供统一的api请求服务，每个微信帐号是一个独立的子进程，分配一个单独的端口和主进程通信
 
 linux中使用`ps ef`命令可以方便的查看到进程的运行情况
 
 ```
-\_ wxcontroller #监听6000端口，提供统一的api服务               
+\_ wxcontroller #监听2000端口，提供统一的api服务               
 	\_ wxclient(weixin_client_01) #子进程监听3000端口
 	\_ wxclient(weixin_client_02) #子进程监听3001端口
 	\_ wxclient(weixin_client_03) #子进程监听3002端口
@@ -28,7 +28,7 @@ linux中使用`ps ef`命令可以方便的查看到进程的运行情况
     my ($host,$port,$post_api);
 
     $host = "0.0.0.0"; #Controller API server 监听地址
-    $port = 6000;      #Controller API server 监听端口，修改为自己希望监听的端口
+    $port = 2000;      #Controller API server 监听端口，修改为自己希望监听的端口
     #$post_api = 'http://xxxx';  #每个微信帐号接收到的消息上报接口，如果不需要接收消息上报，可以删除或注释此行
 
     my $controller = Mojo::Weixin::Controller->new(
@@ -56,7 +56,7 @@ linux中使用`ps ef`命令可以方便的查看到进程的运行情况
 |uri     |/openwx/start_client|
 |请求方法|GET|
 |请求参数|**client**: 自定义微信帐号，用于唯一区分不同微信帐号客户端<br>**其他Mojo-Weixin new方法支持的参数，比如log_level/log_encoding/tmpdir等等，详见 [Mojo::Weixin#new](https://metacpan.org/pod/distribution/Mojo-Weixin/doc/Weixin.pod#new)**|
-|调用示例|http://127.0.0.1:6000/openwx/start_client?client=weixin_client_01<br>http://127.0.0.1:6000/openwx/start_client?client=weixin_client_01&log_level=debug|
+|调用示例|http://127.0.0.1:2000/openwx/start_client?client=weixin_client_01<br>http://127.0.0.1:2000/openwx/start_client?client=weixin_client_01&log_level=debug|
 
 返回JSON数据:
 ```
@@ -70,7 +70,7 @@ linux中使用`ps ef`命令可以方便的查看到进程的运行情况
 |uri     |/openwx/stop_client|
 |请求方法|GET|
 |请求参数|**client**: 自定义微信帐号，用于唯一区分不同微信帐号客户端|
-|调用示例|http://127.0.0.1:6000/openwx/stop_client?client=weixin_client_01|
+|调用示例|http://127.0.0.1:2000/openwx/stop_client?client=weixin_client_01|
 
 返回JSON数据:
 ```
@@ -84,7 +84,7 @@ linux中使用`ps ef`命令可以方便的查看到进程的运行情况
 |uri     |/openwx/check_client|
 |请求方法|GET|
 |请求参数|无|
-|调用示例|http://127.0.0.1:6000/openwx/check_client|
+|调用示例|http://127.0.0.1:2000/openwx/check_client|
 
 返回JSON数据:
 ```
@@ -99,17 +99,17 @@ linux中使用`ps ef`命令可以方便的查看到进程的运行情况
 
 ####查询某个微信帐号用户信息:
 
-http://127.0.0.1:6000/openwx/get_user_info?client=weixin_client_01
+http://127.0.0.1:2000/openwx/get_user_info?client=weixin_client_01
 
 ####使用某个微信帐号发送好友消息： 
 
-http://127.0.0.1:6000/openwx/send_friend_message?client=weixin_client_01&id=filehelper&content=hello
+http://127.0.0.1:2000/openwx/send_friend_message?client=weixin_client_01&id=filehelper&content=hello
 
-每个微信帐号会独立上报消息，比如设置了上报消息post_api地址为 http://127.0.0.1:80/post_message
+每个微信帐号会独立上报消息，比如设置了上报消息post_api地址为 http://127.0.0.1/post_message
 
 则每个帐号上报时会**自动带上client参数**用于区分不同客户端
 
-POST http://127.0.0.1:80/post_message?client=weixin_client_01
+POST http://127.0.0.1/post_message?client=weixin_client_01
 
-POST http://127.0.0.1:80/post_message?client=weixin_client_02
+POST http://127.0.0.1/post_message?client=weixin_client_02
 
