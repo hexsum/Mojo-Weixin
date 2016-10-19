@@ -105,7 +105,7 @@ has _synccheck_running => 0;
 has _synccheck_error_count => 0;
 has _synccheck_connection_id => undef;
 
-sub deviceid { return "e" . substr(rand . ("0" x 15),2,15);}
+sub deviceid { return "e" . substr(rand() . ("0" x 15),2,15);}
 sub on {
     my $self = shift;
     my @return;
