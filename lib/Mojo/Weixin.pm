@@ -8,7 +8,7 @@ use POSIX ();
 use Carp ();
 use base qw(Mojo::Weixin::Util Mojo::Weixin::Model Mojo::Weixin::Client Mojo::Weixin::Plugin Mojo::Weixin::Request);
 
-has http_debug          => 0;
+has http_debug          => sub{$ENV{MOJO_WEIXIN_HTTP_DEBUG} || 0 } ;
 has ua_debug            => sub{$_[0]->http_debug};
 has ua_debug_req_body   => sub{$_[0]->ua_debug};
 has ua_debug_res_body   => sub{$_[0]->ua_debug};
@@ -18,9 +18,9 @@ has log_encoding        => undef;      #utf8|gbk|...
 has log_head            => undef;
 has log_unicode         => 0;
 
-has account             => 'default';
+has account             => sub{ $ENV{MOJO_WEIXIN_ACCUNT} || 'default'};
 has start_time          => time;
-has tmpdir              => sub {File::Spec->tmpdir();};
+has tmpdir              => sub {$ENV{MOJO_WEIXIN_TMPDIR} || File::Spec->tmpdir();};
 has media_dir           => sub {$_[0]->tmpdir};
 has cookie_path         => sub {File::Spec->catfile($_[0]->tmpdir,join('','mojo_weixin_cookie_',$_[0]->account || 'default','.dat'))};
 has qrcode_path         => sub {File::Spec->catfile($_[0]->tmpdir,join('','mojo_weixin_qrcode_',$_[0]->account || 'default','.jpg'))};
@@ -154,10 +154,20 @@ sub new {
     my $class = shift;
     my $self  = $class->SUPER::new(@_);
     #$ENV{MOJO_USERAGENT_DEBUG} = $self->{ua_debug};
+    
+    for my $env(keys %ENV){
+        if($env=~/^MOJO_WEIXIN_([A-Z_]+)$/){
+            my $attr = lc $1;
+            next if $attr =~ /^plugin_/;
+            $self->$attr($ENV{$env}) if $self->can($attr);
+        }
+    }
+
     $self->info("当前正在使用 Mojo-Weixin v" . $self->version);
     $self->ioloop->reactor->on(error=>sub{
-        my ($reactor, $err) = @_;
-        $self->error("reactor error: " . Carp::longmess($err));
+        return;
+        #my ($reactor, $err) = @_;
+        #$self->error("reactor error: " . Carp::longmess($err));
     });
     $SIG{__WARN__} = sub{$self->warn(Carp::longmess @_);};
     $self->on(error=>sub{
@@ -167,6 +177,7 @@ sub new {
     $self->check_pid();
     $SIG{CHLD} = 'IGNORE';
     $SIG{INT} = $SIG{KILL} = $SIG{TERM} = $SIG{HUP} = sub{
+        $self->info("正在停止客户端...");
         $self->clean_qrcode();
         $self->clean_pid();
         $self->stop();

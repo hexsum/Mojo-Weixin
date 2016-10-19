@@ -14,20 +14,21 @@ use Mojo::IOLoop;
 use IO::Socket::IP;
 use Time::HiRes ();
 use Storable qw();
-use base qw(Mojo::Weixin::Util Mojo::Weixin::Request);
+#use base qw(Mojo::Weixin::Util Mojo::Weixin::Request);
+use base qw(Mojo::Weixin::Util);
 
 has backend => sub{+{}};
 has ioloop  => sub {Mojo::IOLoop->singleton};
 has backend_start_port => 3000;
-has last_backend_port => undef;
 has post_api => undef;
 has server =>  sub { Mojo::Weixin::Server->new };
 has listen => sub { [{host=>"0.0.0.0",port=>2000},] };
-#has ua  => sub {Mojo::UserAgent->new};
+has ua  => sub {Mojo::UserAgent->new(connect_timeout=>3,inactivity_timeout=>3,request_timeout=>3)};
 
 has tmpdir              => sub {File::Spec->tmpdir();};
 has pid_path            => sub {File::Spec->catfile($_[0]->tmpdir,join('','mojo_weixin_controller_process','.pid'))};
 has backend_path        => sub {File::Spec->catfile($_[0]->tmpdir,join('','mojo_weixin_controller_backend','.dat'))};
+has template_path        => sub {File::Spec->catfile($_[0]->tmpdir,join('','mojo_weixin_controller_template','.pl'))};
 has check_interval      => 5;
 
 
@@ -77,7 +78,7 @@ sub new {
         my ($self, $err) = @_;
         $self->error(Carp::longmess($err));
     });
-    if($Config{d_pseudofork}){
+    if( $^O!~/^MSWin32/i and $Config{d_pseudofork}){
         $self->fatal("非常抱歉, Mojo-Weixin-Controller不支持您当前使用的系统");
         $self->stop();
     } 
@@ -86,6 +87,7 @@ sub new {
     $self->check_client();
     $SIG{CHLD} =  'IGNORE';
     $SIG{INT} = $SIG{KILL} = $SIG{TERM} = $SIG{HUP} = sub{
+        $self->info("正在停止Controller...");
         $self->save_backend();
         $self->clean_pid();
         $self->stop();
@@ -156,10 +158,19 @@ sub start_client {
     if(!$param->{client}){
         return {code => 1, status=>'client not found',};
     }
-    elsif(exists $self->backend->{$param->{client}} and kill(0,$self->backend->{$param->{client}}{pid})){
-        return {code=>0, status=>'client already exists',%{ $self->backend->{$param->{client}} }}
+    elsif(exists $self->backend->{$param->{client}}){
+        if($^O=~/MSWin32/i){
+            my $port = $self->encode_utf8($self->backend->{$param->{client}}->{port});
+            my $ret = check_port({host=>'127.0.0.1',port =>$port});
+            if($ret){
+                return {code=>0, status=>'client already exists',%{ $self->backend->{$param->{client}} }};
+            }
+        }
+        elsif(kill(0,$self->backend->{$param->{client}}{pid})){
+            return {code=>0, status=>'client already exists',%{ $self->backend->{$param->{client}} }};
+        }
     }
-    my $backend_port = empty_port({host=>'127.0.0.1',port=>($self->last_backend_port?1+$self->last_backend_port:$self->backend_start_port),proto=>'tcp'});
+    my $backend_port = empty_port({host=>'127.0.0.1',port=>$self->backend_start_port,proto=>'tcp'});
     return {code => 2, status=>'no available port',client=>$param->{client}} if not defined $backend_port;
     my $post_api = $param->{post_api} || $self->post_api;
     if(defined $post_api){
@@ -167,37 +178,104 @@ sub start_client {
         $url->query->merge(client=>$param->{client});
         $post_api =  $url->to_string;
     }
-    my $pid = fork();
-    if($pid == 0) {#new process
-        $self->server->stop;
-        $self->ioloop->stop;
-        delete $self->server->{servers};
+    if($^O =~ /^MSWin32/i){
         $param->{account} = $param->{client};
-        $param->{log_head} = $param->{log_head} || "[" . $param->{client} . "] [$$]";
+        $param->{log_head} = "[" . $param->{client} . "][$backend_port]" if not defined $param->{log_head};
         $self->reform_hash($param);
         $0 = "wxclient($param->{client})";
-        undef $self;
-        my $weixin = Mojo::Weixin->new($param)->load(["ShowMsg","UploadQRcode"])->load("Openwx",data=>{
-            listen => [{host=>"127.0.0.1",port=>$backend_port} ],
-            post_api => $post_api,
-        });
-        $SIG{INT} = 'IGNORE' if !-t;
-        $weixin->run;
+
+        for my $env(keys %ENV){
+            delete $ENV{$env} if $env=~/^MOJO_WEIXIN_([A-Z_]+)$/;
+        }
+        for my $p (keys %$param){
+            my $env_key = "MOJO_WEIXIN_" . uc($p);
+            $ENV{$env_key} = $param->{$p};
+        }
+        $ENV{MOJO_WEIXIN_PLUGIN_OPENWX_PORT} = $backend_port;
+        $ENV{MOJO_WEIXIN_PLUGIN_OPENWX_POST_API} = $post_api;
+        local $ENV{PERL5LIB} = join ";",@INC;
+        if(!-f $self->template_path or -z $self->template_path){
+            my $template =<<'MOJO_WEIXIN_CLIENT_TEMPLATE';
+#!/usr/bin/env perl
+use Mojo::Weixin;
+my $client = Mojo::Weixin->new();
+$client->load(["ShowMsg","UploadQRcode","ShowQRcode"]);
+$client->load("Openwx",data=>{listen=>[{host=>"127.0.0.1",port=>$ENV{MOJO_WEIXIN_PLUGIN_OPENWX_PORT} }], post_api=>$ENV{MOJO_WEIXIN_PLUGIN_OPENWX_POST_API} ,post_event=>1,post_media_data=>1},call_on_load=>1);
+$client->run();
+MOJO_WEIXIN_CLIENT_TEMPLATE
+            $self->spurt($template,$self->template_path);
+        }
+        if( 0== (system 'start','/B','perl',$self->template_path) ){
+            $self->backend->{$param->{client}} = $param;
+            #$self->backend->{$param->{client}}{pid} = $pid;
+            $self->backend->{$param->{client}}{port} = $backend_port;
+            delete $self->backend->{$param->{client}}{log_head};
+            return {code=>0,status=>'success',%{ $self->backend->{$param->{client}} } };    
+        }
+        else{
+            return {code=>3,status=>'failure',};
+        }
     }
     else{
-        $self->backend->{$param->{client}} = $param;
-        $self->backend->{$param->{client}}{pid} = $pid;
-        $self->backend->{$param->{client}}{port} = $backend_port;
-        $self->last_backend_port($backend_port);
-        #return {code=>0,status=>'success',pid=>$pid,port=>$backend_port,client=>$param->{client},post_api=>$post_api);
-        return {code=>0,status=>'success',%{ $self->backend->{$param->{client}} } };
+        my $pid = fork();
+        if($pid == 0) {#new process
+            $self->server->stop;
+            $self->ioloop->stop;
+            delete $self->server->{servers};
+            $param->{account} = $param->{client};
+            $param->{log_head} = $param->{log_head} || "[" . $param->{client} . "][$$]";
+            $self->reform_hash($param);
+            $0 = "wxclient($param->{client})";
+            undef $self;
+            my $weixin = Mojo::Weixin->new($param)->load(["ShowMsg","UploadQRcode"])->load("Openwx",data=>{
+                listen => [{host=>"127.0.0.1",port=>$backend_port} ],
+                post_api => $post_api,
+            });
+            $SIG{INT} = 'IGNORE' if !-t;
+            $weixin->run;
+        }
+        else{
+            $self->backend->{$param->{client}} = $param;
+            $self->backend->{$param->{client}}{pid} = $pid;
+            $self->backend->{$param->{client}}{port} = $backend_port;
+            delete $self->backend->{$param->{client}}{log_head};
+            return {code=>0,status=>'success',%{ $self->backend->{$param->{client}} } };
+        }
     }
 }
 
 sub stop_client {
     my $self = shift;
     my $param = shift;
-    my $ret = kill 1 , $self->backend->{$param->{client}}{pid};
+    my $ret;
+    if($^O=~/MSWin32/i){
+        my $json;
+        my $port = $self->encode_utf8($self->backend->{$param->{client}}{port} || '');
+        my $client = $self->encode_utf8($param->{client});
+        eval{
+            if(!$port or !$client){$ret = 0;return}
+            local $SIG{ALRM} = sub { die "netstat timeout" };
+            my $cmd = qq{netstat -ano -p tcp |findstr "LISTEN"|findstr "127.0.0.1:$port"};
+            alarm 3;
+            my $catch = `$cmd`; chomp $catch;
+            alarm 0;
+            my $pid = (split ' ',$catch)[-1];
+            if($pid and $pid=~/^\d+$/){
+                $ret = kill 1 , $pid;
+            }
+            else{
+                $json = $self->ua->get('http://127.0.0.1:' . $port . '/openwx/stop_client' )->res->json;
+                $ret = 1 if (defined $json and $json->{code}==0);
+            }
+        };
+        if($@){
+            $self->warn("stop client $client\[$port\] fail: " . $@);
+            $ret = 0;
+        }
+    }
+    else{
+        $ret = kill 1 , $self->backend->{$param->{client}}{pid};
+    }
     if ($ret){
         my $client = $self->backend->{$param->{client}};
         delete $self->backend->{$param->{client}};
@@ -209,18 +287,28 @@ sub stop_client {
 sub check_client {
     my $self = shift;
     for my $client ( keys %{ $self->backend }  ){
-        my $pid = $self->backend->{$client}->{pid};
-        my $ret = kill 0,$pid;
-        if(not $ret){
-            delete $self->backend->{$client};
-            $self->warn("检测到客户端 $client\[$pid\] 不存在，删除客户端信息");
+        if($^O=~/MSWin32/i){
+            my $port = $self->encode_utf8($self->backend->{$client}->{port} || '');
+            my $ret = $port?check_port({host=>'127.0.0.1',port =>$port}):0;
+            if(not $ret){
+                $self->backend->{$client}{fail_count}++;
+                if($self->backend->{$client}{fail_count} > 3){
+                    delete $self->backend->{$client};
+                    $self->warn("检测到客户端 $client\[$port\] 端口无效，删除客户端信息");
+                }
+            }
         }
-
-        #$ret = check_port({host=>'127.0.0.1',port => $self->backend->{$client}->{port},});
-        #if(not $ret){
-        #    delete $self->backend->{$client};
-        #    $self->warn("检测到客户端 $client\[$pid\] 端口无效，删除客户端信息");
-        #}
+        else{
+            my $pid = $self->backend->{$client}->{pid};
+            my $ret = kill 0,$pid;
+            if(not $ret){
+                $self->backend->{$client}{fail_count}++;
+                if($self->backend->{$client}{fail_count} > 3){
+                    delete $self->backend->{$client};
+                    $self->warn("检测到客户端 $client\[$pid\] 不存在，删除客户端信息");
+                }
+            }
+        }
     }
 }
 sub run {
@@ -362,4 +450,3 @@ sub check_port {
  
 }
 1;
-__END__
