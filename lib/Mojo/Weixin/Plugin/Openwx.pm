@@ -191,7 +191,8 @@ sub call{
     get '/openwx/get_group_info'    => sub {$_[0]->render(json=>[map {$_->to_json_hash()} @{$client->group}]); };
     any [qw(GET POST)] => '/openwx/search_friend' => sub{
         my $c = shift;
-        my @params = map {defined $_?Encode::encode("utf8",$_):$_} grep {$_ ne 'client'} @{$c->req->params->pairs};
+        $c->req->params->remove('client');
+        my @params = map {defined $_?Encode::encode("utf8",$_):$_} @{$c->req->params->pairs};
         my @objects = $client->search_friend(@params);
         if(@objects){
             $c->render(json=>[map {$_->to_json_hash()} @objects]);
@@ -202,7 +203,8 @@ sub call{
     };
     any [qw(GET POST)] => '/openwx/search_group' => sub{
         my $c = shift;
-        my @params = map {defined $_?Encode::encode("utf8",$_):$_} grep {$_ ne 'client'} @{$c->req->params->pairs};
+        $c->req->params->remove('client');
+        my @params = map {defined $_?Encode::encode("utf8",$_):$_} @{$c->req->params->pairs};
         my @objects = $client->search_group(@params);
         if(@objects){
             $c->render(json=>[map {$_->to_json_hash()} @objects]);
