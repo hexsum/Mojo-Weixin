@@ -166,8 +166,8 @@ sub new {
     $self->info("当前正在使用 Mojo-Weixin v" . $self->version);
     $self->ioloop->reactor->on(error=>sub{
         return;
-        #my ($reactor, $err) = @_;
-        #$self->error("reactor error: " . Carp::longmess($err));
+        my ($reactor, $err) = @_;
+        $self->error("reactor error: " . Carp::longmess($err));
     });
     $SIG{__WARN__} = sub{$self->warn(Carp::longmess @_);};
     $self->on(error=>sub{
