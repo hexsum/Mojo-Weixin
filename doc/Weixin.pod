@@ -864,6 +864,12 @@ Mojo::Weixin - A Weixin Client Framework base on Mojolicious
 
     $client->load("ShowQRcode");
 
+=head2 Mojo::Weixin::Plugin::ShowQRCodeInTerm
+
+Linux系统下直接打印二维码到终端，作者 hyvinlam L<https://github.com/hyvinlam>
+
+    $client->load("ShowQRCodeInTerm");
+
 =head2 Mojo::Weixin::Plugin::PostQRcode
 
 登录过程如果需要手机扫描二维码，会将二维码以邮件附件的形式发送到指定邮箱，再通过手机微信扫描二维码

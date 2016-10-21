@@ -37,6 +37,7 @@ Mojo-Weixin v1.2.1 [![Build Status](https://travis-ci.org/sjdy521/Mojo-Weixin.sv
 |[UploadQRcode](https://metacpan.org/pod/distribution/Mojo-Weixin/lib/Mojo/Weixin.pod#Mojo::Weixin::Plugin::UploadQRcode)          |0        |已发布      |sjdy521      |二维码上传腾讯云存储获得公网访问url
 |[XiaoiceReply](https://metacpan.org/pod/distribution/Mojo-Weixin/lib/Mojo/Weixin.pod#Mojo::Weixin::Plugin::XiaoiceReply)        |1        |已发布      |sjdy521      |利用微软小冰实现智能聊天回复
 |[ShowQRcode](https://metacpan.org/pod/distribution/Mojo-Weixin/doc/Weixin.pod#Mojo::Weixin::Plugin::ShowQRcode)          |0        |已发布      |sjdy521  |调用系统图片查看程序来示二维码（目前仅支持win）
+|[ShowQRCodeInTerm](https://metacpan.org/pod/distribution/Mojo-Weixin/doc/Weixin.pod#Mojo::Weixin::Plugin::ShowQRCodeInTerm)          |0        |已发布      |hyvinlam  |Linux系统下直接打印二维码到终端
 |[SmartReply](https://metacpan.org/pod/distribution/Mojo-Weixin/lib/Mojo/Weixin.pod#Mojo::Weixin::Plugin::SmartReply)          |0        |已发布      |sjdy521      |智能聊天回复
 
 

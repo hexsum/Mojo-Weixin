@@ -155,6 +155,7 @@ Mojo::Weixin - A Weixin Client Framework base on Mojolicious
 
     log_level       #默认级别为info，可以设置debug|info|warn|error|fatal
     log_path        #默认客户端输出内容打印到STDERR 设置该参数可以将客户端输出重定向到文件
+    log_unicode     #支持打印unicode字符，默认值为0 不开启
     log_encoding    #输出日志的编码，默认自动检测，如果出现乱码可以尝试手动设置一下输出编码
                     #编码必须是 Encode 模块支持的格式，比如utf8 gbk等
 
@@ -862,6 +863,12 @@ Mojo::Weixin - A Weixin Client Framework base on Mojolicious
 调用系统图片查看程序来示二维码（目前仅支持win）
 
     $client->load("ShowQRcode");
+
+=head2 Mojo::Weixin::Plugin::ShowQRCodeInTerm
+
+Linux系统下直接打印二维码到终端，作者 hyvinlam L<https://github.com/hyvinlam>
+
+    $client->load("ShowQRCodeInTerm");
 
 =head2 Mojo::Weixin::Plugin::PostQRcode
 
