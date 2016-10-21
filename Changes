@@ -1,3 +1,14 @@
+2016-10-21 Mojo::Weixin v1.2.2
+1）新增插件ShowQRcode/ShowQRCodeInTerm 感谢 @hyvinlam
+2）修复 KnowledgeBase2 插件会导致知识库文件出现重复记录的问题 感谢 @时光盒子 的反馈
+3）Openwx插件 /openwx/get_avatar 获取用户头像接口返回图片带有cache-control和expires头部 让浏览器可以缓存住1小时
+    避免在某些应用场景下大量重复请求
+4）增加捐赠小伙伴列表，记住那些曾经爱心捐助的人们，非常感谢，你们的鼓励就是我坚持的动力
+5）SmartReply插件图灵官方api请求形式变更
+6）完善联系人群组信息获取机制,每次最大获取50个对象，超过50个分批次进行
+7）文档和MakeFile.PL的完善
+8）添加Mojo::Weixin::Controller对象以及API支持，用于管理微信多个帐号
+
 2016-10-10 Mojo::Weixin v1.2.1
 1）new中增加qrcode_count_max参数 二维码扫描超时达到一定次数就退出
 2）Openwx插件发送媒体消息支持直接以media_id作为发送对象，避免转发相同消息时重复上传文件，同时新增更多api接口：
