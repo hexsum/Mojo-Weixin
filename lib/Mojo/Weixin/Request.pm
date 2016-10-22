@@ -88,7 +88,12 @@ sub _http_request{
     else{
         my $tx;
         for(my $i=0;$i<=$opt{retry_times};$i++){
+            my $connect_timeout = $self->ua->connect_timeout;
+            my $request_timeout = $self->ua->request_timeout;
+            my $inactivity_timeout = $self->ua->inactivity_timeout;
+            $self->ua->connect_timeout(3)->request_timeout(5)->inactivity_timeout(5);
             $tx = $self->ua->$method(@_);
+            $self->ua->connect_timeout($connect_timeout)->request_timeout($request_timeout)->inactivity_timeout($inactivity_timeout);
             _ua_debug($self,$ua,$tx,\%opt,1) if $opt{ua_debug};;
             $self->save_cookie();
             if(defined $tx and $tx->success){

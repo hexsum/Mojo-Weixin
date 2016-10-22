@@ -82,6 +82,7 @@ has ua                      => sub {
     Mojo::UserAgent->new(
         proxy              => sub{ my $proxy = Mojo::UserAgent::Proxy->new;$proxy->detect;$proxy}->(),
         max_redirects      => 7,
+        connect_timeout    => 5,
         request_timeout    => 120,
         inactivity_timeout => 120,
         transactor => Mojo::UserAgent::Transactor->new( 
