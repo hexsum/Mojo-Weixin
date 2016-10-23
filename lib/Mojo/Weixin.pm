@@ -17,6 +17,7 @@ has log_path            => undef;
 has log_encoding        => undef;      #utf8|gbk|...
 has log_head            => undef;
 has log_unicode         => 0;
+has download_media      => 1;
 
 has account             => sub{ $ENV{MOJO_WEIXIN_ACCUNT} || 'default'};
 has start_time          => time;
@@ -25,6 +26,7 @@ has media_dir           => sub {$_[0]->tmpdir};
 has cookie_path         => sub {File::Spec->catfile($_[0]->tmpdir,join('','mojo_weixin_cookie_',$_[0]->account || 'default','.dat'))};
 has qrcode_path         => sub {File::Spec->catfile($_[0]->tmpdir,join('','mojo_weixin_qrcode_',$_[0]->account || 'default','.jpg'))};
 has pid_path            => sub {File::Spec->catfile($_[0]->tmpdir,join('','mojo_weixin_pid_',$_[0]->account || 'default','.pid'))};
+has state_path          => sub {File::Spec->catfile($_[0]->tmpdir,join('','mojo_weixin_state_',$_[0]->account || 'default','.json'))};
 has ioloop              => sub {Mojo::IOLoop->singleton};
 has keep_cookie         => 1;
 has fix_media_loop      => 1;
@@ -70,6 +72,9 @@ has log     => sub{
 has is_ready                => 0;
 has is_stop                 => 0;
 has ua_retry_times          => 5;
+has ua_connect_timeout      => 5;
+has ua_request_timeout      => 120;
+has ua_inactivity_timeout   => 120;
 has is_first_login          => -1;
 has login_state             => 'init';
 has qrcode_count            => 0;
@@ -82,9 +87,9 @@ has ua                      => sub {
     Mojo::UserAgent->new(
         proxy              => sub{ my $proxy = Mojo::UserAgent::Proxy->new;$proxy->detect;$proxy}->(),
         max_redirects      => 7,
-        connect_timeout    => 5,
-        request_timeout    => 120,
-        inactivity_timeout => 120,
+        connect_timeout    => $_[0]->ua_connect_timeout,
+        request_timeout    => $_[0]->ua_request_timeout,
+        inactivity_timeout => $_[0]->ua_inactivity_timeout,
         transactor => Mojo::UserAgent::Transactor->new( 
             name =>  'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/37.0.2062'
         ),
@@ -107,6 +112,19 @@ has _synccheck_error_count => 0;
 has _synccheck_connection_id => undef;
 
 sub deviceid { return "e" . substr(rand() . ("0" x 15),2,15);}
+sub state {
+    my $self = shift;
+    $self->{state} = 'init' if not defined $self->{state};
+    if(@_ == 0){#get
+        return $self->{state};
+    } 
+    elsif($_[0] and $_[0] ne $self->{state}){#set
+        my($old,$new) = ($self->{state},$_[0]);
+        $self->{state} = $new;
+        $self->emit(state_change=>$old,$new);
+    }
+    $self;
+}
 sub on {
     my $self = shift;
     my @return;
@@ -176,6 +194,7 @@ sub new {
         $self->error(Carp::longmess($err));
     });
     $self->check_pid();
+    $self->save_state();
     $SIG{CHLD} = 'IGNORE';
     $SIG{INT} = $SIG{KILL} = $SIG{TERM} = $SIG{HUP} = sub{
         $self->info("正在停止客户端...");
@@ -183,6 +202,10 @@ sub new {
         $self->clean_pid();
         $self->stop();
     };
+    $self->on(state_change=>sub{
+        my $self = shift;
+        $self->save_state();
+    });
     $self->on(qrcode_expire=>sub{
         my($self) = @_;
         my $count = $self->qrcode_count;

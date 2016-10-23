@@ -1,8 +1,8 @@
 sub Mojo::Weixin::_synccheck{
     my $self = shift;
     if($self->_sync_running or $self->_synccheck_running){
-        $self->_synccheck_running(0);
-        $self->emit("synccheck_over");
+        #$self->_synccheck_running(0);
+        #$self->emit("synccheck_over");
         return;
     }
     $self->_synccheck_running(1);

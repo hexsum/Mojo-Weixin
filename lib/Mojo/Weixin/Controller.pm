@@ -212,6 +212,10 @@ sub start_client {
     }
     $ENV{MOJO_WEIXIN_PLUGIN_OPENWX_PORT} = $backend_port;
     $ENV{MOJO_WEIXIN_PLUGIN_OPENWX_POST_API} = $post_api;
+    $ENV{MOJO_WEIXIN_TMPDIR} = $self->tmpdir if not defined $ENV{MOJO_WEIXIN_TMPDIR};
+    $ENV{MOJO_WEIXIN_STATE_PATH} = File::Spec->catfile($ENV{MOJO_WEIXIN_TMPDIR},join('','mojo_weixin_state_',$ENV{MOJO_WEIXIN_ACCOUNT},'.json')) if not defined $ENV{MOJO_WEIXIN_STATE_PATH};
+    $ENV{MOJO_WEIXIN_QRCODE_PATH} = File::Spec->catfile($ENV{MOJO_WEIXIN_TMPDIR},join('','mojo_weixin_qrcode_',$ENV{MOJO_WEIXIN_ACCOUNT},'.jpg')) if not defined $ENV{MOJO_WEIXIN_QRCODE_PATH};
+    $ENV{MOJO_WEIXIN_PID_PATH} = File::Spec->catfile($ENV{MOJO_WEIXIN_TMPDIR},join('','mojo_weixin_pid_',$ENV{MOJO_WEIXIN_ACCOUNT},'.pid')) if not defined $ENV{MOJO_WEIXIN_PID_PATH};
     local $ENV{PERL5LIB} = join( ($^O eq "MSWin32"?";":":"),@INC);
     if(!-f $self->template_path or -z $self->template_path){
         my $template =<<'MOJO_WEIXIN_CLIENT_TEMPLATE';
@@ -238,8 +242,14 @@ MOJO_WEIXIN_CLIENT_TEMPLATE
             $self->backend->{$param->{client}} = $param;
             $self->backend->{$param->{client}}{pid} = $process->GetProcessID();
             $self->backend->{$param->{client}}{port} = $backend_port;
+            $self->backend->{$param->{client}}{_tmpdir} = $ENV{MOJO_WEIXIN_TMPDIR};
+            $self->backend->{$param->{client}}{_state_path} = $ENV{MOJO_WEIXIN_STATE_PATH};
+            $self->backend->{$param->{client}}{_pid_path} = $ENV{MOJO_WEIXIN_PID_PATH};
+            $self->backend->{$param->{client}}{_qrcode_path} = $ENV{MOJO_WEIXIN_QRCODE_PATH};
             delete $self->backend->{$param->{client}}{log_head};
-            return {code=>0,status=>'success',%{ $self->backend->{$param->{client}} } };    
+            my %client = %{ $self->backend->{$param->{client}} };
+            for(keys %client){ delete $client{$_} if substr($_,0,1) eq "_"}
+            return {code=>0,status=>'success',%client };    
         }
         else{
             $self->error(
@@ -267,8 +277,14 @@ MOJO_WEIXIN_CLIENT_TEMPLATE
             $self->backend->{$param->{client}} = $param;
             $self->backend->{$param->{client}}{pid} = $pid;
             $self->backend->{$param->{client}}{port} = $backend_port;
+            $self->backend->{$param->{client}}{_tmpdir} = $ENV{MOJO_WEIXIN_TMPDIR};
+            $self->backend->{$param->{client}}{_state_path} = $ENV{MOJO_WEIXIN_STATE_PATH};
+            $self->backend->{$param->{client}}{_pid_path} = $ENV{MOJO_WEIXIN_PID_PATH};
+            $self->backend->{$param->{client}}{_qrcode_path} = $ENV{MOJO_WEIXIN_QRCODE_PATH};
             delete $self->backend->{$param->{client}}{log_head};
-            return {code=>0,status=>'success',%{ $self->backend->{$param->{client}} } };
+            my %client = %{ $self->backend->{$param->{client}} };
+            for(keys %client){ delete $client{$_} if substr($_,0,1) eq "_"}
+            return {code=>0,status=>'success',%client };
         }
     }
 }
@@ -286,6 +302,7 @@ sub stop_client {
     if ($ret){
         my $client = $self->backend->{$param->{client}};
         delete $self->backend->{$param->{client}};
+        for(keys %$client){ delete $client->{$_} if substr($_,0,1) eq "_"}
         return {code=>0,status=>'success',%$client };
     }
     return {code=>1,status=>'failure'};
@@ -295,6 +312,8 @@ sub check_client {
     my $self = shift;
     for my $client ( keys %{ $self->backend }  ){
         my $pid = $self->backend->{$client}->{pid};
+        return if !$pid;
+        return if $pid !~ /^\d+$/;
         my $ret = $self->check_process($pid);
         if(not $ret){
             $self->warn("检测到客户端 $client\[$pid\] 不存在，删除客户端信息");
@@ -333,9 +352,68 @@ get '/openwx/stop_client' => sub{
     my $result = $c->stash('wxc')->stop_client($hash);
     $c->render(json=>$result);
 };
+get '/openwx/get_qrcode' => sub{
+    my $c = shift;
+    my $client = $c->param("client");
+    if(!$client){
+        $c->render(json=>{code => 1, status=>'client not found',});
+        return;
+    }
+    elsif(!exists $c->stash('wxc')->backend->{$client}){
+        $c->render(json => {code => 1, status=>'client not exists',});
+        return;
+    }
+    eval{
+        my $qrcode_path = $c->stash('wxc')->backend->{$client}{_qrcode_path};
+        my $data = $c->stash('wxc')->slurp($qrcode_path);
+        $c->res->headers->cache_control('no-cache');
+        $c->res->headers->content_type('image/jpg');
+        $c->render(data=>$data,);
+    };
+    if($@){
+        $c->stash('wxc')->warn("读取客户端二维码失败: $@");
+        $c->render(text=>"",status=>404);
+    }
+};
 get '/openwx/check_client' => sub{
     my $c = shift;
-    $c->render(json=>[ values %{ $c->stash('wxc')->backend } ]);    
+    my $client = $c->param("client");
+    if(defined $client){
+        if(!exists $c->stash('wxc')->backend->{$client}){
+            $c->render(json => {code => 1, status=>'client not exists',});
+            return;
+        }
+        else{
+            eval{
+                my $state_path = $c->stash('wxc')->backend->{$client}{_state_path};
+                my $json = $c->stash('wxc')->decode_json($c->stash('wxc')->slurp($state_path));
+                $json->{port} = $c->stash('wxc')->backend->{$client}{port};
+                $c->render(json=>{code=>0,client=>$json});
+            };
+            if($@){
+                $c->stash('wxc')->warn("读取客户端state文件失败: $@");
+                #$c->render(json=>{code=>0,client=>[ $c->stash('wxc')->backend->{$client}, ] });
+                $c->render(json=>{code => 1,status=>"client state file read error"});
+            }
+        }
+    }
+    else{
+        eval{
+            my @client;
+            for my $client ( values %{ $c->stash('wxc')->backend }){
+                my $state_path = $client->{_state_path};
+                my $json = $c->stash('wxc')->decode_json($c->stash('wxc')->slurp($state_path));
+                $json->{port} = $c->stash('wxc')->backend->{$client}{port};
+                push @client,$json;
+            }
+            $c->render(json=>{code=>0,client=>\@client});
+        };
+        if($@){
+            $c->stash('wxc')->warn("读取客户端state文件失败: $@");
+            #$c->render(json=>{code=>0,client=>[ values %{ $c->stash('wxc')->backend } ]});    
+            $c->render(json=>{code => 1,status=>"client state file read error"});
+        }
+    }
 };
 any '/*whatever'  => sub{
     my $c = shift;

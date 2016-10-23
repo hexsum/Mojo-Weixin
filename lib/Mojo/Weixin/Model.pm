@@ -17,6 +17,7 @@ use Mojo::Weixin::Const;
 
 sub model_init{
     my $self = shift;
+    $self->state('updating');
     $self->info("获取联系人信息...");
     my $initinfo = $self->_webwxinit();
     if(not defined $initinfo){

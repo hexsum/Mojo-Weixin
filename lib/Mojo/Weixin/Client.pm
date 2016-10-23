@@ -9,6 +9,7 @@ use Mojo::Weixin::Client::Remote::_sync;
 use Mojo::Weixin::Message::Handle;
 use Mojo::IOLoop;
 use Mojo::IOLoop::Delay;
+use Mojo::Util qw();
 
 use base qw(Mojo::Weixin::Request);
 
@@ -73,7 +74,6 @@ sub relogin{
         $self->info("重新开始接收消息...");
         $self->_synccheck();
     });
-
     $self->emit("relogin");
 }
 sub logout{
@@ -99,6 +99,7 @@ sub steps {
 }
 sub ready {
     my $self = shift;
+    $self->state('loading');
     #加载插件
     my $plugins = $self->plugins;
     for(
@@ -113,6 +114,7 @@ sub ready {
     $self->on(synccheck_over=>sub{ 
         my $self = shift;
         my($retcode,$selector) = @_;
+        $self->state('running');
         $self->_parse_synccheck_data($retcode,$selector);
         $self->timer($self->synccheck_interval,sub{$self->_synccheck()});
     });
@@ -164,6 +166,7 @@ sub exit{
     my $self = shift;
     my $code = shift;
     $self->info("客户端已退出");
+    $self->state('stop');
     $self->emit("stop");
     CORE::exit(defined $code?$code+0:0);
 }
@@ -171,6 +174,7 @@ sub stop{
     my $self = shift;
     $self->is_stop(1);
     $self->info("客户端停止运行");
+    $self->state('stop');
     $self->emit("stop");
     CORE::exit();
 }
@@ -318,5 +322,48 @@ sub clean_pid {
     return if not -f $self->pid_path;
     $self->info("清除残留的pid文件");
     unlink $self->pid_path or $self->warn("删除pid文件[ " . $self->pid_path . " ]失败: $!");
+}
+sub save_state{
+    my $self = shift;
+    my @attr = qw( 
+        account 
+        version 
+        start_time
+        http_debug 
+        log_encoding 
+        log_path 
+        log_level 
+        log_unicode
+        download_media
+        tmpdir
+        media_dir
+        cookie_path
+        qrcode_path
+        pid_path
+        state_path
+        keep_cookie
+        fix_media_loop
+        synccheck_interval
+        emoji_to_text
+        stop_with_mobile
+        ua_retry_times
+        qrcode_count_max
+        state 
+    );
+    # pid
+    # os
+    eval{
+        my $json = {plugin => []};
+        for my $attr (@attr){
+            $json->{$attr} = defined $self->$attr?Mojo::Util::decode("utf8",$self->$attr): undef;
+        }
+        $json->{pid} = $$;
+        $json->{os}  = $^O;
+        for my $p (keys %{ $self->plugins }){
+            push @{ $json->{plugin} } , { name=>$self->plugins->{$p}{name},priority=>$self->plugins->{$p}{priority},auto_call=>$self->plugins->{$p}{auto_call},call_on_load=>$self->plugins->{$p}{call_on_load} } ;
+        }
+        $self->spurt($self->encode_json($json),$self->state_path);
+    };
+    $self->warn("客户端状态信息保存失败：$@") if $@;
 }
 1;
