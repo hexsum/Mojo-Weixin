@@ -65,7 +65,9 @@ wxclient:
 
 客户端状态的一般迁移过程：
 
-init => loading => scaning => confirming => updating => running => stop
+`init` => `loading` => `scaning` => `confirming` => `updating` => `running` => `stop`
+
+客户端状态实时更新到 `mojo_weixin_state_{客户端名称}.json` 文件中，可以通过检测这个文件来获取上述相关状态的变化
 
 ### 首先要启动一个API Server：
 
