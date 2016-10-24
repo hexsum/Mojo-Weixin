@@ -325,8 +325,14 @@ Mojo::Weixin - A Weixin Client Framework base on Mojolicious
     my ($http_body,$ua,$tx) = $client->http_get($url,$header);
 
     #可以在http header设置一些请求相关的选项，比如：
-    #json=>1 表示将响应的json数据进行json decode得到perl的hash引用
-    #retry_times=>3 表示请求失败自动重试次数，默认使用$client->ua_retry_times的值
+    #json=>1                表示将响应的json数据进行json decode得到perl的hash引用
+    #ua_retry_times=>3      表示请求失败自动重试次数，默认使用$client->ua_retry_times的值
+    #ua_debug               是否打印http请求调试信息
+    #ua_debug_res_body      是否打印http响应的body
+    #ua_debug_req_body      是否打印http请求的body
+    #ua_connect_timeout     阻塞http请求建立连接超时时间
+    #ua_request_timeout     阻塞http请求等待响应超时时间
+    #ua_inactivity_timeout  阻塞http请求idle 超时时间
     my $json_decode_hash = $client->http_get($url,{json=>1,retry_times=>3,Host=>"www.qq.com"});
 
     #http post请求
