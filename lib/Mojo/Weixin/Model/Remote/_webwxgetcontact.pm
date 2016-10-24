@@ -4,44 +4,55 @@ use Mojo::Weixin::Const qw(%KEY_MAP_USER %KEY_MAP_GROUP %KEY_MAP_GROUP_MEMBER %K
 sub Mojo::Weixin::_webwxgetcontact {
     my $self = shift;
     my $api = "https://".$self->domain . "/cgi-bin/mmwebwx-bin/webwxgetcontact";
-    my @query_string = (
-        r           =>  $self->now(),
-        seq         =>  0,
-        skey        =>  $self->skey,
-    );
-    push @query_string,(pass_ticket=>Mojo::Util::url_escape($self->pass_ticket)) if $self->pass_ticket;
-
-    my $json = $self->http_post($self->gen_url($api,@query_string),{Referer=>'https://'.$self->domain . '/',json=>1},json=>{});
-    return unless defined $json;
-    return if $json->{BaseResponse}{Ret}!=0;
-    return if $json->{MemberCount} == 0;
+    my $flag = 0;
+    my $seq = 0;
     my @friends;
     my @groups;
-    for my $e ( @{ $json->{MemberList} } ){
-        if($self->is_group($e->{UserName})){
-            my $group = {};
-            for(keys %KEY_MAP_GROUP){
-                $group->{$_} = defined $e->{$KEY_MAP_GROUP{$_}}?encode("utf8",$e->{$KEY_MAP_GROUP{$_}}):"";
-            }
-            for my $m (@{$e->{MemberList}}){
-                my $member = {};
-                for(keys %KEY_MAP_GROUP_MEMBER){
-                    $member->{$_} = defined $m->{$KEY_MAP_GROUP_MEMBER{$_}}?encode("utf8", $m->{$KEY_MAP_GROUP_MEMBER{$_}} ):"";
-                }
-                $member->{sex} = $self->code2sex($member->{sex});
-                push @{$group->{member}},$member;
-            }
-            push @groups,$group;
+    do {
+        my @query_string = (
+            r           =>  $self->now(),
+            seq         =>  $seq,
+            skey        =>  $self->skey,
+        );
+        push @query_string,(pass_ticket=>Mojo::Util::url_escape($self->pass_ticket)) if $self->pass_ticket;
+
+        my $json = $self->http_post($self->gen_url($api,@query_string),{Referer=>'https://'.$self->domain . '/',json=>1},json=>{});
+        return unless defined $json;
+        return if $json->{BaseResponse}{Ret}!=0;
+        return if $json->{MemberCount} == 0;
+        if (defined $json->{Seq} and $json->{Seq} > $seq){#获取的不全，需要继续获取其余部分
+            $flag = 1 ;
+            $seq = $json->{Seq};
         }
         else{
-            my $friend = {};
-            for(keys %KEY_MAP_FRIEND){
-                $friend->{$_} = defined $e->{$KEY_MAP_FRIEND{$_}}?encode("utf8",$e->{$KEY_MAP_FRIEND{$_}}):"" ;
-            }
-            $friend->{sex} = $self->code2sex($friend->{sex});
-            push @friends,$friend;
+            $flag = 0;
         }
-    }
+        for my $e ( @{ $json->{MemberList} } ){
+            if($self->is_group($e->{UserName})){
+                my $group = {};
+                for(keys %KEY_MAP_GROUP){
+                    $group->{$_} = defined $e->{$KEY_MAP_GROUP{$_}}?encode("utf8",$e->{$KEY_MAP_GROUP{$_}}):"";
+                }
+                for my $m (@{$e->{MemberList}}){
+                    my $member = {};
+                    for(keys %KEY_MAP_GROUP_MEMBER){
+                        $member->{$_} = defined $m->{$KEY_MAP_GROUP_MEMBER{$_}}?encode("utf8", $m->{$KEY_MAP_GROUP_MEMBER{$_}} ):"";
+                    }
+                    $member->{sex} = $self->code2sex($member->{sex});
+                    push @{$group->{member}},$member;
+                }
+                push @groups,$group;
+            }
+            else{
+                my $friend = {};
+                for(keys %KEY_MAP_FRIEND){
+                    $friend->{$_} = defined $e->{$KEY_MAP_FRIEND{$_}}?encode("utf8",$e->{$KEY_MAP_FRIEND{$_}}):"" ;
+                }
+                $friend->{sex} = $self->code2sex($friend->{sex});
+                push @friends,$friend;
+            }
+        }
+    } while $flag;
     return [\@friends,\@groups];
 }
     
