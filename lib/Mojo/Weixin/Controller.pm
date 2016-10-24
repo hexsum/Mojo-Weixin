@@ -403,7 +403,7 @@ get '/openwx/check_client' => sub{
             for my $client ( values %{ $c->stash('wxc')->backend }){
                 my $state_path = $client->{_state_path};
                 my $json = $c->stash('wxc')->decode_json($c->stash('wxc')->slurp($state_path));
-                $json->{port} = $c->stash('wxc')->backend->{$client}{port};
+                $json->{port} = $client->{port};
                 push @client,$json;
             }
             $c->render(json=>{code=>0,client=>\@client});
