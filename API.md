@@ -210,9 +210,10 @@
 ```
 $client->load("Openwx",data=>{
     listen => [{host=>xxx,port=>xxx}],           #可选，发送消息api监听端口
-    post_api=> 'http://127.0.0.1:4000/post_api', #可选，接收消息或事件的上报地址
+    post_api=> 'http://127.0.0.1:3000/post_api', #可选，接收消息或事件的上报地址
     post_event => 1,                             #可选，是否上报事件，为了向后兼容性，默认值为0
     post_media_data => 1,                        #可选，是否上报经过base64编码的图片原始数据，默认值为1
+    post_event_list => ['login','stop','state_change','input_qrcode'], #可选，上报事件列表
 });
 ```
 #### 接收消息上报 
@@ -222,7 +223,7 @@ $client->load("Openwx",data=>{
 普通好友消息或群消息上报
 
 ```
-connect to 127.0.0.1 port 4000
+connect to 127.0.0.1 port 3000
 POST /post_api
 Accept: */*
 Content-Length: xxx
@@ -248,7 +249,7 @@ Content-Type: application/json
 群提示消息上报
 
 ```
-connect to 127.0.0.1 port 4000
+connect to 127.0.0.1 port 3000
 POST /post_api
 Accept: */*
 Content-Length: xxx
@@ -274,7 +275,7 @@ Content-Type: application/json
 发送的消息会通过JSON格式数据POST到该接口
 
 ```
-connect to 127.0.0.1 port 4000
+connect to 127.0.0.1 port 3000
 POST /post_api
 Accept: */*
 Content-Length: xxx
@@ -398,10 +399,16 @@ Server: Mojolicious (Perl)
 |friend_property_change        |好友属性变化| 好友对象，属性，原始值，更新值
 |user_property_change          |帐号属性变化| 账户对象，属性，原始值，更新值
 
+可以在Openwx插件中，通过 `post_event_list` 参数来指定上报的事件
+
+默认 `post_event_list => ['login','stop','state_change','input_qrcode']`
+
+需要注意：属性变化类的事件可能触发的会比较频繁，导致产生大量的上报请求，默认不开启
+
 新增好友事件举例
 
 ```
-connect to 127.0.0.1 port 4000
+connect to 127.0.0.1 port 3000
 POST /post_api
 Accept: */*
 Content-Length: xxx
@@ -431,7 +438,7 @@ Content-Type: application/json
 扫描二维码事件举例
 
 ```
-connect to 127.0.0.1 port 4000
+connect to 127.0.0.1 port 3000
 POST /post_api
 Accept: */*
 Content-Length: xxx
