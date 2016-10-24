@@ -7,7 +7,7 @@
 
 ### 架构设计
 
-采用多进程模型，主进程监听端口2000端口，对外提供统一的api请求服务，每个微信帐号是一个独立的子进程，分配一个单独的端口和主进程通信
+采用多进程模型，主进程（wxcontroller）监听端口2000端口，对外提供统一的api请求服务，每个微信帐号是一个独立的子进程，分配一个单独的端口和主进程通信
 
 linux中使用`ps ef`命令可以方便的查看到进程的运行情况
 
@@ -18,6 +18,54 @@ linux中使用`ps ef`命令可以方便的查看到进程的运行情况
 	\_ wxclient(weixin_client_03) #子进程监听3002端口
 	\_ wxclient(weixin_client_04) #子进程监听3003端口
 ```
+
+### 数据文件介绍
+
+wxcontroller和每个创建的微信客户端（wxclient）在运行过程中会产生很多的文件，这些文件默认情况下会保存在系统的临时目录下
+
+你可以通过wxcontroller的 tmpdir 参数来修改这个临时目录的位置，参加下文的Mojo::Weixin::Controller代码示例
+
+一般情况下你不不需要关心这些文件保存在哪里，有什么作用，这些文件也会在程序退出的时候自动进行清理
+
+```
+wxcontroller :
+
+    /tmp/mojo_weixin_controller_process.pid  #wxcontroller的进程耗
+    /tmp/mojo_weixin_controller_backend.dat  #wxcontroller创建的客户端信息
+    /tmpmojo_weixin_controller_template.pl   #wxcontroller创建客户端时采用的模版文件
+    
+wxclient:
+
+    /tmp/mojo_weixin_cookie_{客户端名称}.dat #客户端的cookie文件，用于短时间内重复登录免扫码
+    /tmp/mojo_weixin_pid_{客户端名称}.pid    #记录客户端进程号，防止相同微信帐号产生多个客户端实例
+    /tmp/mojo_weixin_qrcode_{客户端名称}.jpg #客户端登录二维码文件
+    /tmp/mojo_weixin_state_{客户端名称}.json #客户端的运行状态相关的信息，json格式，实时更新
+    
+```
+### 客户端运行状态介绍
+
+客户端运行过程中会在多种状态之间切换，有很多状态是阻塞的，相当于一个死循环，需要达到一定条件才能跳出死循环
+
+大多数的API都是工作中非阻塞模式下，因此在这些阻塞的过程中大部分API（发送消息/接收消息等）都是无法工作的
+
+比如： 在登录扫描的状态下，还没有完成登录，是无法调用API去发送消息
+
+了解客户端这些状态的差异，有助于帮助你合理正确的调用API
+
+
+|   状态  |模式    |状态说明
+|------------|------------|:-------------------------------------------------|
+|init        | -          |客户端创建后的初始状态                              |
+|loading     |blocking    |客户端加载插件                                     |
+|scaning     |blocking    |等待手机扫码                                       |
+|confirming  |blocking    |等待手机点击[登录]按钮                              |
+|updating    |blocking    |更新个人、好友、群组信息                            |
+|running     |non-blocking|客户端运行中，可以正常接收、发送消息，**相关API可以工作**  |
+|stop        |blocking    |客户端停止运行                                     |
+
+客户端状态的一般迁移过程：
+
+init => loading => scaning => confirming => updating => running => stop
 
 ### 首先要启动一个API Server：
 
@@ -55,7 +103,7 @@ linux中使用`ps ef`命令可以方便的查看到进程的运行情况
 |--------|:------------------------------------------|
 |uri     |/openwx/start_client|
 |请求方法|GET|
-|请求参数|**client**: 自定义微信帐号，用于唯一区分不同微信帐号客户端<br>**其他Mojo-Weixin new方法支持的参数，比如log_level/log_encoding/tmpdir等等，详见 [Mojo::Weixin#new](https://metacpan.org/pod/distribution/Mojo-Weixin/doc/Weixin.pod#new)**|
+|请求参数|**client**: 自定义微信帐号，用于唯一区分不同微信帐号客户端<br>其他Mojo-Weixin new方法支持的参数，比如log_level/log_encoding/tmpdir等等，详见 [Mojo::Weixin#new](https://metacpan.org/pod/distribution/Mojo-Weixin/doc/Weixin.pod#new)|
 |调用示例|http://127.0.0.1:2000/openwx/start_client?client=weixin_client_01<br>http://127.0.0.1:2000/openwx/start_client?client=weixin_client_01&log_level=debug|
 
 返回JSON数据:
@@ -76,6 +124,30 @@ linux中使用`ps ef`命令可以方便的查看到进程的运行情况
 ```
 {"client":"weixin_client_01","code":0,"pid":32294,"port":3000,"status":"success"}
 ```
+### 获取登录二维码文件
+|   API  |查询所有微信客户端列表
+|--------|:------------------------------------------|
+|uri     |/openwx/get_qrcode|
+|请求方法|GET|
+|请求参数|**client**: 指定查询的客户端，否则输出全部客户端|
+|调用示例|http://127.0.0.1:2000/openwx/get_qrcode?client=xxx|
+
+```
+> GET /openwx/get_qrcode?client=123 HTTP/1.1
+> User-Agent: curl/7.29.0
+> Host: 127.0.0.1:2000
+> Accept: */*
+> 
+< HTTP/1.1 200 OK
+< Content-Type: image/jpg
+< Cache-Control: no-cache
+< Date: Mon, 24 Oct 2016 02:11:31 GMT
+< Content-Length: 37821
+< Server: Mojolicious (Perl)
+
+[qrcode binary data]
+```
+
 
 ### 查询所有微信客户端列表
 
@@ -83,15 +155,50 @@ linux中使用`ps ef`命令可以方便的查看到进程的运行情况
 |--------|:------------------------------------------|
 |uri     |/openwx/check_client|
 |请求方法|GET|
-|请求参数|无|
-|调用示例|http://127.0.0.1:2000/openwx/check_client|
+|请求参数|**client**: 可选，指定查询的客户端，否则输出全部客户端|
+|调用示例|http://127.0.0.1:2000/openwx/check_client<br>http://127.0.0.1:2000/openwx/check_client?client=xxx|
 
 返回JSON数据:
 ```
-[
-    {"client":"weixin_client_01","pid":32294,"port":3000,"status":"success"},
-    {"client":"weixin_client_02","pid":32295,"port":3001,"status":"success"},
-]
+{
+    "code":0,
+    "client":[
+        {#第一个客户端
+            "account":"123", #客户端帐号
+            "state":"scaning", #客户端状态 init|loading|scaning|confirming|updating|running|stop
+            "tmpdir":"\/tmp",
+            "cookie_path":"/tmp/mojo_weixin_cookie_123.dat",
+            "pid_path":"/tmp/mojo_weixin_pid_123.pid",
+            "qrcode_path":"/tmp/mojo_weixin_qrcode_123.jpg",
+            "state_path":"/tmp/mojo_weixin_state_123.json",
+            "download_media":"1",
+            "http_debug":"0",
+            "log_encoding":null,
+            "log_level":"info",
+            "log_path":null,
+            "os":"linux",
+            "pid":2380,
+            "plugin":[
+                {
+                    "auto_call":null,
+                    "call_on_load":1,
+                    "name":"Mojo::Weixin::Plugin::Openwx",
+                    "priority":98
+                },
+                {
+                    "auto_call":1,
+                    "call_on_load":0,
+                    "name":"Mojo::Weixin::Plugin::ShowMsg",
+                    "priority":100
+                }
+            ],
+            "port":3000,
+            "start_time":"1477273654",
+            "version":"1.2.2"
+        }
+    ]
+}
+
 ```
 ### 其他微信帐号控制（查询信息、发送消息、上报消息等）
 
