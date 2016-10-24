@@ -161,7 +161,8 @@ Mojo::Weixin - A Weixin Client Framework base on Mojolicious
 
     tmpdir          #程序使用的临时目录，主要用于保存一些验证码、二维码等数据，默认为系统临时目录
     cookie_path     #登录cookie的保存文件，默认为 tmpdir/mojo_weixin_cookie_default.dat（多账号运行时设置不同account）
-    media_dir         #图片接收默认地址，默认为 tmpdir 参数所设置的目录
+    media_dir       #图片接收默认地址，默认为 tmpdir 参数所设置的目录
+    download_media  #是否自动下载媒体文件，默认值为1
 
     qrcode_path     #二维码保存路径，默认是 tmpdir 目录下固定文件名
     emoji_to_text   #默认为1，是否把emoji表情字符转为 "[微笑]" 形式的文本
@@ -637,6 +638,22 @@ Mojo::Weixin - A Weixin Client Framework base on Mojolicious
         }
     });
 
+=head2 state_change 客户端状态改变
+
+    init                    #客户端初始状态
+    loading                 #加载插件
+    scaning                 #等待扫码
+    confirming              #等待手机点击[登录]
+    updating                #更新好友、群组信息
+    running                 #客户端运行中，可以正常接收、发送消息
+    stop                    #客户端停止运行
+
+    状态迁移过程：init => loading => scaning => confirming => updating => running => stop 
+
+    $cient->on(state_change=>sub{
+        my($client,$old_state,$new_state) = @_;
+    });
+
 =head2 input_qrcode 需要扫描二维码
 
     $client->on(input_qrcode=>sub{
@@ -1032,6 +1049,8 @@ Linux系统下直接打印二维码到终端，作者 hyvinlam L<https://github.
         auth   => sub {my($param,$controller) = @_},    #可选，认证回调函数，用于进行请求鉴权
         post_api => 'http://xxxx',                      #可选，你自定义的接收消息上报接口
         post_event => 1,                                #可选，是否上报事件，为了向后兼容性，默认值为0
+        post_media_data => 1,                        #可选，是否上报经过base64编码的图片原始数据，默认值为1
+        post_event_list => ['login','stop','state_change','input_qrcode'], #可选，上报事件列表
     });
 
     #若data中设置了auth函数引用，则表示api接口开启认证

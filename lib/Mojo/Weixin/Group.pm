@@ -3,6 +3,7 @@ use Mojo::Weixin::Base 'Mojo::Weixin::Model::Base';
 use Mojo::Weixin::Group::Member;
 
 has 'id';
+has 'uid';
 has name => '';
 has member => sub{[]};
 has _avatar => '';
@@ -21,6 +22,7 @@ sub new {
     my $class = shift;
     my $self;
     bless $self=@_ ? @_ > 1 ? {@_} : {%{$_[0]}} : {}, ref $class || $class;
+    $self->uid("") if not $self->uid;
     if(exists $self->{member} and ref $self->{member} eq "ARRAY"){
         for( @{ $self->{member} } ){
             $_ = Mojo::Weixin::Group::Member->new($_) if ref $_ ne "Mojo::Weixin::Group::Member";

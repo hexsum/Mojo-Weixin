@@ -4,6 +4,7 @@ use strict;
 use Encode;
 use POSIX qw();
 use Mojo::Util qw();
+use List::Util qw(first);
 use Mojo::Weixin::Server;
 my $server;
 sub call{
@@ -11,24 +12,24 @@ sub call{
     my $data   =  shift;
     my $post_api = $data->{post_api} if ref $data eq "HASH";
     $data->{post_media_data} = 1 if not defined $data->{post_media_data};
+    $data->{post_event_list} = [qw(login stop state_change input_qrcode)] if ref $data->{post_event_list} ne 'ARRAY'; 
 
     if(defined $post_api){
         $client->on(all_event => sub{
             my($client,$event,@args) =@_;
-            if($event eq  'login' or $event eq 'stop'){
+            return if not first {$event eq $_} @{ $data->{post_event_list} };
+            if($event eq  'login' or $event eq 'stop' or $event eq 'state_change'){
                 my $post_json = {};
                 $post_json->{post_type} = "event";
                 $post_json->{event} = $event;
                 $post_json->{params} = [@args];
-                $client->http_post($post_api,json=>$post_json,sub{
-                    my($data,$ua,$tx) = @_;
-                    if($tx->success){
-                        $client->debug("插件[".__PACKAGE__ ."]事件[".$event . "](@args)上报成功");
-                    }
-                    else{
-                        $client->warn("插件[".__PACKAGE__ . "]事件[".$event."](@args)上报失败:" . encode("utf8",$tx->error->{message}));
-                    } 
-                });
+                my($data,$ua,$tx) = $client->http_post($post_api,{ua_connect_timeout=>5,ua_request_timeout=>5,ua_inactivity_timeout=>5,ua_retry_times=>2},json=>$post_json);
+                if($tx->success){
+                    $client->debug("插件[".__PACKAGE__ ."]事件[".$event . "](@args)上报成功");
+                }
+                else{
+                    $client->warn("插件[".__PACKAGE__ . "]事件[".$event."](@args)上报失败:" . encode("utf8",$tx->error->{message}));
+                } 
             }
             elsif($event eq 'input_qrcode'){
                 my ($qrcode_path,$qrcode_data) = @args;

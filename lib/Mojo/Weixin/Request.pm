@@ -57,7 +57,7 @@ sub _http_request{
     my $method = shift;
     my %opt = (
         json                =>  0,
-        retry_times         =>  $self->ua_retry_times,
+        ua_retry_times      =>  $self->ua_retry_times,
         #ua_connect_timeout  =>  $self->ua_connect_timeout,
         #ua_request_timeout  =>  $self->ua_request_timeout,
         #ua_inactivity_timeout => $self->ua_inactivity_timeout,
@@ -67,7 +67,7 @@ sub _http_request{
     );
     if(ref $_[1] eq "HASH"){#with header or option
         $opt{json} = delete $_[1]->{json} if defined $_[1]->{json};
-        $opt{retry_times} = delete $_[1]->{retry_times} if defined $_[1]->{retry_times};
+        $opt{ua_retry_times} = delete $_[1]->{ua_retry_times} if defined $_[1]->{ua_retry_times};
         $opt{ua_debug}          = delete $_[1]->{ua_debug} if defined $_[1]->{ua_debug};
         $opt{ua_debug_res_body} = delete $_[1]->{ua_debug_res_body} if defined $_[1]->{ua_debug_res_body};
         $opt{ua_debug_req_body} = delete $_[1]->{ua_debug_req_body} if defined $_[1]->{ua_debug_req_body};
@@ -93,7 +93,7 @@ sub _http_request{
     }
     else{
         my $tx;
-        for(my $i=0;$i<=$opt{retry_times};$i++){
+        for(my $i=0;$i<=$opt{ua_retry_times};$i++){
             if($opt{ua_connect_timeout} or  $opt{ua_request_timeout} or $opt{ua_inactivity_timeout}){
                 my $connect_timeout = $self->ua->connect_timeout;
                 my $request_timeout = $self->ua->request_timeout;

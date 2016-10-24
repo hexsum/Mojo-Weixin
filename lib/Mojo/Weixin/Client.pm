@@ -165,17 +165,17 @@ sub interval{
 sub exit{
     my $self = shift;
     my $code = shift;
-    $self->info("客户端已退出");
     $self->state('stop');
     $self->emit("stop");
+    $self->info("客户端已退出");
     CORE::exit(defined $code?$code+0:0);
 }
 sub stop{
     my $self = shift;
     $self->is_stop(1);
-    $self->info("客户端停止运行");
     $self->state('stop');
     $self->emit("stop");
+    $self->info("客户端停止运行");
     CORE::exit();
 }
 

@@ -8,6 +8,7 @@ has [qw(
     city
     sex
     id
+    uid
     signature
     display
     markname
@@ -28,6 +29,7 @@ sub new {
     elsif(defined $self->_verifyflag and $self->_verifyflag & 8){
         $self->category("公众号");
     }
+    $self->uid("") if not $self->uid;
     $self;
 }
 sub get_avatar{

@@ -8,6 +8,7 @@ has [qw(
     city
     sex
     id
+    uid
     signature
     display
     markname
@@ -19,6 +20,7 @@ sub new {
     my $self = shift;
     $self = $self->Mojo::Weixin::Base::new(@_);
     $self->client->emoji_convert(\$self->{name},$self->client->emoji_to_text);
+    $self->uid("") if not $self->uid;
     $self;
 }
 
