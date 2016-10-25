@@ -10,9 +10,14 @@ sub Mojo::Weixin::_synccheck{
     my $callback = sub {
         my $data = shift;
         #window.synccheck={retcode:"0",selector:"0"}
-        my($retcode,$selector) = $data=~/window\.synccheck=\{retcode:"([^"]+)",selector:"([^"]+)"\}/g;
         $self->_synccheck_running(0);
-        $self->emit("synccheck_over",$retcode,$selector); 
+        if(defined $data){
+            my($retcode,$selector) = $data=~/window\.synccheck=\{retcode:"([^"]+)",selector:"([^"]+)"\}/g;
+            $self->emit("synccheck_over",$retcode,$selector,1); 
+        }
+        else{
+            $self->emit("synccheck_over",$retcode,$selector,0);
+        }
     };
     my @query_string = (
         r           =>  $self->now(),

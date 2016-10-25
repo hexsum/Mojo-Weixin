@@ -17,15 +17,21 @@ sub to_json_hash{
             next if $self->type eq "group_notice";
             $json->{sender} = decode_utf8($self->sender->displayname);
             $json->{sender_account} = $self->sender->account;
+            $json->{sender_uid} = $self->sender->uid;
+            $json->{sender_name} = decode_utf8($self->sender->name);
         }
         elsif($key eq "receiver"){
             next if $self->type eq 'group_message' and $self->class eq 'send';
             $json->{receiver} = decode_utf8($self->receiver->displayname);
             $json->{receiver_account} = $self->receiver->account;
+            $json->{receiver_uid} = $self->receiver->uid;
+            $json->{receiver_name} = decode_utf8($self->receiver->name);
         }
         elsif($key eq "group"){
             next if ($self->type ne "group_message" and $self->type ne "group_notice");
             $json->{group} = decode_utf8($self->group->displayname);
+            $json->{group_uid} = $self->group->uid;
+            $json->{group_name} = decode_utf8($self->group->name);
         }
         elsif($key eq "media_data"){
             $json->{$key} = defined $self->{$key}?Mojo::Util::b64_encode($self->{$key}):"";

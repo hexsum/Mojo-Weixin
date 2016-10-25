@@ -42,6 +42,7 @@
         "signature": "帮助解决微信支付中遇到的困难，收集关于微信支付的建议反馈。",
         "province": "广东",
         "id": "@efc5f86c30df4b9c80e98ac428e0e257",
+        "uid": 123,
         "displayname": "xxx"
     },
 ```
@@ -67,6 +68,7 @@
         "signature": "帮助解决微信支付中遇到的困难，收集关于微信支付的建议反馈。",
         "province": "广东",
         "id": "@efc5f86c30df4b9c80e98ac428e0e257",
+        "uid": 123456,
         "displayname": "微信支付"
     },
     {#第二个好友
@@ -80,6 +82,7 @@
         "signature": "小灰灰的个性签名",
         "province": "广东",
         "id": "@00227d73fa6b8326f69bca419db7a05c",
+        "uid": 123456,
         "displayname": "小灰"
     }
 ]
@@ -98,6 +101,7 @@
     {#第一个群
         "name": "",
         "id": "@@dadadadada",
+        "uid": 123456,
         "displayname": "xxxx"
         "member": [#群成员数组
             {#第一个群成员
@@ -110,6 +114,7 @@
                 "signature": "",
                 "province": "",
                 "id": "@adadada",
+                "uid": 123456,
                 "displayname": "xxx"
             },
             {#第二个群成员
@@ -122,6 +127,7 @@
                 "signature": "",
                 "province": "",
                 "id": "@dadada",
+                "uid": 123456,
                 "displayname": "xxx"
             },
         ],
@@ -130,6 +136,7 @@
     {#第二个群组
         "name": "xxxx",
         "id": "@@dadadada",
+        "uid": 123456,
         "displayname": "xxx"
         "member": [
             {
@@ -142,6 +149,7 @@
                 "signature": "",
                 "province": "",
                 "id": "@dadadada",
+                "uid": 123456,
                 "displayname": "xxx"
             },
             {
@@ -234,11 +242,18 @@ Content-Type: application/json
     "content":"测试一下",
     "class":"recv",
     "sender_id":"@2372835507",
+    "sender_uid": 123456,
     "receiver_id":"@4072574066",
+    "receiver_name": "小灰",
+    "receiver_uid": 123456,
     "group":"PERL学习交流",
     "group_id":"@@2617047292",
+    "group_uid": 123456,
+    "group_name": "PERL学习交流",
     "sender":"灰灰",
+    "sender_name": "灰灰",
     "id":"10856",
+    "uid": 123456,
     "type":"group_message",
     "format": "text",
     "post_type": "receive_message"
@@ -260,7 +275,10 @@ Content-Type: application/json
     "content":"你邀请灰太狼加入了群聊",
     "class":"recv",
     "receiver_id":"@4072574066",
+    "receiver_name":"小灰",
+    "receiver_uid":123456,
     "group":"PERL学习交流",
+    "group_name":"PERL学习交流",
     "group_id":"@@2617047292",
     "id":"10856",
     "type":"group_notice",
@@ -287,9 +305,15 @@ Content-Type: application/json
     "class":"send",
     "sender_id":"@2372835507",
     "receiver_id":"@4072574066",
+    "receiver_uid":123456,
+    "receiver_name":"小灰",
     "group":"PERL学习交流",
     "group_id":"@@2617047292",
+    "group_name":"PERL学习交流",
+    "group_uid":123456,
     "sender":"灰灰",
+    "sender_uid":123456,
+    "sender_name":"灰灰",
     "id":"10856",
     "type":"group_message",
     "format": "text",
@@ -315,9 +339,15 @@ Content-Type: application/json
     "class":"recv",
     "sender_id":"@2372835507",
     "receiver_id":"@4072574066",
+    "receiver_uid":"",
+    "receiver_name":"",
     "group":"PERL学习交流",
     "group_id":"@@2617047292",
+    "group_name":"",
+    "group_uid":"",
     "sender":"灰灰",
+    "sender_name":"",
+    "sender_uid":"",
     "id":"10856",
     "type":"group_message",
     "format": "media",
@@ -330,6 +360,8 @@ Content-Type: application/json
 
 ```
 {   "receiver":"小灰",
+    "receiver_uid":"",
+    "receiver_name":"",
     "time":"1442542632",
     "content":"[应用分享]标题：饿了么给你发红包",
     "app_name":"饿了么",
@@ -342,7 +374,11 @@ Content-Type: application/json
     "receiver_id":"@4072574066",
     "group":"PERL学习交流",
     "group_id":"@@2617047292",
+    "group_uid":"",
+    "group_name":"",
     "sender":"灰灰",
+    "sender_uid":"",
+    "sender_name":"",
     "id":"10856",
     "type":"group_message",
     "format": "app",

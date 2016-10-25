@@ -113,10 +113,10 @@ sub ready {
     #接收消息
     $self->on(synccheck_over=>sub{ 
         my $self = shift;
-        my($retcode,$selector) = @_;
+        my($retcode,$selector,$status) = @_;
         $self->state('running');
         $self->_parse_synccheck_data($retcode,$selector);
-        $self->timer($self->synccheck_interval,sub{$self->_synccheck()});
+        $self->timer($status?$self->synccheck_interval:15,sub{$self->_synccheck()});
     });
     $self->on(sync_over=>sub{
         my $self = shift;
