@@ -2,7 +2,8 @@ sub Mojo::Weixin::_synccheck{
     my $self = shift;
     if($self->_sync_running or $self->_synccheck_running){
         #$self->_synccheck_running(0);
-        #$self->emit("synccheck_over");
+        $self->emit("synccheck_over",undef,undef,1);
+        #$self->warn("消息处理程序进行中，避免重复运行");
         return;
     }
     $self->_synccheck_running(1);
@@ -16,7 +17,7 @@ sub Mojo::Weixin::_synccheck{
             $self->emit("synccheck_over",$retcode,$selector,1); 
         }
         else{
-            $self->emit("synccheck_over",$retcode,$selector,0);
+            $self->emit("synccheck_over",undef,undef,0);
         }
     };
     my @query_string = (

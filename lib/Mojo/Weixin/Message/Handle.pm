@@ -129,7 +129,7 @@ sub _parse_synccheck_data{
             $self->relogin($retcode);
             return;
         }
-        elsif($self->_synccheck_error_count <= 3){
+        elsif($self->_synccheck_error_count <= 10){
             my $c = $self->_synccheck_error_count; 
             $self->_synccheck_error_count(++$c);
         }

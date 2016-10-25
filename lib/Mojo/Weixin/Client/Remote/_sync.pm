@@ -16,8 +16,8 @@ sub Mojo::Weixin::_sync {
     };
     my $callback = sub{
         my ($json,$ua,$tx) = @_;
-        $self->emit(receive_raw_message=>$tx->res->body,$json);
         $self->_sync_running(0);
+        $self->emit(receive_raw_message=>$tx->res->body,$json);
         if(defined $json and $json->{BaseResponse}{Ret} == -1){#对于 -1 的消息做延迟处理，防止刷屏
             $self->timer(5,sub{
                 $self->emit("sync_over",$json);

@@ -116,7 +116,7 @@ sub ready {
         my($retcode,$selector,$status) = @_;
         $self->state('running');
         $self->_parse_synccheck_data($retcode,$selector);
-        $self->timer($status?$self->synccheck_interval:15,sub{$self->_synccheck()});
+        $self->timer(  ($status? $self->synccheck_interval() : 15)  , sub{$self->_synccheck()});
     });
     $self->on(sync_over=>sub{
         my $self = shift;
@@ -127,6 +127,7 @@ sub ready {
         my $self = shift;
         $self->timer(2,sub{
             $self->info("开始接收消息...");
+            $self->state('running');
             $self->_synccheck()}
         );
     });
