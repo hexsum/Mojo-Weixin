@@ -20,7 +20,7 @@ sub Mojo::Weixin::_webwxgetcontact {
         return unless defined $json;
         return if $json->{BaseResponse}{Ret}!=0;
         return if $json->{MemberCount} == 0;
-        if (defined $json->{Seq} and $json->{Seq} > $seq){#获取的不全，需要继续获取其余部分
+        if (defined $json->{Seq} and $json->{Seq} != 0){#获取的不全，需要继续获取其余部分
             $flag = 1 ;
             $seq = $json->{Seq};
         }
