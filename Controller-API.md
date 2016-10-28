@@ -69,6 +69,10 @@ wxclient:
 
 客户端状态实时更新到 `mojo_weixin_state_{客户端名称}.json` 文件中，可以通过检测这个文件来获取上述相关状态的变化
 
+也可以通过 `/openwx/check_client` 接口查询到这个状态
+
+（`/openwx/check_client`接口实际上就是返回  `mojo_weixin_state_{客户端名称}.json` 文件中的数据 ）
+
 ### 首先要启动一个API Server：
 
 可以直接把如下代码保存成一个源码文件(必须使用UTF8编码)，使用 perl 解释器来运行
