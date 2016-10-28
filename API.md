@@ -733,7 +733,7 @@ Server: Mojolicious (Perl)
     "status":"success",
     "code":0  #成功状态码为0，失败为非0
 }
-
+```
 
 ### 14. 设置群组的显示名称
 
