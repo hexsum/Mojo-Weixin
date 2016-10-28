@@ -364,7 +364,18 @@ Mojo::Weixin - A Weixin Client Framework base on Mojolicious
     #支持按任意群对象属性进行组合搜索，标量上下文返回符合条件的第一个好友对象，列表上下文返回全部对象
     my $group = $client->search_group(name=>xxx);
 
-=head4 create_group()  创建群聊
+=head4 set_markname 设置好友或群成员备注
+
+    $friend->set_markname("小王");
+    $friend->set_markname(""); #取消备注
+    $member->set_markname("小李");
+
+=head4 sticky_group() 置顶群组
+
+    $group->sticky_group(0);#取消置顶
+    $group->sticky_group(1);#置顶
+
+=head4 create_group()  创建群组
 
     #hash传参
     my $group = $client->create_group({
