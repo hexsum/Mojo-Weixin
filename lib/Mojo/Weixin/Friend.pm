@@ -78,6 +78,6 @@ sub send_media{
 }
 sub set_markname {
     my $self = shift;
-    $self->client->set_friend_markname($self,@_);
+    $self->client->set_markname($self,@_);
 }
 1;

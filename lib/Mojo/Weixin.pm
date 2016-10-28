@@ -197,7 +197,8 @@ sub new {
     $self->save_state();
     $SIG{CHLD} = 'IGNORE';
     $SIG{INT} = $SIG{KILL} = $SIG{TERM} = $SIG{HUP} = sub{
-        $self->info("正在停止客户端...");
+        return if $^O ne 'MSWin32' and $_[0] eq 'INT' and !-t;
+        $self->info("捕获到停止信号[$_[0]]，准备停止...");
         $self->clean_qrcode();
         $self->clean_pid();
         $self->stop();

@@ -334,11 +334,12 @@ sub _parse_sync_data {
                     $msg->{content}=~s/<br\/>/\n/g;
                     require Mojo::DOM;
                     my $dom = Mojo::DOM->new($msg->{content});
+                    return if $dom->at('msg > appmsg > type')->content != 5;
                     $msg->{app_id} = $dom->at('msg > appmsg')->attr->{appid};
                     $msg->{app_title} = $dom->at('msg > appmsg > title')->content;
-                    $msg->{app_desc} = $dom->at('msg > appmsg > des')->content;
-                    $msg->{app_url} = $dom->at('msg > appmsg > url')->content;
                     $msg->{app_name} = $dom->at('msg > appinfo > appname')->content;
+                    $msg->{app_url} = $dom->at('msg > appmsg > url')->content;
+                    $msg->{app_desc} = $dom->at('msg > appmsg > des')->content;
                     for( ($msg->{app_title},$msg->{app_desc},$msg->{app_url},$msg->{app_name}) ){
                         s/!\[CDATA\[(.*?)\]\]/$1/g;
                     }

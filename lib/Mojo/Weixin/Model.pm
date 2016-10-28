@@ -8,7 +8,8 @@ use Mojo::Weixin::Model::Remote::_webwxbatchgetcontact;
 use Mojo::Weixin::Model::Remote::_webwxstatusnotify;
 use Mojo::Weixin::Model::Remote::_webwxcreatechatroom;
 use Mojo::Weixin::Model::Remote::_webwxupdatechatroom;
-use Mojo::Weixin::Model::Remote::_webwxoplog;
+use Mojo::Weixin::Model::Remote::_webwxoplog_markname;
+use Mojo::Weixin::Model::Remote::_webwxoplog_sticky;
 use Mojo::Weixin::Model::Remote::_webwxverifyuser;
 use Mojo::Weixin::Model::Remote::_webwxgetheadimg;
 use Mojo::Weixin::User;
@@ -206,27 +207,47 @@ sub groups{
     return @{$self->group};
 }
 
-sub set_friend_markname {
+sub set_markname {
     my $self = shift;
-    my $friend = shift;
+    my $object = shift;
     my $markname = shift;
-    if(ref $friend ne "Mojo::Weixin::Friend"){
+    if(ref $object ne "Mojo::Weixin::Friend" and ref $object ne "Mojo::Weixin::Group::Member"){
         $self->die("无效的对象数据类型");
         return;
     }
-    my $displayname = $friend->displayname;
-    my $ret = $self->_webwxoplog($friend->id,$markname);
+    my $displayname = $object->displayname;
+    my $ret = $self->_webwxoplog_markname($object->id,$markname);
     if($ret){
-        $self->info("设置好友 $displayname 备注[ $markname ]成功");
+        $self->info("设置对象 $displayname 备注[ $markname ]成功");
         return 1;
     }
     else{
-        $self->info("设置好友 $displayname 备注[ $markname ]失败");
+        $self->info("设置对象 $displayname 备注[ $markname ]失败");
         return 0;
     }
 
 }
 
+sub sticky_group{
+    my $self = shift;
+    my $object = shift;
+    my $op = shift;
+    if(ref $object ne "Mojo::Weixin::Group"){
+        $self->die("无效的对象数据类型");
+        return;
+    }
+    my $ret = $self->_webwxoplog_sticky($object->id,$op // 1);
+    my $displayname = $object->displayname;
+    if($ret){
+        $op?$self->info("设置群组[ $displayname ]置顶成功"): $self->info("取消群组[ $displayname ]置顶成功");
+        return 1;
+    }
+    else{
+        $op?$self->info("设置群组[ $displayname ]置顶失败"): $self->info("取消群组[ $displayname ]置顶失败");
+        return 0;
+    }
+
+}
 sub create_group {
     my $self = shift;
     my $friends;

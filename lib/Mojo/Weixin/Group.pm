@@ -153,5 +153,9 @@ sub kick_group_member{
     my $self = shift;
     $self->client->kick_group_member($self,@_);
 }
+sub sticky_group{
+    my $self = shift;
+    $self->client->sticky_group($self,@_);
+}
 
 1;

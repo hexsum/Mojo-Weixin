@@ -697,15 +697,15 @@ Server: Mojolicious (Perl)
 
 ```
 
-### 12. 修改好友备注名称
+### 12. 修改好友或群成员备注名称
 
-|   API  |修改好友备注名称
+|   API  |修改好友或群成员备注名称
 |--------|:------------------------------------------|
-|uri     |/openwx/set_friend_markname|
+|uri     |/openwx/set_markname|
 |请求方法|GET\|POST|
-|请求参数|**id**: 好友的id<br>**account**: 好友的帐号<br>**displayname**: 好友当前显示名称<br>**markname**: 好友当前备注名称<br>**new_markname**:设置的新备注名称 (参数中包含中文需要做urlencode)|
+|请求参数|**id**: 好友或群成员的id<br>**account**: 好友的帐号<br>**displayname**: 好友当前显示名称<br>**markname**: 好友当前备注名称<br>**new_markname**:设置的新备注名称 (参数中包含中文需要做urlencode)|
 |数据格式|application/x-www-form-urlencoded|
-|调用示例|http://127.0.0.1:3000/openwx/set_friend_markname?id=xxxxxx&new_markname=xxxx|
+|调用示例|http://127.0.0.1:3000/openwx/set_markname?id=xxxxxx&new_markname=xxxx<br>http://127.0.0.1:3000/openwx/set_markname?account=xxxxxx&new_markname=xxxx<br>http://127.0.0.1:3000/openwx/set_markname?id=xxxxxx&group_id=xxxx&new_markname=xxxx|
 返回JSON结果:
 
 ```
@@ -716,7 +716,26 @@ Server: Mojolicious (Perl)
 
 ```
 
-### 13. 设置群组的显示名称
+### 13. 设置或取消群组置顶
+
+|   API  |设置或取消群组的显示名称
+|--------|:------------------------------------------|
+|uri     |/openwx/sticky_group|
+|请求方法|GET\|POST|
+|请求参数|**id**: 群组的id<br>**displayname**: 群组当前显示名称(参数中包含中文需要做urlencode)<br>**op**:  1表示置顶,0表示取消置顶|
+|数据格式|application/x-www-form-urlencoded|
+|调用示例|http://127.0.0.1:3000/openwx/sticky_group?id=xxxxxx&op=1<br>http://127.0.0.1:3000/openwx/sticky_group?id=xxxxxx&op=0|
+
+返回JSON结果:
+
+```
+{
+    "status":"success",
+    "code":0  #成功状态码为0，失败为非0
+}
+
+
+### 14. 设置群组的显示名称
 
 |   API  |设置群组的显示名称
 |--------|:------------------------------------------|
@@ -735,7 +754,7 @@ Server: Mojolicious (Perl)
 
 ```
 
-### 14. 向指定的群成员发送好友请求
+### 15. 向指定的群成员发送好友请求
 
 |   API  |向指定的群成员发送好友请求
 |--------|:------------------------------------------|
@@ -754,7 +773,7 @@ Server: Mojolicious (Perl)
 
 ```
 
-### 15. 获取用户或群组头像
+### 16. 获取用户或群组头像
 
 |   API  |获取用户或群组头像
 |--------|:------------------------------------------|
@@ -780,7 +799,7 @@ Server: Mojolicious (Perl)
 
 ```
 
-### 16. 获取程序运行信息
+### 17. 获取程序运行信息
 
 |   API  |获取进程运行信息
 |--------|:------------------------------------------|
@@ -808,7 +827,7 @@ Server: Mojolicious (Perl)
  }
  ```
  
-### 17. 终止程序运行
+### 18. 终止程序运行
 
 |   API  |终止程序运行
 |--------|:------------------------------------------|
@@ -830,7 +849,7 @@ Server: Mojolicious (Perl)
 }
 ```
 
-### 18. 上传媒体文件
+### 19. 上传媒体文件
 
 |   API  |上传媒体文件，获取media_id, 用于稍后发送
 |--------|:------------------------------------------|

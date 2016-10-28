@@ -1,11 +1,11 @@
-use Mojo::Util qw(decode url_escape);
-sub Mojo::Weixin::_webwxoplog {
+use Mojo::Util qw();
+sub Mojo::Weixin::_webwxoplog_sticky {
     my $self = shift;
-    my $friend_id = shift;
-    my $markname = shift;
+    my $id = shift;
+    my $op = shift // 1;
     my $api = 'https://' .$self->domain . '/cgi-bin/mmwebwx-bin/webwxoplog';
     my @query_string = (
-        pass_ticket => url_escape($self->pass_ticket),
+        pass_ticket => Mojo::Util::url_escape($self->pass_ticket),
     );
     #push @query_string,(pass_ticket =>  url_escape($self->pass_ticket)) if $self->pass_ticket;
     my $post = {
@@ -15,9 +15,9 @@ sub Mojo::Weixin::_webwxoplog {
             Skey        =>  $self->skey,
             DeviceID    =>  $self->deviceid,
         },
-        CmdId => 2,
-        RemarkName => decode("utf8",$markname),
-        UserName   => $friend_id,
+        CmdId => 3,
+        OP    => $op,
+        UserName   => $id,
     };
 
     my $json = $self->http_post($self->gen_url($api,@query_string),{json=>1,Referer=>'https://' . $self->domain . '/'},json=>$post); 

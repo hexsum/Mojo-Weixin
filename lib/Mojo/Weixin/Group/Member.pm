@@ -65,4 +65,8 @@ sub make_friend{
     my $self = shift;
     $self->client->make_friend($self,@_);
 }
+sub set_markname {
+    my $self = shift;
+    $self->client->set_markname($self,@_);
+}
 1;

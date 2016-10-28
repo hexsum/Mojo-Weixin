@@ -491,10 +491,38 @@ sub call{
         }
         else{$c->render(json=>{code=>100,status=>"object not found"});}
     };
-    any [qw(GET POST)] => '/openwx/set_friend_markname' => sub{
+    any [qw(GET POST)] => '/openwx/sticky_group' => sub{
         my $c = shift;
-        my($id,$account,$displayname,$markname,$new_markname)= map {defined $_?Encode::encode("utf8",$_):$_} ($c->param("id"),$c->param("account"),$c->param("displayname"),$c->param("markname"),$c->param("new_markname"));
-        my $object = $client->search_friend(id=>$id,account=>$account,displayname=>$displayname,markname=>$markname);
+        my($id,$displayname,$op)= map {defined $_?Encode::encode("utf8",$_):$_} ($c->param("id"),$c->param("displayname"),$c->param("op"));
+        my $object = $client->search_group(id=>$id,displayname=>$displayname);
+        if(defined $object){
+            if($object->sticky_group($op)){
+                $c->render(json=>{code=>0,status=>"success"});
+            }
+            else{
+                $c->render(json=>{code=>201,status=>"failure"});
+            }
+
+        }
+        else{$c->render(json=>{code=>100,status=>"object not found"});}
+    };
+    any [qw(GET POST)] => '/openwx/set_markname' => sub{
+        my $c = shift;
+        my($id,$markname,$new_markname,$group_id,$account,$displayname)= map {defined $_?Encode::encode("utf8",$_):$_} ($c->param("id"),$c->param("markname"),$c->param("new_markname"),$c->param("group_id"),$c->param("account"),$c->param("displayname"));
+        my $object;
+        if(defined $group_id){
+            my $group = $client->search_group(id=>$group_id);
+            if(not defined $group){
+                $c->render(json=>{code=>100,status=>"group not found"});
+                return;
+            }
+            else{
+                $object = $group->search_group_member(id=>$id);
+            }
+        }
+        else{
+            $object = $client->search_friend(id=>$id,account=>$account,displayname=>$displayname,markname=>$markname);
+        }
         if(defined $object){
             if($object->set_markname($new_markname)){
                 $c->render(json=>{code=>0,status=>"success"});
