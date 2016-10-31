@@ -169,7 +169,7 @@ sub remove_group{
 sub is_group{
     my $self = shift;
     my $gid = shift;
-    return index($gid,'@@')==0?1:0;
+    return $gid=~/^\@\@|\@chatroom$/ ? 1 : 0;
 }
 sub code2sex{
     my $c = shift;

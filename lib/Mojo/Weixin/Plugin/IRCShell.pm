@@ -161,6 +161,7 @@ sub call{
 
         elsif($msg->type eq "group_message"){
             my $member = $msg->sender;
+            #return if not defined $member;
             return if @groups and not first {$member->group->displayname eq $_} @groups;
             my $user = $ircd->search_user(id=>$member->id,virtual=>1) || $ircd->search_user(nick=>$member->displayname,virtual=>0);
             my $channel = $ircd->search_channel(id=>$member->group->id) ||

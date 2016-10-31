@@ -4,6 +4,7 @@ use Mojo::Weixin::Group::Member;
 
 has 'id';
 has 'uid';
+has 'owner_uid';
 has name => '';
 has member => sub{[]};
 has _avatar => '';

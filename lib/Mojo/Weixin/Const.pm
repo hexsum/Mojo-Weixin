@@ -47,6 +47,7 @@ our %KEY_MAP_GROUP = qw(
     id      UserName
     uid     Uin
     name    NickName
+    owner_uid    OwnerUin
     _avatar  HeadImgUrl
 );
 our %KEY_MAP_GROUP_MEMBER = qw(
