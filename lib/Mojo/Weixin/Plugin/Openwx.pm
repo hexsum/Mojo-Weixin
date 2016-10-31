@@ -12,7 +12,8 @@ sub call{
     my $data   =  shift;
     my $post_api = $data->{post_api} if ref $data eq "HASH";
     $data->{post_media_data} = 1 if not defined $data->{post_media_data};
-    $data->{post_event_list} = [qw(login stop state_change input_qrcode)] if ref $data->{post_event_list} ne 'ARRAY'; 
+    $data->{post_event_list} = [qw(login stop state_change input_qrcode new_group new_friend new_group_member lose_group lose_friend lose_group_member)] 
+        if ref $data->{post_event_list} ne 'ARRAY'; 
 
     if(defined $post_api){
         $client->on(all_event => sub{

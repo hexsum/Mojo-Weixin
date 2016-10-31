@@ -437,7 +437,7 @@ Server: Mojolicious (Perl)
 
 可以在Openwx插件中，通过 `post_event_list` 参数来指定上报的事件
 
-默认 `post_event_list => ['login','stop','state_change','input_qrcode']`
+默认 `post_event_list => ['login','stop','state_change','input_qrcode','new_group','new_friend','new_group_member','lose_group','lose_friend','lose_group_member']`
 
 需要注意：属性变化类的事件可能触发的会比较频繁，导致产生大量的上报请求，默认不开启
 
