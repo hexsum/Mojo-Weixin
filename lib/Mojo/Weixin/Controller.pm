@@ -396,7 +396,7 @@ get '/openwx/check_client' => sub{
                 my $state_path = $c->stash('wxc')->backend->{$client}{_state_path};
                 my $json = $c->stash('wxc')->decode_json($c->stash('wxc')->slurp($state_path));
                 $json->{port} = $c->stash('wxc')->backend->{$client}{port};
-                $c->render(json=>{code=>0,client=>$json});
+                $c->render(json=>{code=>0,client=>[$json]});
             };
             if($@){
                 $c->stash('wxc')->warn("读取客户端state文件失败: $@");
