@@ -94,7 +94,7 @@ sub new {
         $self->clean_pid();
         $self->stop();
     };
-    $0 = 'wxcontroller';
+    $0 = 'wxcontroller' if $^O ne 'MSWin32';
     $Mojo::Weixin::Controller::_CONTROLLER = $self;
     $self;
 }
@@ -115,7 +115,7 @@ sub load_backend {
     my $self = shift;
     my $backend_path = $self->backend_path;
     return if not -f $backend_path;
-    eval{require Storable;$self->backend(Storable::retrieve($backend_path))};
+    eval{$self->backend(Storable::retrieve($backend_path))};
     if($@){
         $self->warn("Controller加载backend失败: $@");
         return;
@@ -173,14 +173,14 @@ sub kill_process {
 sub check_process {
     my $self = shift;
     if(!$_[0] or $_[0]!~/^\d+$/){
-        $self->error("pid无效，无法终止进程");
+        $self->error("pid无效，无法检测进程");
         return;
     }
     #if($^O  eq "MSWin32"){
     #    my $p;
     #    return Win32::Process::Open($p,$_[0],0);
     #}
-    else{ kill 0,$_[0] ;}
+    kill 0,$_[0];
 }
 sub start_client {
     my $self = shift;
@@ -224,7 +224,7 @@ use Mojo::Weixin;
 my $client = Mojo::Weixin->new(log_head=>"[$ENV{MOJO_WEIXIN_ACCOUNT}][$$]");
 $0 = "wxclient(" . $client->account . ")" if $^O ne "MSWin32";
 $SIG{INT} = 'IGNORE' if ($^O ne 'MSWin32' and !-t);
-$client->load(["ShowMsg","UploadQRcode","ShowQRcode"]);
+$client->load(["ShowMsg","UploadQRcode"]);
 $client->load("Openwx",data=>{listen=>[{host=>"127.0.0.1",port=>$ENV{MOJO_WEIXIN_PLUGIN_OPENWX_PORT} }], post_api=>$ENV{MOJO_WEIXIN_PLUGIN_OPENWX_POST_API} || undef,post_event=>$ENV{MOJO_WEIXIN_PLUGIN_OPENWX_POST_EVENT} // 1,post_media_data=> $ENV{MOJO_WEIXIN_PLUGIN_OPENWX_POST_MEDIA_DATA} // 1},call_on_load=>1);
 $client->run();
 MOJO_WEIXIN_CLIENT_TEMPLATE
@@ -239,8 +239,13 @@ MOJO_WEIXIN_CLIENT_TEMPLATE
             $self->warn("perl路径包含空格或中文可能导致客户端创建失败: [" . $self->encode("utf8",$p) . "]");
         }
         if(Win32::Process::Create($process,$Config{perlpath},'perl ' . $self->template_path,0,CREATE_NEW_PROCESS_GROUP,".") ){
+            
+            my $pid;eval{$pid = $process->GetProcessID()};
+            if($pid!~/^\d+$/){
+                return {code=>4,status=>'client pid not ok' };
+            }
             $self->backend->{$param->{client}} = $param;
-            $self->backend->{$param->{client}}{pid} = $process->GetProcessID();
+            $self->backend->{$param->{client}}{pid} = $pid;
             $self->backend->{$param->{client}}{port} = $backend_port;
             $self->backend->{$param->{client}}{_tmpdir} = $ENV{MOJO_WEIXIN_TMPDIR};
             $self->backend->{$param->{client}}{_state_path} = $ENV{MOJO_WEIXIN_STATE_PATH};
@@ -273,7 +278,10 @@ MOJO_WEIXIN_CLIENT_TEMPLATE
             exec $Config{perlpath} || 'perl',$template_path;
         }
         else{
-            sleep 2;
+            sleep 1;
+            if($pid!~/^\d+$/){
+                return {code=>4,status=>'client pid not ok' };
+            }
             $self->backend->{$param->{client}} = $param;
             $self->backend->{$param->{client}}{pid} = $pid;
             $self->backend->{$param->{client}}{port} = $backend_port;

@@ -304,6 +304,11 @@ sub check_pid {
         else{
             my $pid = $self->slurp($self->pid_path);
             if( $pid=~/^\d+$/ and kill(0, $pid) ){
+                # my $p;
+                #if($^O eq 'MSWin32' and Win32::Process::Open($p,$pid,0)){
+                #    $self->warn("检测到该账号有其他运行中的客户端(pid:$pid), 请先将其关闭");
+                #    $self->stop(); 
+                #}
                 $self->warn("检测到该账号有其他运行中的客户端(pid:$pid), 请先将其关闭");
                 $self->stop();
             }
