@@ -430,6 +430,10 @@ any '/*whatever'  => sub{
         $c->render(json=>{code => 1, status=>'client not found',});
         return;
     }
+    elsif(!exists $c->stash('wxc')->backend->{$client}){
+        $c->render(json => {code => 1, status=>'client not exists',});
+        return;
+    }
     $c->render_later;
     my $tx = Mojo::Transaction::HTTP->new(req=>$c->req->clone);
     $tx->req->url->host("127.0.0.1");
