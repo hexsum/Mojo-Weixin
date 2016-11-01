@@ -423,10 +423,10 @@ get '/openwx/check_client' => sub{
         }
     }
 };
-any '/*whatever'  => sub{
+any '/openwx/*whatever'  => sub{
     my $c = shift;
-    my $client = $c->param('client');
-    if(not $client){
+    my $client = $c->param("client");
+    if(!$client){
         $c->render(json=>{code => 1, status=>'client not found',});
         return;
     }
@@ -447,7 +447,7 @@ any '/*whatever'  => sub{
         $c->rendered;
     });
 };
-#any '/*whatever'  => sub{whatever=>'',$_[0]->render(text=>"api not found",status=>403)};
+any '/*whatever'  => sub{whatever=>'',$_[0]->render(json=>{code=>-1,status=>"api not found"},status=>403)};
 package Mojo::Weixin::Controller;
 
 sub can_bind {
