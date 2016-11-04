@@ -3,9 +3,10 @@ sub Mojo::Weixin::_synccheck{
     if($self->_sync_running or $self->_synccheck_running){
         #$self->_synccheck_running(0);
         $self->emit("synccheck_over",undef,undef,1);
-        #$self->warn("消息处理程序进行中，避免重复运行");
+        $self->debug("消息处理程序进行中，避免重复运行(1)");
         return;
     }
+    $self->debug("检查消息...");
     $self->_synccheck_running(1);
     my $api = "https://webpush.". $self->domain . "/cgi-bin/mmwebwx-bin/synccheck";
     my $callback = sub {

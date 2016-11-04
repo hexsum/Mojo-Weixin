@@ -1,7 +1,11 @@
 use Mojo::Util qw(url_escape);
 sub Mojo::Weixin::_sync {
     my $self = shift;
-    return if ($self->_synccheck_running or $self->_sync_running);
+    if($self->_synccheck_running or $self->_sync_running){
+        $self->debug("消息处理程序进行中，避免重复运行(2)");
+        return;
+    }
+    $self->debug("接收消息...");
     $self->_sync_running(1);
     my $api = 'https://'. $self->domain . '/cgi-bin/mmwebwx-bin/webwxsync';
     my @query_string = (
