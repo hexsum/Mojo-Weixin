@@ -334,7 +334,10 @@ sub _parse_sync_data {
                     $msg->{content}=~s/<br\/>/\n/g;
                     require Mojo::DOM;
                     my $dom = Mojo::DOM->new($msg->{content});
-                    return if $dom->at('msg > appmsg > type')->content != 5;
+                    if( $dom->at('msg > appmsg > type')->content != 5){
+                        $msg->{content} = "[应用分享]标题：$msg->{app_title}\n[应用分享]链接：$msg->{app_url}"; 
+                        return;
+                    }
                     $msg->{app_id} = $dom->at('msg > appmsg')->attr->{appid};
                     $msg->{app_title} = $dom->at('msg > appmsg > title')->content;
                     $msg->{app_name} = $dom->at('msg > appinfo > appname')->content;
