@@ -10,10 +10,10 @@ sub Mojo::Weixin::_synccheck{
     $self->_synccheck_running(1);
     my $api = "https://webpush.". $self->domain . "/cgi-bin/mmwebwx-bin/synccheck";
     my $callback = sub {
-        my ($data,$ua,$tx) = @_;
+        my $data = shift;
         #window.synccheck={retcode:"0",selector:"0"}
         $self->_synccheck_running(0);
-        if(defined $data and defined $tx and $tx->res->code == 200){
+        if(defined $data){
             my($retcode,$selector) = $data=~/window\.synccheck=\{retcode:"([^"]+)",selector:"([^"]+)"\}/g;
             $self->emit("synccheck_over",$retcode,$selector,1); 
         }

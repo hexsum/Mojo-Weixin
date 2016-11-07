@@ -117,11 +117,12 @@ sub ready {
         my($retcode,$selector,$status) = @_;
         $self->debug("检查消息结果异常") if not $status;
         $self->_parse_synccheck_data($retcode,$selector);
-        $self->timer(  ($status? $self->synccheck_interval() : 15)  , sub{$self->_synccheck()});
+        $self->timer($self->_synccheck_interval, sub{$self->_synccheck()});
     });
     $self->on(sync_over=>sub{
         my $self = shift;
-        my $json = shift;
+        my ($json,$status) = @_;
+        $self->_synccheck_interval($status?$self->synccheck_interval:$self->synccheck_interval+$self->synccheck_delay);
         $self->_parse_sync_data($json);
     });
     $self->on(run=>sub{
