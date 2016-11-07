@@ -187,7 +187,7 @@ Mojo-Weixin v1.2.2 [![Build Status](https://travis-ci.org/sjdy521/Mojo-Weixin.sv
         use Mojo::Weixin;
         my ($host,$port,$post_api);
         
-        $host = "0.0.0.0"; #发送消息接口监听地址，修改为自己希望监听的地址
+        $host = "0.0.0.0"; #发送消息接口监听地址，没有特殊需要请不要修改
         $port = 3000;      #发送消息接口监听端口，修改为自己希望监听的端口
         #$post_api = 'http://xxxx';  #接收到的消息上报接口，如果不需要接收消息上报，可以删除或注释此行
         

@@ -81,7 +81,7 @@ wxclient:
     use Mojo::Weixin::Controller;
     my ($host,$port,$post_api);
 
-    $host = "0.0.0.0"; #Controller API server 监听地址
+    $host = "0.0.0.0"; #Controller API server 监听地址，没有有特殊需要请不要修改
     $port = 2000;      #Controller API server 监听端口，修改为自己希望监听的端口
     #$post_api = 'http://xxxx';  #每个微信帐号接收到的消息上报接口，如果不需要接收消息上报，可以删除或注释此行
 
