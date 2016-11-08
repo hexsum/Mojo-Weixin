@@ -21,7 +21,7 @@
         post_api=> $post_api,                        #可选，接收消息或事件的上报地址
         post_event => 1,                             #可选，是否上报事件，为了向后兼容性，默认值为0
         post_media_data => 0,                        #可选，是否上报经过base64编码的图片原始数据，默认值为1
-        post_event_list => ['login','stop','state_change','input_qrcode'], #可选，上报事件列表，更多说明参考 事件上报 相关文档
+        post_event_list => ['login','stop','state_change','input_qrcode'], #可选，上报事件列表，更多说明参考下文 事件上报 相关文档
         poll_api  => $poll_api,                      #可选，从外网调用内网程序的api时需要使用到，默认不启用
         poll_interval   => 5,                        #可选，长轮询请求间隔，默认5s
     });
@@ -41,13 +41,13 @@
 
 内网的客户端程序会请求`poll_api`地址，大多数情况下，这个请求会长时间阻塞等待，服务端不返回任何数据（服务端逻辑需要你自己去实现）
 
-请求超时断开后，会间隔`poll_interval` 秒后继续重复发起请求，如此往复
+服务端响应结果或者请求超时断开后，会间隔`poll_interval` 秒后继续重复发起请求，如此往复
 
 当外网的服务端希望内网的客户端程序调用某个api接口时，比如希望内网的客户端调用`/openwx/send_friend_message`接口给指定的好友发消息
 
 服务端通过HTTP协议的302 Location返回需要访问的完整api地址 
 
-    `http://127.0.0.1:3000/openwx/send_friend_message?id=xxx&content=xxxx`
+    http://127.0.0.1:3000/openwx/send_friend_message?id=xxx&content=xxxx
 
 客户端收到302的响应后会自动请求跳转后的地址（客户端自己请求自己本机127.0.0.1的api地址）实现发送消息
 
