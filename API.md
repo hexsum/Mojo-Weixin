@@ -4,22 +4,65 @@
 
 可以直接把如下代码保存成一个源码文件(必须使用UTF8编码)，使用 perl 解释器来运行
 
+```
     #!/usr/bin/env perl
     use Mojo::Weixin;
-    my ($host,$port,$post_api);
+    my ($host,$port,$post_api,$poll_api);
     
     $host = "0.0.0.0"; #发送消息接口监听地址，没有特殊需要请不要修改
     $port = 3000;      #发送消息接口监听端口，修改为自己希望监听的端口
     #$post_api = 'http://xxxx';  #接收到的消息上报接口，如果不需要接收消息上报，可以删除或注释此行
+    #$poll_api = 'http://xxxx';  #长轮询的请求地址，默认注释或删掉此行，更多说明参见下文 内网穿透 相关文档
     
     my $client = Mojo::Weixin->new(log_level=>"info",http_debug=>0);
     $client->load("ShowMsg");
-    $client->load("Openwx",data=>{listen=>[{host=>$host,port=>$port}], post_api=>$post_api});
+    $client->load("Openwx",data=>{
+        listen => [{host=>$host,port=>$port}],       #可选，发送消息api监听端口
+        post_api=> $post_api,                        #可选，接收消息或事件的上报地址
+        post_event => 1,                             #可选，是否上报事件，为了向后兼容性，默认值为0
+        post_media_data => 0,                        #可选，是否上报经过base64编码的图片原始数据，默认值为1
+        post_event_list => ['login','stop','state_change','input_qrcode'], #可选，上报事件列表，更多说明参考 事件上报 相关文档
+        poll_api  => $poll_api,                      #可选，从外网调用内网程序的api时需要使用到，默认不启用
+        poll_interval   => 5,                        #可选，长轮询请求间隔，默认5s
+    });
     $client->run();
+    
+```
 
 上述代码保存成 xxxx.pl 文件，然后使用 perl 来运行，就会完成 微信 登录并在本机产生一个监听指定地址端口的 http server
 
     $ perl xxxx.pl
+
+### 关于内网穿透的说明
+
+如果你的程序是部署在内网环境，而又希望通过外网的服务器去调用内网的api，实现发送消息等功能
+
+你会需要用到 `Openwx插件` 中的 `poll_api`参数，原理就是：
+
+内网的客户端程序会请求`poll_api`地址，大多数情况下，这个请求会长时间阻塞等待，服务端不返回任何数据（服务端逻辑需要你自己去实现）
+
+请求超时断开后，会间隔`poll_interval` 秒后继续重复发起请求，如此往复
+
+当外网的服务端希望内网的客户端程序调用某个api接口时，比如希望内网的客户端调用`/openwx/send_friend_message`接口给指定的好友发消息
+
+服务端通过HTTP协议的302 Location返回需要访问的完整api地址 
+
+    `http://127.0.0.1:3000/openwx/send_friend_message?id=xxx&content=xxxx`
+
+客户端收到302的响应后会自动请求跳转后的地址（客户端自己请求自己本机127.0.0.1的api地址）实现发送消息
+
+```
+> GET /poll_url HTTP/1.1
+> User-Agent: curl/7.29.0
+> Host: www.example.com
+> Accept: */*
+> 
+< HTTP/1.1 302 Found
+< Location: http://127.0.0.1:3000/openwx/send_friend_message?id=filehelper&content=hello
+< Date: Tue, 08 Nov 2016 14:00:15 GMT
+< Content-Length: 0
+
+```
 
 ### 1. 获取用户数据
 |   API  |获取用户数据
