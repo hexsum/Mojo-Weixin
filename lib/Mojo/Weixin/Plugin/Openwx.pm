@@ -18,12 +18,8 @@ sub call{
 
     if(defined $poll_api){
         $client->on('_mojo_weixin_plugin_openwx_poll_over' => sub{
-            $client->http_get($poll_api,{json=>1},sub{
-                my $json = shift;
-                if(defined $json){
-                     
-                }
-                $client->emit('_mojo_weixin_plugin_openwx_poll_over');
+            $client->http_get($poll_api,sub{
+                $client->timer($data->{poll_interval} || 5,sub {$client->emit('_mojo_weixin_plugin_openwx_poll_over');});
             });
         });
         $client->emit('_mojo_weixin_plugin_openwx_poll_over');
