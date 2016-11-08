@@ -11,10 +11,23 @@ sub call{
     my $client = shift;
     my $data   =  shift;
     my $post_api = $data->{post_api} if ref $data eq "HASH";
+    my $poll_api = $data->{poll_api} if ref $data eq "HASH";
     $data->{post_media_data} = 1 if not defined $data->{post_media_data};
     $data->{post_event_list} = [qw(login stop state_change input_qrcode new_group new_friend new_group_member lose_group lose_friend lose_group_member)] 
         if ref $data->{post_event_list} ne 'ARRAY'; 
 
+    if(defined $poll_api){
+        $client->on('_mojo_weixin_plugin_openwx_poll_over' => sub{
+            $client->http_get($poll_api,{json=>1},sub{
+                my $json = shift;
+                if(defined $json){
+                     
+                }
+                $client->emit('_mojo_weixin_plugin_openwx_poll_over');
+            });
+        });
+        $client->emit('_mojo_weixin_plugin_openwx_poll_over');
+    }
     if(defined $post_api){
         $client->on(all_event => sub{
             my($client,$event,@args) =@_;

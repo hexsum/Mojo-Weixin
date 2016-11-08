@@ -30,6 +30,7 @@ sub model_init{
         $self->info("更新个人信息成功");
         $self->user(Mojo::Weixin::User->new($user));
         $self->_webwxstatusnotify($self->user->id,3);
+        $self->emit(update_user=>$self->user);
     }
     my $contactinfo = $self->_webwxgetcontact();
     if(not defined $contactinfo){
@@ -40,6 +41,7 @@ sub model_init{
     if(ref $friends eq "ARRAY" and @$friends>0){
         $self->friend([ map {Mojo::Weixin::Friend->new($_)} grep {$_->{id} ne $user->{id}} @$friends ]);
         $self->info("更新好友信息成功");
+        $self->emit(update_friend=>$self->friend);
     }
 
     my %groups_id;
@@ -60,6 +62,7 @@ sub model_init{
             if(ref $groups eq "ARRAY" and @$groups >0){
                 $self->group([ map { Mojo::Weixin::Group->new($_) } @$groups ]);
                 $self->info("更新群组[ @{[$_->displayname]} ]信息成功") for $self->groups;
+                $self->emit(update_group=>$self->group);
             }
         }
         else{
