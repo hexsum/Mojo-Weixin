@@ -1069,9 +1069,13 @@ Linux系统下直接打印二维码到终端，作者 hyvinlam L<https://github.
         auth   => sub {my($param,$controller) = @_},    #可选，认证回调函数，用于进行请求鉴权
         post_api => 'http://xxxx',                      #可选，你自定义的接收消息上报接口
         post_event => 1,                                #可选，是否上报事件，为了向后兼容性，默认值为0
-        post_media_data => 1,                        #可选，是否上报经过base64编码的图片原始数据，默认值为1
+        post_media_data => 1,                           #可选，是否上报经过base64编码的图片原始数据，默认值为1
         post_event_list => ['login','stop','state_change','input_qrcode'], #可选，上报事件列表
+        #poll_api  => 'http://xxxx',                     #可选，从外网调用内网程序的api时需要使用到，默认不启用
+        #poll_interval   => 5,                           #可选，长轮询请求间隔，默认5s
     });
+
+    #关于 poll_api 参数的说明，参见L<https://github.com/sjdy521/Mojo-Weixin/blob/master/API.md#关于内网穿透的说明>
 
     #若data中设置了auth函数引用，则表示api接口开启认证
     #认证函数返回值为真，认证通过，函数返回值为假，认证失败，接口返回403
