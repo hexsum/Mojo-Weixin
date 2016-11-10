@@ -98,11 +98,13 @@ Mojo-Weixin v1.2.2 [![Build Status](https://travis-ci.org/sjdy521/Mojo-Weixin.sv
   
     安装之前请先确认下你的系统是否已经安装了Perl，因为除了windows，其他大部分的平台默认都可能已经预装过
 
-    并且你的Perl版本至少5.10.1+，推荐5.14+，如果你的perl版本较低，想要升级perl，可以考虑使用工具[perlbrew](https://perlbrew.pl/)
+    并且你的Perl版本至少5.10.1+，推荐5.14+
 
     [Perl官网下载页面](https://www.perl.org/get.html) 有包含Unix/Linux、Mac OS X、Windows多平台比较全面详细的安装说明
 
     建议大家尽量选择**Binaries**（二进制预编译）的版本，安装即可使用，比较方便
+
+    Linux上如果你的perl版本较低，想要升级perl，可以考虑使用工具[perlbrew](https://perlbrew.pl/)
 
   |平台   |推荐选择|下载地址
   |-------|--------|-------------|
