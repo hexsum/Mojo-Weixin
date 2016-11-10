@@ -740,7 +740,7 @@ Server: Mojolicious (Perl)
 
 ```
 
-### 12. 修改好友或群成员备注名称
+### 12. 修改好友或群成员备注名称（修改群成员备注的功能疑似被官方屏蔽）
 
 |   API  |修改好友或群成员备注名称
 |--------|:------------------------------------------|
@@ -749,6 +749,9 @@ Server: Mojolicious (Perl)
 |请求参数|**id**: 好友或群成员的id<br>**account**: 好友的帐号<br>**displayname**: 好友当前显示名称<br>**markname**: 好友当前备注名称<br>**new_markname**:设置的新备注名称 (参数中包含中文需要做urlencode)|
 |数据格式|application/x-www-form-urlencoded|
 |调用示例|http://127.0.0.1:3000/openwx/set_markname?id=xxxxxx&new_markname=xxxx<br>http://127.0.0.1:3000/openwx/set_markname?account=xxxxxx&new_markname=xxxx<br>http://127.0.0.1:3000/openwx/set_markname?id=xxxxxx&group_id=xxxx&new_markname=xxxx|
+
+注意：修改群成员备注的功能疑似被官方屏蔽，api调用即使返回成功可能也没有真正的生效，建议暂时不要使用
+
 返回JSON结果:
 
 ```
