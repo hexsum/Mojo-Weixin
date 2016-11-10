@@ -24,6 +24,7 @@ has backend => sub{+{}};
 has ioloop  => sub {Mojo::IOLoop->singleton};
 has backend_start_port => 3000;
 has post_api => undef;
+has poll_api => undef;
 has server =>  sub { Mojo::Weixin::Server->new };
 has listen => sub { [{host=>"0.0.0.0",port=>2000},] };
 has ua  => sub {Mojo::UserAgent->new(connect_timeout=>3,inactivity_timeout=>3,request_timeout=>3)};
@@ -38,6 +39,7 @@ has log_level           => 'info';     #debug|info|warn|error|fatal
 has log_path            => undef;
 has log_encoding        => undef;      #utf8|gbk|...
 has log_head            => "[wxc][$$]";
+has log_console         => 1;
 
 has version             => sub{$Mojo::Weixin::Controller::VERSION};
 
@@ -47,6 +49,7 @@ has log     => sub{
         encoding    =>  $_[0]->log_encoding,
         path        =>  $_[0]->log_path,
         level       =>  $_[0]->log_level,
+        console_output => $_[0]->log_console,
         format      =>  sub{
             my ($time, $level, @lines) = @_;
             my $title = "";
@@ -196,10 +199,16 @@ sub start_client {
     my $backend_port = empty_port({host=>'127.0.0.1',port=>$self->backend_start_port,proto=>'tcp'});
     return {code => 2, status=>'no available port',client=>$param->{client}} if not defined $backend_port;
     my $post_api = $param->{post_api} || $self->post_api;
+    my $poll_api = $param->{poll_api} || $self->poll_api;
     if(defined $post_api){
         my $url = Mojo::URL->new($post_api);
         $url->query->merge(client=>$param->{client});
         $post_api =  $url->to_string;
+    }
+    if(defined $poll_api){
+        my $url = Mojo::URL->new($poll_api);
+        $url->query->merge(client=>$param->{client});
+        $poll_api =  $url->to_string;
     }
     $param->{account} = $param->{client};
     $self->reform_hash($param);
@@ -213,6 +222,7 @@ sub start_client {
     }
     $ENV{MOJO_WEIXIN_PLUGIN_OPENWX_PORT} = $backend_port;
     $ENV{MOJO_WEIXIN_PLUGIN_OPENWX_POST_API} = $post_api;
+    $ENV{MOJO_WEIXIN_PLUGIN_OPENWX_POLL_API} = $poll_api;
     $ENV{MOJO_WEIXIN_TMPDIR} = $self->tmpdir if not defined $ENV{MOJO_WEIXIN_TMPDIR};
     $ENV{MOJO_WEIXIN_STATE_PATH} = File::Spec->catfile($ENV{MOJO_WEIXIN_TMPDIR},join('','mojo_weixin_state_',$ENV{MOJO_WEIXIN_ACCOUNT},'.json')) if not defined $ENV{MOJO_WEIXIN_STATE_PATH};
     $ENV{MOJO_WEIXIN_QRCODE_PATH} = File::Spec->catfile($ENV{MOJO_WEIXIN_TMPDIR},join('','mojo_weixin_qrcode_',$ENV{MOJO_WEIXIN_ACCOUNT},'.jpg')) if not defined $ENV{MOJO_WEIXIN_QRCODE_PATH};
@@ -226,7 +236,7 @@ my $client = Mojo::Weixin->new(log_head=>"[$ENV{MOJO_WEIXIN_ACCOUNT}][$$]");
 $0 = "wxclient(" . $client->account . ")" if $^O ne "MSWin32";
 $SIG{INT} = 'IGNORE' if ($^O ne 'MSWin32' and !-t);
 $client->load(["ShowMsg","UploadQRcode"]);
-$client->load("Openwx",data=>{listen=>[{host=>"127.0.0.1",port=>$ENV{MOJO_WEIXIN_PLUGIN_OPENWX_PORT} }], post_api=>$ENV{MOJO_WEIXIN_PLUGIN_OPENWX_POST_API} || undef,post_event=>$ENV{MOJO_WEIXIN_PLUGIN_OPENWX_POST_EVENT} // 1,post_media_data=> $ENV{MOJO_WEIXIN_PLUGIN_OPENWX_POST_MEDIA_DATA} // 1},call_on_load=>1);
+$client->load("Openwx",data=>{listen=>[{host=>"127.0.0.1",port=>$ENV{MOJO_WEIXIN_PLUGIN_OPENWX_PORT} }], post_api=>$ENV{MOJO_WEIXIN_PLUGIN_OPENWX_POST_API} || undef,post_event=>$ENV{MOJO_WEIXIN_PLUGIN_OPENWX_POST_EVENT} // 1,post_media_data=> $ENV{MOJO_WEIXIN_PLUGIN_OPENWX_POST_MEDIA_DATA} // 1, poll_api=>$ENV{MOJO_WEIXIN_PLUGIN_OPENWX_POLL_API} || undef},call_on_load=>1);
 $client->run();
 MOJO_WEIXIN_CLIENT_TEMPLATE
         $self->spurt($template,$self->template_path);
@@ -349,27 +359,46 @@ sub run {
 package Mojo::Weixin::Controller::App;
 use Mojolicious::Lite;
 use Mojo::Transaction::HTTP;
+helper safe_render =>sub {
+    my $c = shift;
+    $c->render(@_) if (defined $c->tx and !$c->tx->is_finished);
+};
+under sub {
+    my $c = shift;
+    if(ref $data eq "HASH" and ref $data->{auth} eq "CODE"){
+        my $hash  = $c->req->params->to_hash;
+        $client->reform_hash($hash);
+        my $ret = 0;
+        eval{
+            $ret = $data->{auth}->($hash,$c);
+        };
+        $client->warn("插件[Mojo::Weixin::Controller]认证回调执行错误: $@") if $@;
+        $c->safe_render(text=>"auth failure",status=>403) if not $ret;
+        return $ret;
+    }
+    else{return 1}
+};
 get '/openwx/start_client' => sub{
     my $c = shift;
     my $hash   = $c->req->params->to_hash;
     my $result =  $c->stash('wxc')->start_client($hash);
-    $c->render(json=>$result);
+    $c->safe_render(json=>$result);
 };
 get '/openwx/stop_client' => sub{
     my $c = shift;
     my $hash   = $c->req->params->to_hash;
     my $result = $c->stash('wxc')->stop_client($hash);
-    $c->render(json=>$result);
+    $c->safe_render(json=>$result);
 };
 get '/openwx/get_qrcode' => sub{
     my $c = shift;
     my $client = $c->param("client");
     if(!$client){
-        $c->render(json=>{code => 1, status=>'client not found',});
+        $c->safe_render(json=>{code => 1, status=>'client not found',});
         return;
     }
     elsif(!exists $c->stash('wxc')->backend->{$client}){
-        $c->render(json => {code => 1, status=>'client not exists',});
+        $c->safe_render(json => {code => 1, status=>'client not exists',});
         return;
     }
     eval{
@@ -377,11 +406,11 @@ get '/openwx/get_qrcode' => sub{
         my $data = $c->stash('wxc')->slurp($qrcode_path);
         $c->res->headers->cache_control('no-cache');
         $c->res->headers->content_type('image/jpg');
-        $c->render(data=>$data,);
+        $c->safe_render(data=>$data,);
     };
     if($@){
         $c->stash('wxc')->warn("读取客户端二维码失败: $@");
-        $c->render(text=>"",status=>404);
+        $c->safe_render(text=>"",status=>404);
     }
 };
 get '/openwx/check_client' => sub{
@@ -389,7 +418,7 @@ get '/openwx/check_client' => sub{
     my $client = $c->param("client");
     if(defined $client){
         if(!exists $c->stash('wxc')->backend->{$client}){
-            $c->render(json => {code => 1, status=>'client not exists',});
+            $c->safe_render(json => {code => 1, status=>'client not exists',});
             return;
         }
         else{
@@ -397,12 +426,12 @@ get '/openwx/check_client' => sub{
                 my $state_path = $c->stash('wxc')->backend->{$client}{_state_path};
                 my $json = $c->stash('wxc')->decode_json($c->stash('wxc')->slurp($state_path));
                 $json->{port} = $c->stash('wxc')->backend->{$client}{port};
-                $c->render(json=>{code=>0,client=>[$json]});
+                $c->safe_render(json=>{code=>0,client=>[$json]});
             };
             if($@){
                 $c->stash('wxc')->warn("读取客户端state文件失败: $@");
-                #$c->render(json=>{code=>0,client=>[ $c->stash('wxc')->backend->{$client}, ] });
-                $c->render(json=>{code => 1,status=>"client state file read error"});
+                #$c->safe_render(json=>{code=>0,client=>[ $c->stash('wxc')->backend->{$client}, ] });
+                $c->safe_render(json=>{code => 1,status=>"client state file read error"});
             }
         }
     }
@@ -415,12 +444,12 @@ get '/openwx/check_client' => sub{
                 $json->{port} = $client->{port};
                 push @client,$json;
             }
-            $c->render(json=>{code=>0,client=>\@client});
+            $c->safe_render(json=>{code=>0,client=>\@client});
         };
         if($@){
             $c->stash('wxc')->warn("读取客户端state文件失败: $@");
-            #$c->render(json=>{code=>0,client=>[ values %{ $c->stash('wxc')->backend } ]});    
-            $c->render(json=>{code => 1,status=>"client state file read error"});
+            #$c->safe_render(json=>{code=>0,client=>[ values %{ $c->stash('wxc')->backend } ]});    
+            $c->safe_render(json=>{code => 1,status=>"client state file read error"});
         }
     }
 };
@@ -428,11 +457,11 @@ any '/openwx/*whatever'  => sub{
     my $c = shift;
     my $client = $c->param("client");
     if(!$client){
-        $c->render(json=>{code => 1, status=>'client not found',});
+        $c->safe_render(json=>{code => 1, status=>'client not found',});
         return;
     }
     elsif(!exists $c->stash('wxc')->backend->{$client}){
-        $c->render(json => {code => 1, status=>'client not exists',});
+        $c->safe_render(json => {code => 1, status=>'client not exists',});
         return;
     }
     $c->render_later;
@@ -448,7 +477,7 @@ any '/openwx/*whatever'  => sub{
         $c->rendered;
     });
 };
-any '/*whatever'  => sub{whatever=>'',$_[0]->render(json=>{code=>-1,status=>"api not found"},status=>403)};
+any '/*whatever'  => sub{whatever=>'',$_[0]->safe_render(json=>{code=>-1,status=>"api not found"},status=>403)};
 package Mojo::Weixin::Controller;
 
 sub can_bind {

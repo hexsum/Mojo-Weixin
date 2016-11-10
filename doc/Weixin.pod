@@ -132,7 +132,7 @@ Mojo::Weixin - A Weixin Client Framework base on Mojolicious
 =head3 客户端对象属性
 
     $client->log_level  #日志记录等级 默认info
-    $client->log_path   #日志记录路径，默认undef，打印到STDERR
+    $client->log_path   #日志记录路径，默认undef，打印到STDOUT
     $client->version    #客户端版本
 
     #获取客户端属性
@@ -154,8 +154,9 @@ Mojo::Weixin - A Weixin Client Framework base on Mojolicious
     keep_cookie     #默认为1，0表示不保存登录cookie，1表示保存登录cookie方便下次直接恢复登录
 
     log_level       #默认级别为info，可以设置debug|info|warn|error|fatal
-    log_path        #默认客户端输出内容打印到STDERR 设置该参数可以将客户端输出重定向到文件
+    log_path        #默认客户端输出内容打印到STDOUT 设置该参数可以将客户端输出重定向到文件
     log_unicode     #支持打印unicode字符，默认值为0 不开启
+    log_console     #打印到文件的同时也打印到屏幕，方便调试，默认 1
     log_encoding    #输出日志的编码，默认自动检测，如果出现乱码可以尝试手动设置一下输出编码
                     #编码必须是 Encode 模块支持的格式，比如utf8 gbk等
 

@@ -79,16 +79,18 @@ wxclient:
 
     #!/usr/bin/env perl
     use Mojo::Weixin::Controller;
-    my ($host,$port,$post_api);
+    my ($host,$port,$post_api,$poll_api);
 
     $host = "0.0.0.0"; #Controller API server 监听地址，没有有特殊需要请不要修改
     $port = 2000;      #Controller API server 监听端口，修改为自己希望监听的端口
     #$post_api = 'http://xxxx';  #每个微信帐号接收到的消息上报接口，如果不需要接收消息上报，可以删除或注释此行
+    #$poll_api = 'http://xxxx';  #可选，每个微信帐号内网穿透api地址，参见[内网穿透](https://github.com/sjdy521/Mojo-Weixin/blob/master/API.md#关于内网穿透的说明)文档说明，不需要可以删除或注释此行
 
     my $controller = Mojo::Weixin::Controller->new(
         listen              =>[{host=>$host,port=>$port} ], #监听的地址端口
         backend_start_port  => 3000, #可选，后端微信帐号分配的端口最小值
         post_api            => $post_api, #每个微信帐号上报的api地址
+        poll_api            => $poll_api, #可选，每个微信帐号内网穿透api地址
     #   tmpdir              => '/tmp', #可选，临时目录位置
     #   pid_path            => '/tmp/mojo_weixin_controller_process.pid', #可选，Controller进程的pid信息，默认tmpdir目录
     #   backend_path        => '/tmp/mojo_weixin_controller_backend.dat', #可选，后端微信帐号信息，默认tmpdir目录

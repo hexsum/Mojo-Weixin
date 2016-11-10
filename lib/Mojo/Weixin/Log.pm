@@ -11,7 +11,7 @@ has format => sub { \&_format };
 has handle => sub {
  
   # STDERR
-  return \*STDERR unless my $path = shift->path;
+  return \*STDOUT unless my $path = shift->path;
  
   # File
   croak qq{Can't open log file "$path": $!} unless open my $file, '>>', $path;
@@ -21,6 +21,7 @@ has history => sub { [] };
 has level => 'debug';
 has encoding => undef;
 has unicode_support => 0;
+has console_output  => 0;
 has max_history_size => 10;
 has 'path';
  
@@ -34,14 +35,19 @@ sub append {
   flock $handle, LOCK_EX;
   no strict;
   if($self->unicode_support and Encode::is_utf8($msg)){
-    $handle->print(encode($self->encoding || console_out,$msg)) or croak "Can't write to log: $!";
+    my $data = encode($self->encoding || console_out,$msg);
+    $handle->print($data) or croak "Can't write to log: $!";
+    print STDOUT $data if ($self->console_output and !-t $handle and -t STDOUT);
   }
   else{
     if( $self->encoding =~/^utf-?8$/i){
       $handle->print($msg) or croak "Can't write to log: $!";
+      print STDOUT $data if ($self->console_output and !-t $handle and -t STDOUT);
     }
     else{
-      $handle->print(encode($self->encoding || console_out,decode("utf8",$msg))) or croak "Can't write to log: $!";
+      my $data = encode($self->encoding || console_out,decode("utf8",$msg));
+      $handle->print($data) or croak "Can't write to log: $!";
+      print STDOUT $data if ($self->console_output and !-t $handle and -t STDOUT);
     }
   }
   flock $handle, LOCK_UN;

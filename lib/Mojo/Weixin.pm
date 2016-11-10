@@ -17,6 +17,7 @@ has log_path            => undef;
 has log_encoding        => undef;      #utf8|gbk|...
 has log_head            => undef;
 has log_unicode         => 0;
+has log_console         => 1;
 has download_media      => 1;
 
 has account             => sub{ $ENV{MOJO_WEIXIN_ACCUNT} || 'default'};
@@ -52,6 +53,7 @@ has log     => sub{
         path        =>  $_[0]->log_path,
         level       =>  $_[0]->log_level,
         unicode_support => $_[0]->log_unicode,
+        console_output  => $_[0]->log_console,
         format      =>  sub{
             my ($time, $level, @lines) = @_;
             my $title = "";
