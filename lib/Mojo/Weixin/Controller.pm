@@ -89,6 +89,7 @@ sub new {
     $self->check_client();
     $SIG{CHLD} =  'IGNORE';
     $SIG{INT} = $SIG{KILL} = $SIG{TERM} = $SIG{HUP} = sub{
+        $self->info("捕获到停止信号[$_[0]]，准备停止...");
         $self->info("正在停止Controller...");
         $self->save_backend();
         $self->clean_pid();

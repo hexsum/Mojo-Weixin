@@ -53,16 +53,15 @@ our %KEY_MAP_GROUP = qw(
 our %KEY_MAP_GROUP_MEMBER = qw(
     id          UserName
     uid         Uin
-    name        NickName
     account     Alias
     province    Province
     city        City
     signature   Signature
     sex         Sex
     display     DisplayName
-    markname    RemarkName
-    _avatar      HeadImgUrl
-);
+    markname    NickName
+    _avatar     HeadImgUrl
+);  #name       NickName 群成员获取不到真实的昵称，NickName只是备注,除非和你是好友关系 
 
 our %FACE_MAP_QQ = qw(
     微笑     0

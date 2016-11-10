@@ -218,6 +218,7 @@ sub set_markname {
         $self->die("无效的对象数据类型");
         return;
     }
+    $self->warn("设置群成员备注的功能当前可能已被官方屏蔽") if ref $object ne "Mojo::Weixin::Group::Member";
     my $displayname = $object->displayname;
     my $ret = $self->_webwxoplog_markname($object->id,$markname);
     if($ret){

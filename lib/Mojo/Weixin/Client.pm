@@ -115,7 +115,10 @@ sub ready {
         my $self = shift;
         $self->state('running');
         my($retcode,$selector,$status) = @_;
-        $self->debug("检查消息结果异常") if not $status;
+        if(not $status){#检查消息异常时，强制把检查消息(synccheck)间隔设置的更久，直到获取消息(sync)正常为止
+            $self->debug("检查消息结果异常");
+            $self->_synccheck_interval($self->synccheck_interval+$self->synccheck_delay);
+        }
         $self->_parse_synccheck_data($retcode,$selector);
         $self->timer($self->_synccheck_interval, sub{$self->_synccheck()});
     });

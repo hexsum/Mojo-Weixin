@@ -516,6 +516,20 @@ sub call{
         }
         else{$c->render(json=>{code=>100,status=>"object not found"});}
     };
+    any [qw(GET POST)] => '/openwx/set_friend_markname' => sub {
+        my $c = shift;
+        my($id,$markname,$new_markname,$account,$displayname)= map {defined $_?Encode::encode("utf8",$_):$_} ($c->param("id"),$c->param("markname"),$c->param("new_markname"),$c->param("account"),$c->param("displayname"));
+        my $object = $client->search_friend(id=>$id,account=>$account,displayname=>$displayname,markname=>$markname);
+        if(defined $object){
+            if($object->set_markname($new_markname)){
+                $c->render(json=>{code=>0,status=>"success"});
+            }
+            else{
+                $c->render(json=>{code=>201,status=>"failure"});
+            }
+        }
+        else{$c->render(json=>{code=>100,status=>"object not found"});}
+    };
     any [qw(GET POST)] => '/openwx/set_markname' => sub{
         my $c = shift;
         my($id,$markname,$new_markname,$group_id,$account,$displayname)= map {defined $_?Encode::encode("utf8",$_):$_} ($c->param("id"),$c->param("markname"),$c->param("new_markname"),$c->param("group_id"),$c->param("account"),$c->param("displayname"));
