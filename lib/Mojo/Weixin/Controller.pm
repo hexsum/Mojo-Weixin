@@ -1,5 +1,4 @@
 package Mojo::Weixin::Controller;
-our $VERSION = '1.0.0';
 use strict;
 use warnings;
 use Carp;
@@ -19,12 +18,14 @@ use if $^O eq "MSWin32",'Win32::Process';
 use if $^O eq "MSWin32",'Win32';
 #use base qw(Mojo::Weixin::Util Mojo::Weixin::Request);
 use base qw(Mojo::Weixin::Util);
+our $VERSION = $Mojo::Weixin::VERSION;
 
 has backend => sub{+{}};
 has ioloop  => sub {Mojo::IOLoop->singleton};
 has backend_start_port => 3000;
 has post_api => undef;
 has poll_api => undef;
+has auth     => undef;
 has server =>  sub { Mojo::Weixin::Server->new };
 has listen => sub { [{host=>"0.0.0.0",port=>2000},] };
 has ua  => sub {Mojo::UserAgent->new(connect_timeout=>3,inactivity_timeout=>3,request_timeout=>3)};
@@ -365,14 +366,14 @@ helper safe_render =>sub {
 };
 under sub {
     my $c = shift;
-    if(ref $data eq "HASH" and ref $data->{auth} eq "CODE"){
+    if(ref $c->stash('wxc')->auth eq "CODE"){
         my $hash  = $c->req->params->to_hash;
-        $client->reform_hash($hash);
+        $c->stash('wxc')->reform_hash($hash);
         my $ret = 0;
         eval{
-            $ret = $data->{auth}->($hash,$c);
+            $ret = $c->stash('wxc')->auth->($hash,$c);
         };
-        $client->warn("插件[Mojo::Weixin::Controller]认证回调执行错误: $@") if $@;
+        $c->stash('wxc')->warn("插件[Mojo::Weixin::Controller]认证回调执行错误: $@") if $@;
         $c->safe_render(text=>"auth failure",status=>403) if not $ret;
         return $ret;
     }
