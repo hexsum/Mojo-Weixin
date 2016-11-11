@@ -25,6 +25,7 @@ has ioloop  => sub {Mojo::IOLoop->singleton};
 has backend_start_port => 3000;
 has post_api => undef;
 has poll_api => undef;
+has poll_interval => 5;
 has auth     => undef;
 has server =>  sub { Mojo::Weixin::Server->new };
 has listen => sub { [{host=>"0.0.0.0",port=>2000},] };
@@ -99,7 +100,15 @@ sub new {
         $self->clean_pid();
         $self->stop();
     };
-    $0 = 'wxcontroller' if $^O ne 'MSWin32';
+    eval{$0 = 'wxcontroller';} if $^O ne 'MSWin32';
+    if(defined $self->poll_api){
+        $self->on('_mojo_weixin_controller_poll_over' => sub{
+            $self->debug("Polling: " . $self->poll_api);
+            $self->ua->get($self->poll_api,sub{
+                $self->ioloop->timer($self->poll_interval || 5,sub {$self->emit('_mojo_weixin_controller_poll_over');});
+            });
+        });
+    } 
     $Mojo::Weixin::Controller::_CONTROLLER = $self;
     $self;
 }
@@ -200,7 +209,7 @@ sub start_client {
     my $backend_port = empty_port({host=>'127.0.0.1',port=>$self->backend_start_port,proto=>'tcp'});
     return {code => 2, status=>'no available port',client=>$param->{client}} if not defined $backend_port;
     my $post_api = $param->{post_api} || $self->post_api;
-    my $poll_api = $param->{poll_api} || $self->poll_api;
+    my $poll_api = $param->{poll_api};
     if(defined $post_api){
         my $url = Mojo::URL->new($post_api);
         $url->query->merge(client=>$param->{client});
@@ -237,7 +246,7 @@ my $client = Mojo::Weixin->new(log_head=>"[$ENV{MOJO_WEIXIN_ACCOUNT}][$$]");
 $0 = "wxclient(" . $client->account . ")" if $^O ne "MSWin32";
 $SIG{INT} = 'IGNORE' if ($^O ne 'MSWin32' and !-t);
 $client->load(["ShowMsg","UploadQRcode"]);
-$client->load("Openwx",data=>{listen=>[{host=>"127.0.0.1",port=>$ENV{MOJO_WEIXIN_PLUGIN_OPENWX_PORT} }], post_api=>$ENV{MOJO_WEIXIN_PLUGIN_OPENWX_POST_API} || undef,post_event=>$ENV{MOJO_WEIXIN_PLUGIN_OPENWX_POST_EVENT} // 1,post_media_data=> $ENV{MOJO_WEIXIN_PLUGIN_OPENWX_POST_MEDIA_DATA} // 1, poll_api=>$ENV{MOJO_WEIXIN_PLUGIN_OPENWX_POLL_API} || undef},call_on_load=>1);
+$client->load("Openwx",data=>{listen=>[{host=>"127.0.0.1",port=>$ENV{MOJO_WEIXIN_PLUGIN_OPENWX_PORT} }], post_api=>$ENV{MOJO_WEIXIN_PLUGIN_OPENWX_POST_API} || undef,post_event=>$ENV{MOJO_WEIXIN_PLUGIN_OPENWX_POST_EVENT} // 1,post_media_data=> $ENV{MOJO_WEIXIN_PLUGIN_OPENWX_POST_MEDIA_DATA} // 1, poll_api=>$ENV{MOJO_WEIXIN_PLUGIN_OPENWX_POLL_API} || undef, poll_interval => $ENV{MOJO_WEIXIN_PLUGIN_OPENWX_POLL_INTERVAL} },call_on_load=>1);
 $client->run();
 MOJO_WEIXIN_CLIENT_TEMPLATE
         $self->spurt($template,$self->template_path);
@@ -354,6 +363,7 @@ sub run {
         $self->check_client();
         $self->save_backend();
     });
+    $self->emit('_mojo_weixin_controller_poll_over');
     $self->ioloop->start if not $self->ioloop->is_running;
 }
 

@@ -90,7 +90,8 @@ wxclient:
         listen              =>[{host=>$host,port=>$port} ], #监听的地址端口
         backend_start_port  => 3000, #可选，后端微信帐号分配的端口最小值
         post_api            => $post_api, #每个微信帐号上报的api地址
-        poll_api            => $poll_api, #可选，每个微信帐号内网穿透api地址
+        poll_api            => $poll_api, #可选，Controller内网穿透api地址
+        poll_interval       => 5, #可选，Controller内网穿透请求时间间隔，不是Controller下面管理的客户端
     #   tmpdir              => '/tmp', #可选，临时目录位置
     #   pid_path            => '/tmp/mojo_weixin_controller_process.pid', #可选，Controller进程的pid信息，默认tmpdir目录
     #   backend_path        => '/tmp/mojo_weixin_controller_backend.dat', #可选，后端微信帐号信息，默认tmpdir目录
