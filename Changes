@@ -1,3 +1,33 @@
+2016-11-11 Mojo::Weixin v1.2.3
+1）完善客户端http请求超时时间
+2）XiaoiceReply插件的bug修复
+3）客户端增加state属性和增加 state_change 事件
+4）Controller增加更多实用api
+    查询客户端运行状态 /openwx/check_client?client=xxx 输出格式变更
+    获取登录二维码     /openwx/get_qrcode?client=xxx
+    Controller增加auth认证支持
+5）Openwx插件大量改进
+    增加 post_event_list 参数，控制上报的事件列表
+    支持state_change事件上报
+    上报消息添加对象的uid/name属性
+    新增/openwx/sticky_group 设置或取消群组置顶
+    /openwx/set_friend_markname 改为 /openwx/set_markname
+    新增poll_api参数，解决内网穿透问题
+    修复经常出现 can't call method "res" on an undefined value的警告信息
+    消息上报增加发送者备注名称 sender_markname 
+6）修复获取好友、群组信息不全的问题 感谢 @海狼团队 的反馈
+7）修复接收消息出现大量503报错问题 @Beckjiang 反馈
+8）更新郑重声明
+9）完善当前判断群组和个人用户id的逻辑，除了 @@ 开头，还有结尾包含 @chatroom 关键字
+10）客户端new初始化新增http_max_message_size属性，设置http请求和响应的最大大小，默认16M，解决警告 "Maximum message size"
+11）群组对象新增 owner_uid 属性，表示群组管理员的uid
+12）消息处理添加更多debug日志
+13）新增update_user/update_friend/update_group事件
+14）修复群成员备注、群昵称错乱问题 感谢 @beckjiang 的反馈
+15）客户端初始化新增 log_console 参数 默认为1 用于日志写入文件的同时也打印到终端 方便调试
+16）不设置log_path的情况下，客户端默认日志打印到STDOUT（原来是STDERR）
+17）完善昵称、备注里包含emoji字符的处理
+
 2016-10-21 Mojo::Weixin v1.2.2
 1）新增插件ShowQRcode/ShowQRCodeInTerm 感谢 @hyvinlam
 2）修复 KnowledgeBase2 插件会导致知识库文件出现重复记录的问题 感谢 @时光盒子 的反馈

@@ -19,6 +19,7 @@ sub to_json_hash{
             $json->{sender_account} = $self->sender->account;
             $json->{sender_uid} = $self->sender->uid;
             $json->{sender_name} = decode_utf8($self->sender->name);
+            $json->{sender_markname} = decode_utf8($self->sender->markname);
         }
         elsif($key eq "receiver"){
             next if $self->type eq 'group_message' and $self->class eq 'send';
