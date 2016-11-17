@@ -250,8 +250,10 @@
 {"status":"发送成功","msg_id":23910327,"media_id":"@crypt_1eb0ba44_cb3de736e6ccd5ae8:3","code":0} #code为 0 表示发送成功
 ```
 注意：相同媒体消息转发给多个好友或群组时，可以直接拿之前发送消息返回的media_id作为发送对象，这样可以避免重复上传文件，提高发送效率
-### 6. 自定义接收消息上报地址
-|   API  |接收消息上报（支持好友消息、群消息）
+
+### 6. 自定义消息、事件上报地址
+
+|   API  |自定义消息、事件上报地址
 |--------|:------------------------------------------|
 |uri     |自定义任意支持http协议的url|
 |请求方法|POST|
@@ -477,12 +479,47 @@ Server: Mojolicious (Perl)
 |group_member_property_change  |成员属性变化| 成员对象，属性，原始值，更新值
 |friend_property_change        |好友属性变化| 好友对象，属性，原始值，更新值
 |user_property_change          |帐号属性变化| 账户对象，属性，原始值，更新值
+|update_user                   |初始化(更新)帐号信息|帐号对象
+|update_friend                 |初始化(更新)好友信息|好友对象列表
+|update_group                  |初始化(更新)群组信息|群组对象列表
 
 可以在Openwx插件中，通过 `post_event_list` 参数来指定上报的事件
 
 默认 `post_event_list => ['login','stop','state_change','input_qrcode','new_group','new_friend','new_group_member','lose_group','lose_friend','lose_group_member']`
 
 需要注意：属性变化类的事件可能触发的会比较频繁，导致产生大量的上报请求，默认不开启
+
+初始化(更新）帐号信息事件
+
+```
+connect to 127.0.0.1 port 3000
+POST /post_api
+Accept: */*
+Content-Length: xxx
+Content-Type: application/json
+
+{
+    "post_type":"event",
+    "event":"update_user",
+    "params":[
+        {
+            "account": "xxx",
+            "name": "xxx",
+            "markname": "",
+            "sex": "none",
+            "display": "",
+            "city": "",
+            "signature": "帮助解决微信支付中遇到的困难，收集关于微信支付的建议反馈。",
+            "province": "广东",
+            "id": "@efc5f86c30df4b9c80e98ac428e0e257",
+            "uid": 123,
+            "displayname": "xxx"
+       }
+    ],
+
+}
+
+```
 
 新增好友事件举例
 
