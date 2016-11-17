@@ -9,7 +9,7 @@ use Mojo::Weixin::Model::Remote::_webwxstatusnotify;
 use Mojo::Weixin::Model::Remote::_webwxcreatechatroom;
 use Mojo::Weixin::Model::Remote::_webwxupdatechatroom;
 use Mojo::Weixin::Model::Remote::_webwxoplog_markname;
-use Mojo::Weixin::Model::Remote::_webwxoplog_sticky;
+use Mojo::Weixin::Model::Remote::_webwxoplog_stick;
 use Mojo::Weixin::Model::Remote::_webwxverifyuser;
 use Mojo::Weixin::Model::Remote::_webwxgetheadimg;
 use Mojo::Weixin::User;
@@ -232,22 +232,22 @@ sub set_markname {
 
 }
 
-sub sticky_group{
+sub stick{
     my $self = shift;
     my $object = shift;
     my $op = shift;
-    if(ref $object ne "Mojo::Weixin::Group"){
+    if(ref $object ne "Mojo::Weixin::Group" and ref $object ne "Mojo::Weixin::Friend"){
         $self->die("无效的对象数据类型");
         return;
     }
-    my $ret = $self->_webwxoplog_sticky($object->id,$op // 1);
+    my $ret = $self->_webwxoplog_stick($object->id,$op // 1);
     my $displayname = $object->displayname;
     if($ret){
-        $op?$self->info("设置群组[ $displayname ]置顶成功"): $self->info("取消群组[ $displayname ]置顶成功");
+        $op?$self->info("设置对象[ $displayname ]置顶成功"): $self->info("取消对象[ $displayname ]置顶成功");
         return 1;
     }
     else{
-        $op?$self->info("设置群组[ $displayname ]置顶失败"): $self->info("取消群组[ $displayname ]置顶失败");
+        $op?$self->info("设置对象[ $displayname ]置顶失败"): $self->info("取消对象[ $displayname ]置顶失败");
         return 0;
     }
 

@@ -799,15 +799,15 @@ Server: Mojolicious (Perl)
 
 ```
 
-### 13. 设置或取消群组置顶
+### 13. 设置或取消群组、好友置顶
 
-|   API  |设置或取消群组的显示名称
+|   API  |设置或取消群组、好友置顶
 |--------|:------------------------------------------|
-|uri     |/openwx/sticky_group|
+|uri     |/openwx/stick|
 |请求方法|GET\|POST|
-|请求参数|**id**: 群组的id<br>**displayname**: 群组当前显示名称(参数中包含中文需要做urlencode)<br>**op**:  1表示置顶,0表示取消置顶|
+|请求参数|**id**: 群组或好友的id<br>**op**:  1表示置顶,0表示取消置顶|
 |数据格式|application/x-www-form-urlencoded|
-|调用示例|http://127.0.0.1:3000/openwx/sticky_group?id=xxxxxx&op=1<br>http://127.0.0.1:3000/openwx/sticky_group?id=xxxxxx&op=0|
+|调用示例|http://127.0.0.1:3000/openwx/stick?id=xxxxxx&op=1<br>http://127.0.0.1:3000/openwx/stick?id=xxxxxx&op=0|
 
 返回JSON结果:
 

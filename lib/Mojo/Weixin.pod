@@ -374,10 +374,11 @@ Mojo::Weixin - A Weixin Client Framework base on Mojolicious
     $friend->set_markname(""); #取消备注
     $member->set_markname("小李");
 
-=head4 sticky_group() 置顶群组
+=head4 stick() 置顶群组
 
-    $group->sticky_group(0);#取消置顶
-    $group->sticky_group(1);#置顶
+    $group->stick(0);#取消置顶
+    $group->stickp(1);#置顶
+    $friend->stick(1);
 
 =head4 create_group()  创建群组
 

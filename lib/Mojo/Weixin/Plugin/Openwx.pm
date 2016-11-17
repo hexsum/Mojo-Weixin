@@ -522,12 +522,12 @@ sub call{
         }
         else{$c->safe_render(json=>{code=>100,status=>"object not found"});}
     };
-    any [qw(GET POST)] => '/openwx/sticky_group' => sub{
+    any [qw(GET POST)] => '/openwx/stick' => sub{
         my $c = shift;
-        my($id,$displayname,$op)= map {defined $_?Encode::encode("utf8",$_):$_} ($c->param("id"),$c->param("displayname"),$c->param("op"));
-        my $object = $client->search_group(id=>$id,displayname=>$displayname);
+        my($id,$op)= ($c->param("id"),$c->param("op"));
+        my $object = $client->is_group($id)?$client->search_group(id=>$id,):$client->search_friend(id=>$id);
         if(defined $object){
-            if($object->sticky_group($op)){
+            if($object->stick($op)){
                 $c->safe_render(json=>{code=>0,status=>"success"});
             }
             else{

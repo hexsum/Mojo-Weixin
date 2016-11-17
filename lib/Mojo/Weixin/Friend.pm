@@ -84,4 +84,8 @@ sub set_markname {
     my $self = shift;
     $self->client->set_markname($self,@_);
 }
+sub stick{
+    my $self = shift;
+    $self->client->stick($self,@_);
+}
 1;
