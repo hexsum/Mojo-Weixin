@@ -13,7 +13,7 @@ sub call{
     my $post_api = $data->{post_api} if ref $data eq "HASH";
     my $poll_api = $data->{poll_api} if ref $data eq "HASH";
     $data->{post_media_data} = 1 if not defined $data->{post_media_data};
-    $data->{post_event_list} = [qw(login stop state_change input_qrcode new_group new_friend new_group_member lose_group lose_friend lose_group_member)] 
+    $data->{post_event_list} = [qw(login stop state_change input_qrcode new_group new_friend new_group_member lose_group lose_friend lose_group_member update_user update_friend update_group)] 
         if ref $data->{post_event_list} ne 'ARRAY'; 
 
     if(defined $poll_api){
@@ -97,6 +97,23 @@ sub call{
                     }
                 });
 
+            }
+            elsif($event =~ /^update_user|update_friend|update_group$/){
+                my ($ref) = @args;
+                my $post_json = {
+                    post_type => "event",
+                    event     => $event,
+                    params    => [$event eq 'update_user'?$ref->to_json_hash():map {$_->to_json_hash()} @{$ref}], 
+                };
+                $client->http_post($post_api,json=>$post_json,sub{
+                    my($data,$ua,$tx) = @_;
+                    if($tx->success){
+                        $client->debug("插件[".__PACKAGE__ ."]事件[".$event."]上报成功");
+                    }
+                    else{
+                        $client->warn("插件[".__PACKAGE__ . "]事件[".$event."]上报失败: ".encode("utf8",$tx->error->{message}));
+                    }
+                });
             }
         }) if $data->{post_event};
         $client->on(receive_message=>sub{
