@@ -1,6 +1,6 @@
 ### 本文档包含的API是针对单帐号的，如果需要多账号统一管理API，请移步到[Controller-API](Controller-API.md)
 
-### 首先要启动一个API Server：
+### 启动一个API Server：
 
 可以直接把如下代码保存成一个源码文件(必须使用UTF8编码)，使用 perl 解释器来运行
 
@@ -12,7 +12,7 @@
     $host = "0.0.0.0"; #发送消息接口监听地址，没有特殊需要请不要修改
     $port = 3000;      #发送消息接口监听端口，修改为自己希望监听的端口
     #$post_api = 'http://xxxx';  #接收到的消息上报接口，如果不需要接收消息上报，可以删除或注释此行
-    #$poll_api = 'http://xxxx';  #长轮询的请求地址，默认注释或删掉此行，更多说明参见下文 内网穿透 相关文档
+    #$poll_api = 'http://xxxx';  #心跳请求地址，默认注释或删掉此行，更多说明参见下文 心跳请求 相关文档
     
     my $client = Mojo::Weixin->new(log_level=>"info",http_debug=>0);
     $client->load("ShowMsg");
@@ -22,26 +22,78 @@
         post_event => 1,                             #可选，是否上报事件，为了向后兼容性，默认值为0
         post_media_data => 0,                        #可选，是否上报经过base64编码的图片原始数据，默认值为1
         post_event_list => ['login','stop','state_change','input_qrcode'], #可选，上报事件列表，更多说明参考下文 事件上报 相关文档
-        poll_api  => $poll_api,                      #可选，从外网调用内网程序的api时需要使用到，默认不启用
+        poll_api  => $poll_api,                      #可选，心跳请求地址，默认不启用
         poll_interval   => 5,                        #可选，长轮询请求间隔，默认5s
     });
     $client->run();
     
 ```
+API是通过加载`Openwx插件`的形式提供的，上述代码保存成 xxxx.pl 文件
 
-上述代码保存成 xxxx.pl 文件，然后使用 perl 来运行，就会完成 微信 登录并在本机产生一个监听指定地址端口的 http server
+然后使用 perl 来运行，就会完成 微信 登录并在本机产生一个监听指定地址端口的 http server
 
     $ perl xxxx.pl
 
-### 关于内网穿透的说明
+### 客户端数据文件介绍
 
-如果你的程序是部署在内网环境，而又希望通过外网的服务器去调用内网的api，实现发送消息等功能
+微信客户端在运行过程中会产生很多的文件，这些文件默认情况下会保存在系统的临时目录下
 
-你会需要用到 `Openwx插件` 中的 `poll_api`参数，原理就是：
+你可以通过在启动脚本的 `Mojo::Weixin->new()`中增加 `tmpdir` 参数来修改这个临时目录的位置，例如：
 
-内网的客户端程序会请求`poll_api`地址，大多数情况下，这个请求会长时间阻塞等待，服务端不返回任何数据（服务端逻辑需要你自己去实现）
+    Mojo::Weixin->new(log_level=>"info",http_debug=>0,tmpdir=>'C:\tmpdir\') #请确保目录已经存在并有访问权限
+
+更多自定义参数参见[Mojo::Weixin->new参数说明](https://metacpan.org/pod/distribution/Mojo-Weixin/doc/Weixin.pod#new)
+
+    mojo_weixin_cookie_{客户端名称}.dat #客户端的cookie文件，用于短时间内重复登录免扫码
+    mojo_weixin_pid_{客户端名称}.pid    #记录客户端进程号，防止相同微信帐号产生多个重复的客户端实例
+    mojo_weixin_qrcode_{客户端名称}.jpg #客户端登录二维码文件
+    mojo_weixin_state_{客户端名称}.json #客户端的运行状态相关的信息，json格式，实时更新
+
+一般情况下你不需要关心这些文件保存在哪里，有什么作用，这些文件也会在程序退出的时候自动进行清理
+
+### 客户端运行状态介绍
+
+客户端运行过程中会在多种状态之间切换，有很多状态是阻塞的，相当于一个死循环，需要达到一定条件才能跳出死循环
+
+单帐号模式采用的是单进程异步机制，很多API全部都是工作在非阻塞模式下，因此在阻塞的状态中大部分API（发送消息/接收消息等）都是暂时无法工作的
+
+比如： 在登录扫描的状态下，还没有完成登录，是无法调用API去发送消息，请求会收不到任何响应
+
+了解客户端这些状态的差异，有助于帮助你合理正确的调用API
+
+|   状态      |模式        |状态说明
+|------------|------------|:-------------------------------------------------|
+|init        | -          |客户端创建后的初始状态                              |
+|loading     |blocking    |客户端加载插件                                     |
+|scaning     |blocking    |等待手机扫码                                       |
+|confirming  |blocking    |等待手机点击[登录]按钮                              |
+|updating    |blocking    |更新个人、好友、群组信息                            |
+|running     |non-blocking|客户端运行中，可以正常接收、发送消息，**相关API可以工作**  |
+|stop        |-           |客户端停止运行                                     |
+
+客户端状态的一般迁移过程：
+
+`init` => `loading` => `scaning` => `confirming` => `updating` => `running` => `stop`
+
+客户端状态实时更新到 `mojo_weixin_state_{客户端名称}.json` 文件中，可以通过读取这个文件来获取上述相关状态的变化
+
+也可以通过客户端 [事件上报](API.md#事件上报) 中的 `state_change` 事件来获取客户端当前所处的状态
+
+多账号模式下也可以通过Controller提供的 `/openwx/check_client` 接口查询到这个状态
+
+（`/openwx/check_client`接口实际上就是返回  `mojo_weixin_state_{客户端名称}.json` 文件中的数据 ）
+
+### 关于心跳请求的说明
+
+可能用于内网穿透、客户端存活检测、客户端信息收集等方面，期待你发掘更多利用价值
+
+设置 `Openwx插件` 中的参数 `poll_api`和`poll_interval`，会使得客户端在处于 `running` 状态时，自发的去请求`poll_api`地址
+
+期望的是，这个请求会长时间阻塞等待，服务端不返回任何数据（服务端逻辑需要你自己去实现）
 
 服务端响应结果或者请求超时断开后，会间隔`poll_interval` 秒后继续重复发起请求，如此往复
+
+如果你的程序是部署在内网环境，而又希望通过外网的服务器去调用内网的api，实现发送消息等功能
 
 当外网的服务端希望内网的客户端程序调用某个api接口时，比如希望内网的客户端调用`/openwx/send_friend_message`接口给指定的好友发消息
 
@@ -63,6 +115,10 @@
 < Content-Length: 0
 
 ```
+
+### API列表汇总
+
+|API地址 |工作状态|API说明|
 
 ### 1. 获取用户数据
 |   API  |获取用户数据
