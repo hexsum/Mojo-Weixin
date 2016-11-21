@@ -31,6 +31,7 @@ sub new {
     elsif(defined $self->_verifyflag and $self->_verifyflag & 8){
         $self->category("公众号");
     }
+    else{$self->category("好友");}
     $self->uid("") if not $self->uid;
     $self;
 }

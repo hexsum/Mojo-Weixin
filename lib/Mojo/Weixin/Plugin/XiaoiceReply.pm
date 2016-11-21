@@ -11,7 +11,7 @@ sub call{
 
     $client->on(ready=>sub{
         #支持绑定的两个对象之间互相转发消息
-        my $xiaoice = $client->search_friend(account=>'ms-xiaoice');
+        my $xiaoice = $client->search_friend(account=>'xiaoice-ms');
         if(not defined $xiaoice){
             $client->error("未能在通讯录中搜索到 微软小冰 帐号信息，请确认是否已经关注 微软小冰 公众号");
             return;

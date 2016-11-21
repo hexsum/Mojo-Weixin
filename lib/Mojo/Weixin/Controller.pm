@@ -16,8 +16,7 @@ use Storable qw();
 use POSIX qw();
 use if $^O eq "MSWin32",'Win32::Process';
 use if $^O eq "MSWin32",'Win32';
-#use base qw(Mojo::Weixin::Util Mojo::Weixin::Request);
-use base qw(Mojo::Weixin::Util);
+use base qw(Mojo::Weixin::Util Mojo::Weixin::Request);
 our $VERSION = $Mojo::Weixin::VERSION;
 
 has backend => sub{+{}};
@@ -29,6 +28,19 @@ has poll_interval => 5;
 has auth     => undef;
 has server =>  sub { Mojo::Weixin::Server->new };
 has listen => sub { [{host=>"0.0.0.0",port=>2000},] };
+
+has keep_cookie => 0;
+has cookie_path => undef;
+has http_debug          => sub{$ENV{MOJO_WEIXIN_CONTROLLER_HTTP_DEBUG} || 0 } ;
+has ua_debug            => sub{$_[0]->http_debug};
+has ua_debug_req_body   => sub{$_[0]->ua_debug};
+has ua_debug_res_body   => sub{$_[0]->ua_debug};
+has ua_debug_req_body   => sub{$_[0]->ua_debug};
+has ua_debug_res_body   => sub{$_[0]->ua_debug};
+has ua_retry_times          => 5;
+has ua_connect_timeout      => 10;
+has ua_request_timeout      => 35;
+has ua_inactivity_timeout   => 35;
 has ua  => sub {Mojo::UserAgent->new(connect_timeout=>3,inactivity_timeout=>3,request_timeout=>3)};
 
 has tmpdir              => sub {File::Spec->tmpdir();};
@@ -103,8 +115,7 @@ sub new {
     eval{$0 = 'wxcontroller';} if $^O ne 'MSWin32';
     if(defined $self->poll_api){
         $self->on('_mojo_weixin_controller_poll_over' => sub{
-            $self->debug("Polling: " . $self->poll_api);
-            $self->ua->get($self->poll_api,sub{
+            $self->http_get($self->poll_api,sub{
                 $self->ioloop->timer($self->poll_interval || 5,sub {$self->emit('_mojo_weixin_controller_poll_over');});
             });
         });
