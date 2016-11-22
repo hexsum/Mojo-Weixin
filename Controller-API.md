@@ -7,6 +7,7 @@
 
 可以直接把如下代码保存成一个源码文件(必须使用UTF8编码)，使用 perl 解释器来运行
 
+```
     #!/usr/bin/env perl
     use Mojo::Weixin::Controller;
     my ($host,$port,$post_api,$poll_api);
@@ -32,6 +33,7 @@
     #   template_path       => '/tmp/mojo_weixin_controller_template.pl', #创建客户端时采用的模版文件,文件不存在会自动生成
     );
     $controller->run();
+```
 
 上述代码保存成 xxxx.pl 文件，然后使用 perl 来运行，就会完成 微信 登录并在本机产生一个监听指定地址端口的 http server
 
@@ -56,7 +58,7 @@ linux中使用`ps ef`命令可以方便的查看到进程的运行情况
 
 wxcontroller和每个创建的微信客户端（wxclient）在运行过程中会产生很多的文件，这些文件默认情况下会保存在系统的临时目录下
 
-你可以通过wxcontroller的 `tmpdir` 参数来修改这个临时目录的位置，参考[首先要启动一个Controller API Server](Controller-API.md#首先要启动一个Controller API Server)中的代码示例
+你可以通过wxcontroller的 `tmpdir` 参数来修改这个临时目录的位置，参考[首先要启动一个Controller API Server](Controller-API.md##首先要启动一个controller-api-server)中的代码示例
 
 一般情况下你不不需要关心这些文件保存在哪里，有什么作用，这些文件也会在程序退出的时候自动进行清理
 
@@ -104,7 +106,7 @@ $client->run();
 |[/openwx/stop_client](Controller-API.md#停止一个微信客户端) |停止一个微信客户端 |
 |[/openwx/check_client](Controller-API.md#查询微信客户端状态)|查询微信客户端状态 |
 |[/openwx/get_qrcode](Controller-API.md#获取登录二维码文件)  |获取登录二维码文件 |
-|[兼容其他单微信帐号API](Controller-API.md#兼容其他单微信帐号API) |兼容其他单微信帐号API |
+|[兼容其他微信单帐号API](Controller-API.md#兼容其他微信单帐号API) |兼容其他微信单帐号API |
 
 
 ### 客户端运行状态介绍
@@ -241,7 +243,7 @@ $client->run();
 }
 
 ```
-### 兼容其他单微信帐号API
+### 兼容其他微信单帐号API
 
 查询某个微信帐号的信息、发送消息、消息上报等和[单帐号模式API](API.md)相同，只是url中增加了一个 `client=xxx`的参数用于区分不同客户端，比如
 
