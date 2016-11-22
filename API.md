@@ -135,7 +135,7 @@ API是通过加载`Openwx插件`的形式提供的，上述代码保存成 xxxx.
 |[/openwx/set_group_displayname](API.md#设置群组的显示名称)|running |设置群组的显示名称|
 |[/openwx/kick_group_member](API.md#移除群组成员)    |running |移除群组成员|
 |[/openwx/set_markname](API.md#修改好友或群成员备注名称)         |running |修改好友或群成员备注名称|
-|[openwx/stick](API.md#设置或取消群组、好友置顶)                |running |设置或取消群组、好友置顶|
+|[/openwx/stick](API.md#设置或取消聊天置顶)                |running |设置或取消群组、好友置顶|
 |发送消息相关                  |        |                |
 |[/openwx/send_friend_message](API.md#发送好友消息)  |running |发送好友消息     |
 |[/openwx/send_group_message](API.md#发送群组消息)   |running |发送群组消息     |
@@ -143,7 +143,7 @@ API是通过加载`Openwx插件`的形式提供的，上述代码保存成 xxxx.
 |[/openwx/upload_media](API.md#上传媒体文件)         |running |上传媒体文件，获取media_id, 用于稍后发送     |
 |[/openwx/consult](API.md#好友问答)              |running  |发送消息给好友并返回好友的回复<br>主要用途是转发微软小冰的智能回复|
 |事件（消息）上报相关 |                    |         |
-|[自定义事件（消息）上报地址](API.md#自定义事件（消息）上报地址) |scaning<br>updating<br>running| 将产生的事件通过HTTP POST请求发送到指定的地址<br>可用于上报扫描二维码事件、新增好友事件、接收消息事件等 |
+|[自定义事件（消息）上报地址](API.md#自定义事件消息上报地址) |scaning<br>updating<br>running| 将产生的事件通过HTTP POST请求发送到指定的地址<br>可用于上报扫描二维码事件、新增好友事件、接收消息事件等 |
 |客户端控制相关                |        |                |
 |[/openwx/get_client_info](API.md#获取进程运行信息)      |running |获取进程运行信息|
 |[/openwx/stop_client](API.md#终止程序运行)          |running |终止程序运行   |
@@ -336,9 +336,9 @@ API是通过加载`Openwx插件`的形式提供的，上述代码保存成 xxxx.
 ```
 注意：相同媒体消息转发给多个好友或群组时，可以直接拿之前发送消息返回的media_id作为发送对象，这样可以避免重复上传文件，提高发送效率
 
-### 自定义事件（消息）上报地址
+### 自定义事件消息上报地址
 
-|   API  |自定义消息、事件上报地址
+|   API  |自定义事件（消息）上报地址
 |--------|:------------------------------------------|
 |uri     |自定义任意支持http协议的url|
 |请求方法|POST|
@@ -862,9 +862,9 @@ Server: Mojolicious (Perl)
 
 ```
 
-### 修改好友或群成员备注名称（修改群成员备注的功能疑似被官方屏蔽）
+### 修改好友或群成员备注名称
 
-|   API  |修改好友或群成员备注名称
+|   API  |修改好友或群成员备注名称（修改群成员备注的功能疑似被官方屏蔽）
 |--------|:------------------------------------------|
 |uri     |/openwx/set_markname|
 |请求方法|GET\|POST|
@@ -884,7 +884,7 @@ Server: Mojolicious (Perl)
 
 ```
 
-### 设置或取消群组、好友置顶
+### 设置或取消聊天置顶
 
 |   API  |设置或取消群组、好友置顶
 |--------|:------------------------------------------|
