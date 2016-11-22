@@ -122,31 +122,31 @@ API是通过加载`Openwx插件`的形式提供的，上述代码保存成 xxxx.
 |:----------------------------|:-------|:--------------|
 |微信基础信息获取相关           |       |                |
 |[/openwx/get_user_info](API.md#获取用户数据)      |running |获取登录用户数据 |
-|/openwx/get_friend_info      |running |获取好友数据 |
-|/openwx/get_group_info       |running |获取群组数据 |
-|/openwx/get_avatar           |running |获取用户或群组头像|
+|[/openwx/get_friend_info](API.md#获取好友数据)  |running |获取好友数据 |
+|[/openwx/get_group_info](API.md#获取群组数据)       |running |获取群组数据 |
+|[/openwx/get_avatar](API.md#获取用户或群组头像)          |running |获取用户或群组头像|
 |数据搜索相关                  |        |                |
-|/openwx/search_friend        |running |搜索好友对象|
-|/openwx/search_group         |running |搜索群组对象|
+|[/openwx/search_friend](API.md#搜索好友对象)        |running |搜索好友对象|
+|[/openwx/search_group](API.md#搜索群组对象)        |running |搜索群组对象|
 |聊天控制相关                  |        |                |
-|/openwx/create_group         |running |创建群组         |
-|/openwx/invite_friend        |running |邀请好友加入群组|
-|/openwx/make_friend          |running |向指定的群成员发送好友请求|
-|/openwx/set_group_displayname|running |设置群组的显示名称|
-|/openwx/kick_group_member    |running |移除群组成员|
-|/openwx/set_markname         |running |修改好友或群成员备注名称|
-|/openwx/stick                |running |设置或取消群组、好友置顶|
+|[/openwx/create_group](API.md#创建群组)         |running |创建群组         |
+|[/openwx/invite_friend](API.md#邀请好友加入群组)        |running |邀请好友加入群组|
+|[/openwx/make_friend](API.md#向指定的群成员发送好友请求)          |running |向指定的群成员发送好友请求|
+|[/openwx/set_group_displayname](API.md#设置群组的显示名称)|running |设置群组的显示名称|
+|[/openwx/kick_group_member](API.md#移除群组成员)    |running |移除群组成员|
+|[/openwx/set_markname](API.md#修改好友或群成员备注名称)         |running |修改好友或群成员备注名称|
+|[openwx/stick](API.md#设置或取消群组、好友置顶)                |running |设置或取消群组、好友置顶|
 |发送消息相关                  |        |                |
-|/openwx/send_friend_message  |running |发送好友消息     |
-|/openwx/send_group_message   |running |发送群组消息     |
-|/openwx/send_friend_message  |running |发送好友消息     |
-|/openwx/upload_media         |running |上传媒体文件，获取media_id, 用于稍后发送     |
-|/openwx/consult              |running  |发送消息给好友并返回好友的回复<br>主要用途是转发微软小冰的智能回复|
-|事件（接收消息）上报相关 |                    |         |
-|自定义事件上报地址             |scaning<br>updating<br>running| 将产生的事件通过HTTP POST请求发送到指定的地址<br>可用于上报扫描二维码事件、新增好友事件、接收消息事件等 |
+|[/openwx/send_friend_message](API.md#发送好友消息)  |running |发送好友消息     |
+|[/openwx/send_group_message](API.md#发送群组消息)   |running |发送群组消息     |
+|[/openwx/send_friend_message](API.md#发送好友消息)  |running |发送好友消息     |
+|[/openwx/upload_media](API.md#上传媒体文件)         |running |上传媒体文件，获取media_id, 用于稍后发送     |
+|[/openwx/consult](API.md#好友问答)              |running  |发送消息给好友并返回好友的回复<br>主要用途是转发微软小冰的智能回复|
+|事件（消息）上报相关 |                    |         |
+|[自定义事件（消息）上报地址](API.md#自定义事件（消息）上报地址) |scaning<br>updating<br>running| 将产生的事件通过HTTP POST请求发送到指定的地址<br>可用于上报扫描二维码事件、新增好友事件、接收消息事件等 |
 |客户端控制相关                |        |                |
-|/openwx/get_client_info      |running |获取进程运行信息|
-|/openwx/stop_client          |running |终止程序运行   |
+|[/openwx/get_client_info](API.md#获取进程运行信息)      |running |获取进程运行信息|
+|[/openwx/stop_client](API.md#终止程序运行)          |running |终止程序运行   |
 
 
 ### 获取用户数据
