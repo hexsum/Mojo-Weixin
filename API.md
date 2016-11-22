@@ -145,7 +145,7 @@ API是通过加载`Openwx插件`的形式提供的，上述代码保存成 xxxx.
 |事件（消息）上报相关 |                    |         |
 |[自定义事件（消息）上报地址](API.md#自定义事件消息上报地址) |scaning<br>updating<br>running| 将产生的事件通过HTTP POST请求发送到指定的地址<br>可用于上报扫描二维码事件、新增好友事件、接收消息事件等 |
 |客户端控制相关                |        |                |
-|[/openwx/get_client_info](API.md#获取进程运行信息)      |running |获取进程运行信息|
+|[/openwx/get_client_info](API.md#获取程序运行信息)      |running |获取程序运行信息|
 |[/openwx/stop_client](API.md#终止程序运行)          |running |终止程序运行   |
 
 
