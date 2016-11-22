@@ -28,7 +28,7 @@
 |[/openwx/consult](API.md#好友问答)              |running  |发送消息给好友并返回好友的回复<br>主要用途是转发微软小冰的智能回复|
 |事件（消息）获取相关 |                    |         |
 |[自定义事件（消息）上报地址](API.md#自定义事件消息上报地址) |scaning<br>updating<br>running| 将产生的事件通过HTTP POST请求发送到指定的地址<br>可用于上报扫描二维码事件、新增好友事件、接收消息事件等 |
-|[/openwx/check_event](API.md#查询事件消息) |running| 采用HTTP GET请求长轮询机制获取事件（消息），API只能工作在非阻塞模式下<br>功能受限，不如POST上报的方式获取的信息全面 |
+|[/openwx/check_event](API.md#查询事件消息) |running| 采用HTTP GET请求长轮询机制获取事件（消息）<br>API只能工作在非阻塞模式下，功能受限<br>不如POST上报的方式获取的信息全面 |
 |客户端控制相关                |        |                |
 |[/openwx/get_client_info](API.md#获取程序运行信息)      |running |获取程序运行信息|
 |[/openwx/stop_client](API.md#终止程序运行)          |running |终止程序运行   |
