@@ -142,8 +142,9 @@ API是通过加载`Openwx插件`的形式提供的，上述代码保存成 xxxx.
 |[/openwx/send_friend_message](API.md#发送好友消息)  |running |发送好友消息     |
 |[/openwx/upload_media](API.md#上传媒体文件)         |running |上传媒体文件，获取media_id, 用于稍后发送     |
 |[/openwx/consult](API.md#好友问答)              |running  |发送消息给好友并返回好友的回复<br>主要用途是转发微软小冰的智能回复|
-|事件（消息）上报相关 |                    |         |
+|事件（消息）获取相关 |                    |         |
 |[自定义事件（消息）上报地址](API.md#自定义事件消息上报地址) |scaning<br>updating<br>running| 将产生的事件通过HTTP POST请求发送到指定的地址<br>可用于上报扫描二维码事件、新增好友事件、接收消息事件等 |
+|[/openwx/check_event](API.md#查询事件消息) |running| 采用HTTP GET请求长轮询机制获取事件（消息），API只能工作在非阻塞模式下<br>功能受限，不如POST上报的方式获取的信息全面 |
 |客户端控制相关                |        |                |
 |[/openwx/get_client_info](API.md#获取程序运行信息)      |running |获取程序运行信息|
 |[/openwx/stop_client](API.md#终止程序运行)          |running |终止程序运行   |
@@ -335,6 +336,77 @@ API是通过加载`Openwx插件`的形式提供的，上述代码保存成 xxxx.
 {"status":"发送成功","msg_id":23910327,"media_id":"@crypt_1eb0ba44_cb3de736e6ccd5ae8:3","code":0} #code为 0 表示发送成功
 ```
 注意：相同媒体消息转发给多个好友或群组时，可以直接拿之前发送消息返回的media_id作为发送对象，这样可以避免重复上传文件，提高发送效率
+
+### 查询事件消息
+
+| API|采用HTTP GET请求长轮询获取事件（消息）
+|----|:------------------|
+|uri |/openwx/check_event|
+|请求方法|GET|
+|数据格式|application/json|
+
+接口返回JSON数组的形式，数组中的每个元素是一个JSON格式消息，格式和 [自定义事件消息上报地](API.md#自定义事件消息上报地)完全一样
+
+程序最大保留最近20条信息记录，可以通过插件参数`check_event_list_max_size`进行自定义
+
+```
+$client->load("Openwx",data=>{ 
+    check_event_list_max_size=>100,
+});
+```
+
+采用长轮询机制，没有事件（消息）时，请求会挂起等待30s即断开，需要客户端再次重复发起请求
+
+```
+* Connected to 127.1 (127.0.0.1) port 3000 (#0)
+> GET /openwx/check_event? HTTP/1.1
+> User-Agent: curl/7.29.0
+> Host: 127.1:3000
+> Accept: */*
+> 
+< HTTP/1.1 200 OK
+< Content-Type: application/json;charset=UTF-8
+< Date: Tue, 22 Nov 2016 04:11:36 GMT
+< Content-Length: 16405
+< Server: Mojolicious (Perl)
+
+[ 
+   {
+    "class":"send",
+    "content":" hello world",
+    "format":"text",
+    "from":"none",
+    "id":"2647366348175870091",
+    "post_type":"send_message",
+    "receiver":"文件传输助手",
+    "receiver_account":"",
+    "receiver_id":"filehelper",
+    "receiver_name":"文件传输助手",
+    "receiver_uid":"",
+    "sender":"小灰",
+    "time":"1479787946",
+    "type":"friend_message"
+    }
+]
+```
+
+没有消息等待超时后，会返回一个空的JSON数组，客户端需要再次发起请求
+
+```
+* Connected to 127.1 (127.0.0.1) port 3000 (#0)
+> GET /openwx/check_event? HTTP/1.1
+> User-Agent: curl/7.29.0
+> Host: 127.1:3000
+> Accept: */*
+> 
+< HTTP/1.1 200 OK
+< Content-Type: application/json;charset=UTF-8
+< Date: Tue, 22 Nov 2016 04:11:36 GMT
+< Content-Length: 16405
+< Server: Mojolicious (Perl)
+
+[]
+```
 
 ### 自定义事件消息上报地址
 
