@@ -106,7 +106,7 @@ $client->run();
 |[/openwx/stop_client](Controller-API.md#停止一个微信客户端) |停止一个微信客户端 |
 |[/openwx/check_client](Controller-API.md#查询微信客户端状态)|查询微信客户端状态 |
 |[/openwx/get_qrcode](Controller-API.md#获取登录二维码文件)  |获取登录二维码文件 |
-|[兼容其他微信单帐号API](Controller-API.md#兼容其他微信单帐号API) |兼容其他微信单帐号API |
+|[兼容其他微信单帐号API](Controller-API.md#兼容其他微信单帐号api) |兼容其他微信单帐号API |
 
 
 ### 客户端运行状态介绍
