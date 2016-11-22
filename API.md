@@ -23,7 +23,6 @@
 |发送消息相关                  |        |                |
 |[/openwx/send_friend_message](API.md#发送好友消息)  |running |发送好友消息     |
 |[/openwx/send_group_message](API.md#发送群组消息)   |running |发送群组消息     |
-|[/openwx/send_friend_message](API.md#发送好友消息)  |running |发送好友消息     |
 |[/openwx/upload_media](API.md#上传媒体文件)         |running |上传媒体文件，获取media_id, 用于稍后发送     |
 |[/openwx/consult](API.md#好友问答)              |running  |发送消息给好友并返回好友的回复<br>主要用途是转发微软小冰的智能回复|
 |事件（消息）获取相关 |                    |         |
