@@ -1,8 +1,41 @@
 ### 微信多账号管理API
 
-* 支持多账号客户端的管理（启动、停止）
-* 支持统一的API来查询帐号信息、发送消息、上报接收消息
+* 支持多账号客户端的管理（启动、停止、状态查询）
 * 兼容全部的[单帐号API](API.md)，仅在原有的单帐号API地址中增加 `client=xxx` 参数来识别不同帐号客户端
+
+### 首先要启动一个Controller API Server：
+
+可以直接把如下代码保存成一个源码文件(必须使用UTF8编码)，使用 perl 解释器来运行
+
+    #!/usr/bin/env perl
+    use Mojo::Weixin::Controller;
+    my ($host,$port,$post_api,$poll_api);
+
+    $host = "0.0.0.0"; #Controller API server 监听地址，没有有特殊需要请不要修改
+    $port = 2000;      #Controller API server 监听端口，修改为自己希望监听的端口
+    #$post_api = 'http://xxxx';  #每个微信帐号接收到的消息上报接口，如果不需要接收消息上报，可以删除或注释此行
+    #$poll_api = 'http://xxxx';  #可选，参见单帐号API文档中关于内网穿透的说明，不需要可以删除或注释此行
+
+    my $controller = Mojo::Weixin::Controller->new(
+        listen              =>[{host=>$host,port=>$port} ], #监听的地址端口
+        backend_start_port  => 3000, #可选，后端微信帐号分配的端口最小值
+        post_api            => $post_api, #每个微信帐号上报的api地址
+        poll_api            => $poll_api, #可选，Controller心跳请求的api地址
+        poll_interval       => 5, #可选，Controller自身心跳请求时间间隔，不是Controller下面管理的客户端
+    #   tmpdir              => '/tmp', #可选，临时目录位置
+    #   pid_path            => '/tmp/mojo_weixin_controller_process.pid', #可选，Controller进程的pid信息，默认tmpdir目录
+    #   backend_path        => '/tmp/mojo_weixin_controller_backend.dat', #可选，后端微信帐号信息，默认tmpdir目录
+    #   check_interval      => 5, #可选，检查后端微信帐号状态的时间间隔
+    #   log_level           => 'debug',#可选,debug|info|warn|error|fatal
+    #   log_path            => '/tmp/mojo_weixin_controller.log', #可选，运行日志路径，默认输出到终端
+    #   log_encoding        => 'utf8', #可选，打印到终端的编码，默认自动识别
+    #   template_path       => '/tmp/mojo_weixin_controller_template.pl', #创建客户端时采用的模版文件,文件不存在会自动生成
+    );
+    $controller->run();
+
+上述代码保存成 xxxx.pl 文件，然后使用 perl 来运行，就会完成 微信 登录并在本机产生一个监听指定地址端口的 http server
+
+    $ perl xxxx.pl
 
 
 ### 架构设计
@@ -23,25 +56,57 @@ linux中使用`ps ef`命令可以方便的查看到进程的运行情况
 
 wxcontroller和每个创建的微信客户端（wxclient）在运行过程中会产生很多的文件，这些文件默认情况下会保存在系统的临时目录下
 
-你可以通过wxcontroller的 tmpdir 参数来修改这个临时目录的位置，参加下文的Mojo::Weixin::Controller代码示例
+你可以通过wxcontroller的 `tmpdir` 参数来修改这个临时目录的位置，参考[首先要启动一个Controller API Server](Controller-API.md#首先要启动一个Controller API Server)中的代码示例
 
 一般情况下你不不需要关心这些文件保存在哪里，有什么作用，这些文件也会在程序退出的时候自动进行清理
 
 ```
 wxcontroller :
 
-    /tmp/mojo_weixin_controller_process.pid  #wxcontroller的进程耗
-    /tmp/mojo_weixin_controller_backend.dat  #wxcontroller创建的客户端信息
-    /tmpmojo_weixin_controller_template.pl   #wxcontroller创建客户端时采用的模版文件
+    mojo_weixin_controller_process.pid  #wxcontroller的进程耗
+    mojo_weixin_controller_backend.dat  #wxcontroller创建的客户端信息
+    mojo_weixin_controller_template.pl  #wxcontroller创建客户端时采用的模版文件
     
 wxclient:
 
-    /tmp/mojo_weixin_cookie_{客户端名称}.dat #客户端的cookie文件，用于短时间内重复登录免扫码
-    /tmp/mojo_weixin_pid_{客户端名称}.pid    #记录客户端进程号，防止相同微信帐号产生多个客户端实例
-    /tmp/mojo_weixin_qrcode_{客户端名称}.jpg #客户端登录二维码文件
-    /tmp/mojo_weixin_state_{客户端名称}.json #客户端的运行状态相关的信息，json格式，实时更新
+    mojo_weixin_cookie_{客户端名称}.dat #客户端的cookie文件，用于短时间内重复登录免扫码
+    mojo_weixin_pid_{客户端名称}.pid    #记录客户端进程号，防止相同微信帐号产生多个客户端实例
+    mojo_weixin_qrcode_{客户端名称}.jpg #客户端登录二维码文件
+    mojo_weixin_state_{客户端名称}.json #客户端的运行状态相关的信息，json格式，实时更新
     
 ```
+
+关于创建客户端时采用的模版文件，这里要做一下特别说明：
+
+在创建客户端时，wxcontroller会使用临时目录中的`mojo_weixin_controller_template.pl`来启动一个微信客户端进程，你可以通过
+
+`Mojo::Weixin::Controller->new` 中的 `template_path` 参数来自定义模版文件的路径，也可以修改模版文件，来自定义产生的微信客户端默认配置
+
+比如，修改默认加载哪些插件等行为，模版文件的默认形式参考如下：
+
+注意：模版文件有一些特殊的书写方式（主要是设置了很多参数从环境变量读取，因为wxcontroller是通过环境变量把启动参数传递给客户端的模版文件）
+
+```
+use Mojo::Weixin;
+my $client = Mojo::Weixin->new(log_head=>"[$ENV{MOJO_WEIXIN_ACCOUNT}][$$]");
+$0 = "wxclient(" . $client->account . ")" if $^O ne "MSWin32";
+$SIG{INT} = 'IGNORE' if ($^O ne 'MSWin32' and !-t);
+$client->load(["ShowMsg","UploadQRcode"]);
+$client->load("Openwx",data=>{listen=>[{host=>"127.0.0.1",port=>$ENV{MOJO_WEIXIN_PLUGIN_OPENWX_PORT} }], post_api=>$ENV{MOJO_WEIXIN_PLUGIN_OPENWX_POST_API} || undef,post_event=>$ENV{MOJO_WEIXIN_PLUGIN_OPENWX_POST_EVENT} // 1,post_media_data=> $ENV{MOJO_WEIXIN_PLUGIN_OPENWX_POST_MEDIA_DATA} // 1, poll_api=>$ENV{MOJO_WEIXIN_PLUGIN_OPENWX_POLL_API} || undef, poll_interval => $ENV{MOJO_WEIXIN_PLUGIN_OPENWX_POLL_INTERVAL} },call_on_load=>1);
+$client->run();
+```
+
+### API列表汇总
+
+|API地址                                                   |API说明          |
+|:---------------------------------------------------------|:----------------|
+|[/openwx/start_client](Controller-API.md#启动一个微信客户端)|启动一个微信客户端 |
+|[/openwx/stop_client](Controller-API.md#停止一个微信客户端) |停止一个微信客户端 |
+|[/openwx/check_client](Controller-API.md#查询微信客户端状态)|查询微信客户端状态 |
+|[/openwx/get_qrcode](Controller-API.md#获取登录二维码文件)  |获取登录二维码文件 |
+|[兼容其他单微信帐号API](Controller-API.md#兼容其他单微信帐号API) |兼容其他单微信帐号API |
+
+
 ### 客户端运行状态介绍
 
 客户端运行过程中会在多种状态之间切换，有很多状态是阻塞的，相当于一个死循环，需要达到一定条件才能跳出死循环
@@ -73,38 +138,6 @@ wxclient:
 
 （`/openwx/check_client`接口实际上就是返回  `mojo_weixin_state_{客户端名称}.json` 文件中的数据 ）
 
-### 首先要启动一个API Server：
-
-可以直接把如下代码保存成一个源码文件(必须使用UTF8编码)，使用 perl 解释器来运行
-
-    #!/usr/bin/env perl
-    use Mojo::Weixin::Controller;
-    my ($host,$port,$post_api,$poll_api);
-
-    $host = "0.0.0.0"; #Controller API server 监听地址，没有有特殊需要请不要修改
-    $port = 2000;      #Controller API server 监听端口，修改为自己希望监听的端口
-    #$post_api = 'http://xxxx';  #每个微信帐号接收到的消息上报接口，如果不需要接收消息上报，可以删除或注释此行
-    #$poll_api = 'http://xxxx';  #可选，参见单帐号API文档中关于内网穿透的说明，不需要可以删除或注释此行
-
-    my $controller = Mojo::Weixin::Controller->new(
-        listen              =>[{host=>$host,port=>$port} ], #监听的地址端口
-        backend_start_port  => 3000, #可选，后端微信帐号分配的端口最小值
-        post_api            => $post_api, #每个微信帐号上报的api地址
-        poll_api            => $poll_api, #可选，Controller内网穿透api地址
-        poll_interval       => 5, #可选，Controller内网穿透请求时间间隔，不是Controller下面管理的客户端
-    #   tmpdir              => '/tmp', #可选，临时目录位置
-    #   pid_path            => '/tmp/mojo_weixin_controller_process.pid', #可选，Controller进程的pid信息，默认tmpdir目录
-    #   backend_path        => '/tmp/mojo_weixin_controller_backend.dat', #可选，后端微信帐号信息，默认tmpdir目录
-    #   check_interval      => 5, #可选，检查后端微信帐号状态的时间间隔
-    #   log_level           => 'debug',#可选,debug|info|warn|error|fatal
-    #   log_path            => '/tmp/mojo_weixin_controller.log', #可选，运行日志路径，默认输出到终端
-    #   log_encoding        => 'utf8', #可选，打印到终端的编码，默认自动识别
-    );
-    $controller->run();
-
-上述代码保存成 xxxx.pl 文件，然后使用 perl 来运行，就会完成 微信 登录并在本机产生一个监听指定地址端口的 http server
-
-    $ perl xxxx.pl
 
 ### 启动一个微信客户端 
 
@@ -157,10 +190,9 @@ wxclient:
 [qrcode binary data]
 ```
 
+### 查询微信客户端状态
 
-### 查询所有微信客户端列表
-
-|   API  |查询所有微信客户端列表
+|   API  |查询某个或者所有微信客户端列表
 |--------|:------------------------------------------|
 |uri     |/openwx/check_client|
 |请求方法|GET|
@@ -209,7 +241,7 @@ wxclient:
 }
 
 ```
-### 其他微信帐号控制（查询信息、发送消息、上报消息等）
+### 兼容其他单微信帐号API
 
 查询某个微信帐号的信息、发送消息、消息上报等和[单帐号模式API](API.md)相同，只是url中增加了一个 `client=xxx`的参数用于区分不同客户端，比如
 
