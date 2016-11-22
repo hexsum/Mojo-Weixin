@@ -30,7 +30,7 @@ sub call{
             return if not $msg->allow_plugin;
             return if not $onoff_flag;
             return if $is_need_at and $msg->type eq "group_message" and !$msg->is_at;
-            my $xiaoice = $client->search_friend(account=>'ms-xiaoice');
+            my $xiaoice = $client->search_friend(account=>'xiaoice-ms');
             if(not defined $xiaoice){
                 $client->error("未能在通讯录中搜索到 微软小冰 帐号信息，请确认是否已经关注 微软小冰 公众号");
                 return;
