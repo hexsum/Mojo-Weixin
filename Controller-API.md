@@ -3,6 +3,16 @@
 * 支持多账号客户端的管理（启动、停止、状态查询）
 * 兼容全部的[单帐号API](API.md)，仅在原有的单帐号API地址中增加 `client=xxx` 参数来识别不同帐号客户端
 
+### API列表汇总
+
+|API地址                                                   |API说明          |
+|:---------------------------------------------------------|:----------------|
+|[/openwx/start_client](Controller-API.md#启动一个微信客户端)|启动一个微信客户端 |
+|[/openwx/stop_client](Controller-API.md#停止一个微信客户端) |停止一个微信客户端 |
+|[/openwx/check_client](Controller-API.md#查询微信客户端状态)|查询微信客户端状态 |
+|[/openwx/get_qrcode](Controller-API.md#获取登录二维码文件)  |获取登录二维码文件 |
+|[兼容其他微信单帐号API](Controller-API.md#兼容其他微信单帐号api) |兼容其他微信单帐号API |
+
 ### 首先要启动一个Controller API Server：
 
 可以直接把如下代码保存成一个源码文件(必须使用UTF8编码)，使用 perl 解释器来运行
@@ -97,17 +107,6 @@ $client->load(["ShowMsg","UploadQRcode"]);
 $client->load("Openwx",data=>{listen=>[{host=>"127.0.0.1",port=>$ENV{MOJO_WEIXIN_PLUGIN_OPENWX_PORT} }], post_api=>$ENV{MOJO_WEIXIN_PLUGIN_OPENWX_POST_API} || undef,post_event=>$ENV{MOJO_WEIXIN_PLUGIN_OPENWX_POST_EVENT} // 1,post_media_data=> $ENV{MOJO_WEIXIN_PLUGIN_OPENWX_POST_MEDIA_DATA} // 1, poll_api=>$ENV{MOJO_WEIXIN_PLUGIN_OPENWX_POLL_API} || undef, poll_interval => $ENV{MOJO_WEIXIN_PLUGIN_OPENWX_POLL_INTERVAL} },call_on_load=>1);
 $client->run();
 ```
-
-### API列表汇总
-
-|API地址                                                   |API说明          |
-|:---------------------------------------------------------|:----------------|
-|[/openwx/start_client](Controller-API.md#启动一个微信客户端)|启动一个微信客户端 |
-|[/openwx/stop_client](Controller-API.md#停止一个微信客户端) |停止一个微信客户端 |
-|[/openwx/check_client](Controller-API.md#查询微信客户端状态)|查询微信客户端状态 |
-|[/openwx/get_qrcode](Controller-API.md#获取登录二维码文件)  |获取登录二维码文件 |
-|[兼容其他微信单帐号API](Controller-API.md#兼容其他微信单帐号api) |兼容其他微信单帐号API |
-
 
 ### 客户端运行状态介绍
 
