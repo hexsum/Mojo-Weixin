@@ -357,6 +357,12 @@ $client->load("Openwx",data=>{
 
 采用长轮询机制，没有事件（消息）时，请求会挂起等待30s即断开，需要客户端再次重复发起请求
 
+API只能工作在非阻塞模式下,功能受限，不如POST上报的方式获取的信息全面，目前仅支持获取:
+
+发送消息、接收消息 以及如下一部分事件: 
+
+`new_group`,`new_friend`,`new_group_member`,`lose_group`,`lose_friend`,`lose_group_member`,
+
 ```
 * Connected to 127.1 (127.0.0.1) port 3000 (#0)
 > GET /openwx/check_event? HTTP/1.1
