@@ -592,6 +592,29 @@ Content-Type: application/json
 }
 
 ```
+#### 撤回消息上报
+
+```
+{
+    "time":"1442542632",
+    "content":"[撤回消息](你撤回了一条消息)",
+    "class":"send",
+    "sender_id":"@2372835507",
+    "sender_uid": 123456,
+    "group":"PERL学习交流",
+    "group_id":"@@2617047292",
+    "group_uid": 123456,
+    "group_name": "PERL学习交流",
+    "sender":"灰灰",
+    "sender_name": "灰灰",
+    "id":"10856",
+    "uid": 123456,
+    "type":"group_message",
+    "format": "revoke",
+    "post_type": "send_message"
+}
+
+```
 
 一般情况下，post_api接口返回的响应内容可以是随意，会被忽略，上报完不做其他操作
 如果post_api接口返回的数据类型是 text/json 或者 application/json，并且json格式形式如下:
@@ -1019,13 +1042,13 @@ Server: Mojolicious (Perl)
 
 ### 获取用户或群组头像
 
-|   API  |获取用户或群组头像
+|   API  |获取用户或群组头像
 |--------|:------------------------------------------|
 |uri     |/openwx/get_avatar|
 |请求方法|GET\|POST|
-|请求参数|**id**: 用户或群组的id|
+|请求参数|**id**: 用户或群组的id<br>**group_id**: 群组id（获取群成员头像时需要用到,但群成员因为经常获取不到地址可能导致无法获取头像）|
 |数据格式|image/jpg、image/png|
-|调用示例|http://127.0.0.1:3000/openwx/get_avatar?id=xxxxxx|
+|调用示例|获取好友或群组头像: http://127.0.0.1:3000/openwx/get_avatar?id=xxxxxx<br>获取群成员头像:http://127.0.0.1:3000/openwx/get_avatar?id=xxxxxx&group_id=xxxxx|
 
 返回图片原始数据:
 
