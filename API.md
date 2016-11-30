@@ -598,7 +598,8 @@ Content-Type: application/json
 {
     "time":"1442542632",
     "content":"[撤回消息](你撤回了一条消息)",
-    "class":"send",
+    "revoke_id":"2513410439052032973", #被用户撤回的消息id
+    "class":"send",
     "sender_id":"@2372835507",
     "sender_uid": 123456,
     "group":"PERL学习交流",
