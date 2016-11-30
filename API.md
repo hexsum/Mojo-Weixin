@@ -421,6 +421,7 @@ API只能工作在非阻塞模式下,功能受限，不如POST上报的方式获
 |数据格式|application/json|
 
 需要加载Openwx插件时通过 `post_api` 参数来指定上报地址:
+
 ```
 $client->load("Openwx",data=>{
     listen => [{host=>xxx,port=>xxx}],           #可选，发送消息api监听端口
@@ -430,6 +431,28 @@ $client->load("Openwx",data=>{
     post_event_list => ['login','stop','state_change','input_qrcode'], #可选，上报事件列表
 });
 ```
+
+首先要了解消息一些关键属性信息：
+
+上报或拉取的JSON数据的类型中的`post_type`属性用于区分上报的数据是消息类的数据还是其他事件
+
+|关键属性     |取值             |说明                  | 
+|:-----------|:----------------|:---------------------|
+|post_type   |receive_message<br>send_message<br>event|接收消息<br>发送消息<br>其他事件|
+
+发送接收消息（`post_type`为`receive_message`或`send_message`时)的关键属性信息：
+
+|关键属性     |取值           |说明                           | 
+|:-----------|:--------------|:------------------------------|
+|id          |-|消息的id
+|type        |friend_message<br>group_message<br>group_notice|消息类型细分:<br>好友消息<br>群消息<br>群提示消息  |
+|class       |send<br>recv|表明是发送消息还是接收消息
+|format      |text<br>media<br>app<br>revoke|消息的格式：<br>文本消息<br>媒体（图片、视频、语音）<br>应用分享<br>撤回消息|
+|sender_id   |-|消息发送者id（注意不是所有的消息类型都存在这个属性）
+|receiver_id |-|消息接收者id（注意不是所有的消息类型都存在这个属性）
+|group_id    |-|消息相关的群组id（注意不是所有的消息类型都存在这个属性）
+
+
 #### 接收消息上报 
 
 当接收到消息时，会把消息通过JSON格式数据POST到该接口
@@ -467,7 +490,7 @@ Content-Type: application/json
 
 ```
 
-群提示消息上报
+#### 群提示消息上报
 
 ```
 connect to 127.0.0.1 port 3000
@@ -759,7 +782,7 @@ Content-Type: application/json
 
 ```
 
-**可以通过上报的json数组中的`post_type`来区分上报的数据是收到的消息还是其他事件**
+**可以通过上报的json数组中的`post_type`来区分上报的数据是消息还是其他事件**
 
 ### 好友问答
 |   API  |发送消息给好友并等待好友回答
