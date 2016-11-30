@@ -205,7 +205,7 @@ sub call{
     });
     helper safe_render =>sub {
         my $c = shift;
-        $c->render(@_) if (defined $c->tx and !$c->tx->is_finished); 
+        $c->render(@_) if (defined $c and defined $c->tx and !$c->tx->is_finished); 
     };
     under sub {
         my $c = shift;
@@ -234,8 +234,9 @@ sub call{
         }
         else{
             $c->inactivity_timeout(35);
-            my $timer = Mojo::IOLoop->timer( 30 ,sub { $c->safe_render(json=>[]) });
-            $check_event_list->once(append=>sub{
+            my($timer,$cb);
+            $timer = Mojo::IOLoop->timer( 30 ,sub { $check_event_list->unsubscribe(append=>$cb);$c->safe_render(json=>[]) });
+            $cb = $check_event_list->once(append=>sub{
                 my($list,$element) = @_;
                 Mojo::IOLoop->remove($timer);
                 $c->safe_render(json=>[ $list->pick ]);
@@ -631,15 +632,24 @@ sub call{
     };
     any [qw(GET POST)] => '/openwx/get_avatar' => sub{
         my $c = shift;
-        my($id,$account,$displayname,$markname) = map {defined $_?Encode::encode("utf8",$_):$_} ($c->param("id"),$c->param("account"),$c->param("displayname"),$c->param("markname"),);
+        my($id,$account,$displayname,$markname,$group_id) = map {defined $_?Encode::encode("utf8",$_):$_} ($c->param("id"),$c->param("account"),$c->param("displayname"),$c->param("markname"),$c->param("group_id"));
         my $object =    (defined $id and $id eq $client->user->id) ? $client->user 
                 :       $client->is_group($id)? $client->search_group(id=>$id,displayname=>$displayname)
-                :       $client->search_friend(id=>$id,account=>$account,displayname=>$displayname,markname=>$markname)
+                :       undef
         ;
+        if(not defined $object and defined $group_id and defined $id){
+            my $group =  $client->search_group(id=>$group_id);
+            $object = $group->search_group_member(id=>$id) if defined $group;
+        }
+        else{
+            $object = $client->search_friend(id=>$id,account=>$account,displayname=>$displayname,markname=>$markname);
+        }
        
         if(defined $object){
             $c->render_later;
+            my $timer = $client->timer(3,sub{$c->safe_render(data=>'',status=>'503',);});
             $object->get_avatar(sub{
+                $client->ioloop->remove($timer);
                 my ($path,$data,$mime) = @_;
                 my $mtime = time;
                 $c->res->headers->cache_control('max-age=3600');

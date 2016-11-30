@@ -271,8 +271,11 @@ sub _parse_sync_data {
                 $self->emit("friend_request",$id,$displayname,$verify,$ticket);
                 next;
             }
-            elsif($e->{MsgType} == 10000){
+            elsif($e->{MsgType} == 10000){#群提示消息
                 $msg->{format} = "text";
+            }
+            elsif($e->{MsgType} == 10002){#撤回消息
+                $msg->{format} = "revoke";
             }
             elsif($e->{MsgType} == 49) {#应用分享
                 $msg->{format} = "app";
@@ -344,7 +347,7 @@ sub _parse_sync_data {
                     $msg->{app_url} = $dom->at('msg > appmsg > url')->content;
                     $msg->{app_desc} = $dom->at('msg > appmsg > des')->content;
                     for( ($msg->{app_title},$msg->{app_desc},$msg->{app_url},$msg->{app_name}) ){
-                        s/!\[CDATA\[(.*?)\]\]/$1/g;
+                        s/<!\[CDATA\[(.*?)\]\]>/$1/g;
                     }
                     $msg->{app_url} = Mojo::Util::html_unescape($msg->{app_url});
                     $msg->{content} = "[应用分享]标题：@{[$msg->{app_title} || '未知']}\n[应用分享]描述：@{[$msg->{app_desc} || '未知']}\n[应用分享]应用：@{[$msg->{app_name} || '未知']}\n[应用分享]链接：@{[$msg->{app_url} || '未知']}";
@@ -352,6 +355,36 @@ sub _parse_sync_data {
                 if($@){
                     $self->warn("app message xml parse fail: $@") if $@;
                     $msg->{content} = "[应用分享]标题：$msg->{app_title}\n[应用分享]链接：$msg->{app_url}";
+                }
+            }
+            elsif($msg->{format} eq "revoke"){
+                #<sysmsg type=\"revokemsg\"><revokemsg><session>wxid_8mn2bmkx40so22</session><oldmsgid>1072643834</oldmsgid><msgid>4835386562261263795</msgid><replacemsg><![CDATA[你撤回了一条消息]]></replacemsg></revokemsg></sysmsg>
+                eval{
+                    require Mojo::DOM;
+                    my $dom = Mojo::DOM->new($msg->{content});
+                    return if  $dom->at('sysmsg')->attr->{type} ne 'revokemsg';
+                    #$msg->{revoke_session} = $dom->at('sysmsg > revokemsg > session')->content;
+                    $msg->{revoke_id} = $dom->at('sysmsg > revokemsg > msgid')->content;
+                    $msg->{content} = $dom->at('sysmsg > revokemsg > replacemsg')->content;
+                    $msg->{content}=~s/<!\[CDATA\[(.*?)\]\]>/$1/g;
+
+                    #纠正自己撤回消息时，消息类型错乱的问题
+                    if($msg->{content} eq '你撤回了一条消息' and $msg->{class} eq 'recv'){
+                        $msg->{class} = 'send';
+                        $msg->{source} = 'outer';
+                        if($msg->{type} eq "group_message"){
+                            $msg->{sender_id} = $msg->{receiver_id};
+                            delete $msg->{receiver_id};
+                        }
+                        elsif($msg->{type} eq "friend_message"){
+                            ($msg->{sender_id},$msg->{receiver_id}) = ($msg->{receiver_id},$msg->{sender_id});
+                        }
+                    }
+                    $msg->{content} = "[撤回消息](" . $msg->{content} . ")";
+                };
+                if($@){
+                    $self->warn("app message xml parse fail: $@") if $@;
+                    $msg->{content} = "[撤回消息]";
                 }
             }
             $self->message_queue->put(Mojo::Weixin::Message->new($msg)); 
