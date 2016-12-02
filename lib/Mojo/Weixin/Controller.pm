@@ -214,8 +214,11 @@ sub start_client {
         return {code => 1, status=>'client not found',};
     }
     elsif(exists $self->backend->{$param->{client}}){
-        return {code=>0, status=>'client already exists',%{ $self->backend->{$param->{client}} }}
-            if $self->check_process($self->backend->{$param->{client}}{pid});
+        if( $self->check_process($self->backend->{$param->{client}}{pid}) ){
+            my %client = %{ $self->backend->{$param->{client}} };
+            for(keys %client){ delete $client{$_} if substr($_,0,1) eq "_"};
+            return {code=>0, status=>'client already exists',%client};
+        }
     }
     my $backend_port = empty_port({host=>'127.0.0.1',port=>$self->backend_start_port,proto=>'tcp'});
     return {code => 2, status=>'no available port',client=>$param->{client}} if not defined $backend_port;
@@ -310,7 +313,7 @@ MOJO_WEIXIN_CLIENT_TEMPLATE
             exec $Config{perlpath} || 'perl',$template_path;
         }
         else{
-            sleep 1;
+            select undef,undef,undef,0.05;
             if($pid!~/^\d+$/){
                 return {code=>4,status=>'client pid not ok' };
             }

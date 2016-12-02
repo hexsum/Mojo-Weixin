@@ -29,7 +29,7 @@ sub call{
     $client->on(all_event => sub{
         my($client,$event,@args) =@_;
         return if not first {$event eq $_} @{ $data->{post_event_list} };
-        if(defined $data->{post_api} and $event eq  'login' or $event eq 'stop' or $event eq 'state_change'){
+        if(defined $data->{post_api} and ($event eq  'login' or $event eq 'stop' or $event eq 'state_change') ){
             my $post_json = {};
             $post_json->{post_type} = "event";
             $post_json->{event} = $event;
@@ -108,7 +108,6 @@ sub call{
                 event     => $event,
                 params    => [$event eq 'update_user'?$ref->to_json_hash():map {$_->to_json_hash()} @{$ref}], 
             };
-            $check_event_list->append($post_json);
             $client->http_post($data->{post_api},json=>$post_json,sub{
                 my($data,$ua,$tx) = @_;
                 if($tx->success){
