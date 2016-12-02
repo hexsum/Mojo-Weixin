@@ -1,3 +1,7 @@
+2016-12-02 Mojo::Weixin v1.2.5
+1）紧急修复1.2.4版本Controller调用api大量报错的问题
+2）修复文档错误
+
 2016-12-01 Mojo::Weixin v1.2.4
 1）Openwx插件新增update_user/update_friend/update_group事件上报，默认不上报，需要在post_event_list中显式指定
 2）sticky_group函数改名为stick() 支持好友和群组设置取消置顶
