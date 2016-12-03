@@ -117,7 +117,11 @@ sub Mojo::Weixin::_upload_media {
             StartPos  => 0,
             DataLen   => $msg->media_size,
             MediaType => 4,
+            FromUserName => $msg->sender_id,
+            ToUserName => ($msg->type eq "group_message"?$msg->group_id:$msg->receiver_id),
+            UploadType=> 2,
         };
+        $uploadmediarequest->{FileMd5} = Mojo::Util::md5_sum($msg->media_data) if defined $msg->media_data;
 
         if(not defined $msg->media_type){
             my $media_type = $msg->media_mime=~/^image\/gif/i         ?   "emoticon"
@@ -146,7 +150,7 @@ sub Mojo::Weixin::_upload_media {
                 id=>'WU_FILE_0',
                 name=>$msg->media_name,
                 type=>$msg->media_mime,
-                lastModifiedDate=>POSIX::strftime('%a, %d %b %Y %H:%M:%S GMT+0800',gmtime($msg->media_mtime)),
+                lastModifiedDate=>POSIX::strftime('%a %b %d %Y %H:%M:%S GMT+0800',gmtime($msg->media_mtime)),
                 size=>$msg->media_size,
                 mediatype=>(
                         $msg->media_type eq "image"                                             ?   "pic"
