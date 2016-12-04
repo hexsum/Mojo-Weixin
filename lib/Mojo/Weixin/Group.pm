@@ -8,6 +8,7 @@ has 'owner_uid';
 has name => '';
 has member => sub{[]};
 has _avatar => '';
+has _eid    => '';
 
 sub get_avatar{
     my $self = shift;

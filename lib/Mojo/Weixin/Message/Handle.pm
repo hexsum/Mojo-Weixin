@@ -437,7 +437,8 @@ sub send_message{
         from  => "code",
     );
 
-    $callback->($self,$msg) if ref $callback eq "CODE"; 
+    $callback->($self,$msg) if ref $callback eq "CODE";
+    $self->emit(before_send_message=>$msg);
     $self->message_queue->put($msg);
 
 }

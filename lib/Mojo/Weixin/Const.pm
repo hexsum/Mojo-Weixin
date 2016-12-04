@@ -49,6 +49,7 @@ our %KEY_MAP_GROUP = qw(
     name    NickName
     owner_uid    OwnerUin
     _avatar  HeadImgUrl
+    _eid    EncryChatRoomId
 );
 our %KEY_MAP_GROUP_MEMBER = qw(
     id          UserName
