@@ -180,7 +180,9 @@ sub _parse_sync_data {
                 }
                 my $g = $self->search_group(id=>$group->{id});
                 if(not defined $g){#新增群组
-                    $self->add_group(Mojo::Weixin::Group->new($group));
+                    if(not $self->update_group($group->{id},1)){
+                        $self->add_group(Mojo::Weixin::Group->new($group));
+                    }
                 }
                 else{#更新已有联系人
                     $g->update($group);
@@ -192,7 +194,9 @@ sub _parse_sync_data {
                     $friend->{$_} = encode("utf8",$e->{$KEY_MAP_FRIEND{$_}}) if defined $e->{$KEY_MAP_FRIEND{$_}};
                 }
                 my $f = $self->search_friend(id=>$friend->{id});
-                if(not defined $f){$self->add_friend(Mojo::Weixin::Friend->new($friend))}
+                if(not defined $f){
+                    $self->add_friend(Mojo::Weixin::Friend->new($friend));
+                }
                 else{$f->update($friend)}
             }
         }

@@ -4,7 +4,9 @@ use base qw(Mojo::Weixin::Model::Base);
 use List::Util qw(first);
 use Mojo::Weixin::Model::Remote::_webwxinit;
 use Mojo::Weixin::Model::Remote::_webwxgetcontact;
-use Mojo::Weixin::Model::Remote::_webwxbatchgetcontact;
+use Mojo::Weixin::Model::Remote::_webwxbatchgetcontact_friend;
+use Mojo::Weixin::Model::Remote::_webwxbatchgetcontact_group;
+use Mojo::Weixin::Model::Remote::_webwxbatchgetcontact_group_member;
 use Mojo::Weixin::Model::Remote::_webwxstatusnotify;
 use Mojo::Weixin::Model::Remote::_webwxcreatechatroom;
 use Mojo::Weixin::Model::Remote::_webwxupdatechatroom;
@@ -56,13 +58,23 @@ sub model_init{
         }
     }
     if(keys %groups_id){
-        my $info = $self->_webwxbatchgetcontact(keys %groups_id);
-        if(defined $info){
-            my(undef,$groups) = @$info;
-            if(ref $groups eq "ARRAY" and @$groups >0){
-                $self->group([ map { Mojo::Weixin::Group->new($_) } @$groups ]);
-                $self->info("更新群组[ @{[$_->displayname]} ]信息成功") for $self->groups;
+        my @groups = $self->_webwxbatchgetcontact_group(0,keys %groups_id);
+        if(@groups){
+            if($self->is_init_group_member){
+                $self->group([]);
+                for my $g (@groups){
+                    my @member = $self->_webwxbatchgetcontact_group_member($g->{_eid},map {$_->{id}} @{$g->{member}});
+                    $g->{member} = \@member if @member;
+                    my $group = Mojo::Weixin::Group->new($g);
+                    push @{  $self->group },$group;
+                    $self->info("更新群组[ @{[$group->displayname]} ]信息成功");
+                }
                 $self->emit(update_group=>$self->group);
+            }
+            else{
+                $self->group([ map { Mojo::Weixin::Group->new($_) } @groups ]);
+                $self->info("更新群组[ @{[$_->displayname]} ]信息成功") for $self->groups;
+                $self->emit(update_group=>$self->group); 
             }
         }
         else{
@@ -79,22 +91,21 @@ sub update_friend{
     my $self = shift;
     if(defined $_[0]){
         my $friend_id = ref $_[0] eq "Mojo::Weixin::Friend"?$_[0]->id:$_[0];
-        my $info = $self->_webwxbatchgetcontact($friend_id);
-        return if not defined $info;
-        my ($friends) = @$info;
-        $self->add_friend(Mojo::Weixin::Friend->new($friends->[0]));
-        return;
+        my $friend = $self->_webwxbatchgetcontact_friend($friend_id);
+        return if not defined $friend;
+        $self->add_friend(Mojo::Weixin::Friend->new($friend));
+        return 1;
     }
 }
 sub update_group{
     my $self = shift;
     if(defined $_[0]){
         my $group_id = ref $_[0] eq "Mojo::Weixin::Group"?$_[0]->id:$_[0];
-        my $info = $self->_webwxbatchgetcontact($group_id);
-        return if not defined $info;
-        my(undef,$groups) = @$info;
-        $self->add_group(Mojo::Weixin::Group->new($groups->[0]));
-        return;
+        my $is_update_group_member = $_[1] // $self->is_update_group_member;
+        my $group = $self->_webwxbatchgetcontact_group($is_update_group_member,$group_id);
+        return if not defined $group;
+        $self->add_group(Mojo::Weixin::Group->new($group));
+        return 1;
     }
 }
 
