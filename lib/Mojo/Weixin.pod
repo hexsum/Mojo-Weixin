@@ -176,6 +176,9 @@ Mojo::Weixin - A Weixin Client Framework base on Mojolicious
     qrcode_count_max #每个二维码都有一个过期时间，过期后会重新下载一个二维码继续等待扫描
                      #如果等待扫码次数超过 qrcode_count_max 客户端会停止运行，默认10次
 
+    is_init_group_member   #是否在客户端初始登录时获取详细的群成员信息（比如account/sex）等，
+                           #默认为0，如果你很在意这些群成员属性，可以设置为1，但可能会极大降低启动速度
+
     #注意：所有参数都支持通过环境变量来设置，参数对应的环境变量格式 MOJO_WEIXIN_{参数名大写}
     #比如: MOJO_WEIXIN_ACCOUNT、 MOJO_WEIXIN_HTTP_DEBUG
 

@@ -20,7 +20,7 @@ has log_unicode         => 0;
 has log_console         => 1;
 has download_media      => 1;
 
-has is_init_group_member => 1;
+has is_init_group_member => 0;
 has is_update_group_member => 1;
 
 has account             => sub{ $ENV{MOJO_WEIXIN_ACCUNT} || 'default'};
