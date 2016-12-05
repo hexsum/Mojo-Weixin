@@ -654,7 +654,7 @@ Mojo::Weixin - A Weixin Client Framework base on Mojolicious
 =head2 before_send_message 消息发送前
 
     $client->on(before_send_message=>sub{
-        my $msg=shift;
+        my($client,$msg)= @_;
         $msg->content(  $msg->content . "——我是一个消息小尾巴"  );
     });
 
