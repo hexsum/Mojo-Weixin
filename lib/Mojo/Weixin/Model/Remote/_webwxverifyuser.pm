@@ -22,11 +22,11 @@ sub Mojo::Weixin::_webwxverifyuser {
             Skey        =>  $self->skey,
             DeviceID    =>  $self->deviceid,
         },
-        Opcode => $opcode || 2,
+        Opcode => $opcode,
         VerifyUserListSize => 1,
         VerifyUserList=>[{
             Value => $id,
-            VerifyUserTicket => "",
+            VerifyUserTicket => $ticket,
         }],
         VerifyContent => $content || "",
         SceneListCount => 1,
