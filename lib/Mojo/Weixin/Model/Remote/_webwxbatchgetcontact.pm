@@ -1,5 +1,6 @@
-use Mojo::Util qw(encode url_escape);
+#该源码文件已临时废弃
 use strict;
+use Mojo::Util qw(encode url_escape);
 use Mojo::Weixin::Const qw(%KEY_MAP_USER %KEY_MAP_GROUP %KEY_MAP_GROUP_MEMBER %KEY_MAP_FRIEND);
 sub Mojo::Weixin::_webwxbatchgetcontact{
     my $self  = shift;
