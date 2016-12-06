@@ -636,14 +636,15 @@ sub call{
                 :       $client->is_group($id)? $client->search_group(id=>$id,displayname=>$displayname)
                 :       undef
         ;
-        if(not defined $object and defined $group_id and defined $id){
-            my $group =  $client->search_group(id=>$group_id);
-            $object = $group->search_group_member(id=>$id) if defined $group;
+        if(not defined $object){
+            if(defined $group_id and defined $id){
+                my $group =  $client->search_group(id=>$group_id);
+                $object = $group->search_group_member(id=>$id) if defined $group;
+            }
+            else{
+                $object = $client->search_friend(id=>$id,account=>$account,displayname=>$displayname,markname=>$markname);
+            }
         }
-        else{
-            $object = $client->search_friend(id=>$id,account=>$account,displayname=>$displayname,markname=>$markname);
-        }
-       
         if(defined $object){
             $c->render_later;
             my $timer = $client->timer(3,sub{$c->safe_render(data=>'',status=>'503',);});
