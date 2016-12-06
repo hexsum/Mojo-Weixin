@@ -39,9 +39,15 @@ has ua_debug_req_body   => sub{$_[0]->ua_debug};
 has ua_debug_res_body   => sub{$_[0]->ua_debug};
 has ua_retry_times          => 5;
 has ua_connect_timeout      => 10;
-has ua_request_timeout      => 35;
-has ua_inactivity_timeout   => 35;
-has ua  => sub {Mojo::UserAgent->new(connect_timeout=>3,inactivity_timeout=>3,request_timeout=>3)};
+has ua_request_timeout      => 120;
+has ua_inactivity_timeout   => 120;
+has ua  => sub {
+    Mojo::UserAgent->new(
+        connect_timeout=>$_[0]->ua_connect_timeout,
+        request_timeout=>$_[0]->ua_request_timeout,
+        inactivity_timeout=>$_[0]->ua_inactivity_timeout,
+    )
+};
 
 has tmpdir              => sub {File::Spec->tmpdir();};
 has pid_path            => sub {File::Spec->catfile($_[0]->tmpdir,join('','mojo_weixin_controller_process','.pid'))};
@@ -489,6 +495,7 @@ any '/openwx/*whatever'  => sub{
         $c->safe_render(json => {code => 1, status=>'client not exists',});
         return;
     }
+    $c->inactivity_timeout(120);
     $c->render_later;
     my $tx = Mojo::Transaction::HTTP->new(req=>$c->req->clone);
     $tx->req->url->host("127.0.0.1");
@@ -496,7 +503,7 @@ any '/openwx/*whatever'  => sub{
     $tx->req->url->scheme('http');
     $tx->req->headers->header('Host',$tx->req->url->host_port);
     return if $c->stash('mojo.finished');
-    $c->ua->start($tx,sub{
+    $c->stash('wxc')->ua->start($tx,sub{
         my ($ua,$tx) = @_;
         $c->tx->res($tx->res);
         $c->rendered;

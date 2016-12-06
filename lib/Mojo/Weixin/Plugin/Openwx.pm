@@ -232,7 +232,7 @@ sub call{
             return;
         }
         else{
-            $c->inactivity_timeout(35);
+            $c->inactivity_timeout(120);
             my($timer,$cb);
             $timer = Mojo::IOLoop->timer( 30 ,sub { $check_event_list->unsubscribe(append=>$cb);$c->safe_render(json=>[]) });
             $cb = $check_event_list->once(append=>sub{
