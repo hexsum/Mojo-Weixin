@@ -27,6 +27,7 @@ sub to_json_hash{
             $json->{receiver_account} = $self->receiver->account;
             $json->{receiver_uid} = $self->receiver->uid;
             $json->{receiver_name} = decode_utf8($self->receiver->name);
+            $json->{receiver_markname} = decode_utf8($self->receiver->markname);
         }
         elsif($key eq "group"){
             next if ($self->type ne "group_message" and $self->type ne "group_notice");
