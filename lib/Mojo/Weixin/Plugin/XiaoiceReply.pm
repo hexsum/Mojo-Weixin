@@ -26,7 +26,8 @@ sub call{
 
         $client->on(receive_message=>sub{
             my($client,$msg) = @_;
-            return if $msg !~ /^friend_message|group_message$/;
+            return if $msg->type !~ /^friend_message|group_message$/;
+            return if $msg->format !~ /^text|media$/;
             return if not $msg->allow_plugin;
             return if not $onoff_flag;
             return if $is_need_at and $msg->type eq "group_message" and !$msg->is_at;
