@@ -1,5 +1,4 @@
 use strict;
-use Mojo::Util ();
 use Mojo::Weixin::Const ();
 sub Mojo::Weixin::_send_media_message {
     my $self = shift;
@@ -10,18 +9,18 @@ sub Mojo::Weixin::_send_media_message {
     }
     my $callback = sub{
         my $json = shift;
-        my $status = $self->_parse_send_status_data($json);
-        if(defined $status and !$status->is_success and $msg->ttl > 0){
+        $msg->_parse_send_status_data($json);
+        if(!$msg->is_success and $msg->ttl > 0){
             $self->debug("消息[ " . $msg->id . " ]发送失败，尝试重新发送，当前TTL: " . $msg->ttl);
             $self->message_queue->put($msg);
             return;
         }
-        elsif(defined $status){
+        else{
             if(ref $msg->cb eq 'CODE'){
-                $msg->cb->($self, $msg,$status,);
+                $msg->cb->($self, $msg);
             }
             $self->emit(send_media => $msg->media_path,$msg->media_data,$msg);
-            $self->emit(send_message => $msg,$status);
+            $self->emit(send_message => $msg);
         }
     };
     $self->steps(
@@ -32,18 +31,18 @@ sub Mojo::Weixin::_send_media_message {
         sub{
             my($delay,$msg) = @_;
             if(not defined $msg->media_id){
-                my $status = Mojo::Weixin::Message::SendStatus->new(code=>-1,msg=>"发送失败",info=>"media_id无效");
+                $msg->send_status(code=>-1,msg=>"发送失败",info=>"media_id无效");
                 if(ref $msg->cb eq 'CODE'){
-                    $msg->cb->($self, $msg,$status,);
+                    $msg->cb->($self, $msg);
                 }
-                $self->emit(send_message => $msg,$status);
+                $self->emit(send_message => $msg);
                 return;
             }
             my $api;
             my @query_string = (
                 fun => 'async',
                 f   => 'json',
-                $self->pass_ticket?(pass_ticket => Mojo::Util::url_escape($self->pass_ticket)):()
+                $self->pass_ticket?(pass_ticket => $self->url_escape($self->pass_ticket)):()
             );
             my $t = sub{my $r = sprintf "%.3f", rand();$r=~s/\.//g;return $self->now() . $r;}->();
             my $post = {
@@ -77,7 +76,7 @@ sub Mojo::Weixin::_send_media_message {
                 $api =  'https://' . $self->domain . '/cgi-bin/mmwebwx-bin/webwxsendemoticon';
                 @query_string = (
                     fun=>'sys',
-                    $self->pass_ticket?(pass_ticket => Mojo::Util::url_escape($self->pass_ticket)):()    
+                    $self->pass_ticket?(pass_ticket => $self->url_escape($self->pass_ticket)):()    
                 );
                 $post->{Msg}{EmojiFlag} = 2;
             }
@@ -102,7 +101,7 @@ sub Mojo::Weixin::_send_media_message {
                 $post->{Msg}{Content} = $content;
             }
             $post->{Msg}{Content} =~ s#/#__SLASH__#g if exists $post->{Msg}{Content};
-            my $json = $self->encode_json($post);
+            my $json = $self->to_json($post);
             $json =~ s#__SLASH__#/#g;
             $self->http_post(
                 $self->gen_url($api,@query_string),

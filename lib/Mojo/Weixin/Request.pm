@@ -1,5 +1,5 @@
 package Mojo::Weixin::Request;
-use Mojo::Util qw(url_escape encode);
+use Mojo::Util ();
 use List::Util qw(first);
 sub gen_url{
     my $self = shift;
@@ -24,7 +24,7 @@ sub gen_url2{
         my $val = shift(@query_string);
         $key = "" if not defined $key;
         $val = "" if not defined $val;
-        push @query_string_pairs , $key . "=" . url_escape($val);
+        push @query_string_pairs , $key . "=" . Mojo::Util::url_escape($val);
     }
     return $url . '?' . join("&",@query_string_pairs);
 }
@@ -37,6 +37,7 @@ sub http_post{
     my $self = shift;
     return $self->_http_request("post",@_);
 }
+
 sub _ua_debug {
     my ($self,$ua,$tx,$opt,$is_blocking) = @_;
     return if not $opt->{ua_debug};
@@ -56,7 +57,8 @@ sub _http_request{
     my $self = shift;
     my $method = shift;
     my %opt = (
-        json                =>  0,
+        json                =>  0,  
+        blocking            =>  0,
         ua_retry_times      =>  $self->ua_retry_times,
         #ua_connect_timeout  =>  $self->ua_connect_timeout,
         #ua_request_timeout  =>  $self->ua_request_timeout,
@@ -67,6 +69,7 @@ sub _http_request{
     );
     if(ref $_[1] eq "HASH"){#with header or option
         $opt{json} = delete $_[1]->{json} if defined $_[1]->{json};
+        $opt{blocking} = delete $_[1]->{blocking} if defined $_[1]->{blocking};
         $opt{ua_retry_times} = delete $_[1]->{ua_retry_times} if defined $_[1]->{ua_retry_times};
         $opt{ua_debug}          = delete $_[1]->{ua_debug} if defined $_[1]->{ua_debug};
         $opt{ua_debug_res_body} = delete $_[1]->{ua_debug_res_body} if defined $_[1]->{ua_debug_res_body};
@@ -75,24 +78,25 @@ sub _http_request{
         $opt{ua_request_timeout} = delete $_[1]->{ua_request_timeout} if defined $_[1]->{ua_request_timeout};
         $opt{ua_inactivity_timeout} = delete $_[1]->{ua_inactivity_timeout} if defined $_[1]->{ua_inactivity_timeout};
     }
-    if(ref $_[-1] eq "CODE"){
+    if(ref $_[-1] eq "CODE" and !$opt{blocking}){
         my $cb = pop;
         return $self->ua->$method(@_,sub{
             my($ua,$tx) = @_;
-            _ua_debug($self,$ua,$tx,\%opt,0) if $opt{ua_debug};;
+            _ua_debug($self,$ua,$tx,\%opt,0) if $opt{ua_debug};
             $self->save_cookie();
             if(defined $tx and $tx->success){
-                my $r = $opt{json}?$self->decode_json($tx->res->body):$tx->res->body;
+                my $r = $opt{json}?$self->from_json($tx->res->body):$tx->res->body;
                 $cb->($r,$ua,$tx);
             }
             elsif(defined $tx){
-                $self->warn($tx->req->url->to_abs . " 请求失败: " . ($tx->error->{code}||"-") . " " . encode("utf8",$tx->error->{message}));
+                $self->warn($tx->req->url->to_abs . " 请求失败: " . ($tx->error->{code}||"-") . " " . $self->encode_utf8($tx->error->{message}));
                 $cb->(undef,$ua,$tx);
             }
         });
     }
     else{
         my $tx;
+        my $cb = pop if ref $_[-1] eq "CODE";
         for(my $i=0;$i<=$opt{ua_retry_times};$i++){
             if($opt{ua_connect_timeout} or  $opt{ua_request_timeout} or $opt{ua_inactivity_timeout}){
                 my $connect_timeout = $self->ua->connect_timeout;
@@ -109,18 +113,20 @@ sub _http_request{
             else{
                 $tx = $self->ua->$method(@_);
             }
-            _ua_debug($self,$ua,$tx,\%opt,1) if $opt{ua_debug};;
+            _ua_debug($self,$ua,$tx,\%opt,1) if $opt{ua_debug};
             $self->save_cookie();
             if(defined $tx and $tx->success){
-                my $r = $opt{json}?$self->decode_json($tx->res->body):$tx->res->body;
+                my $r = $opt{json}?$self->from_json($tx->res->body):$tx->res->body;
+                $cb->($r,$ua,$tx) if defined $cb;
                 return wantarray?($r,$self->ua,$tx):$r;
             }
             elsif(defined $tx){
-                $self->warn($tx->req->url->to_abs . " 请求失败: " . ($tx->error->{code} || "-") . " " . encode("utf8",$tx->error->{message}));
+                $self->warn($tx->req->url->to_abs . " 请求失败: " . ($tx->error->{code} || "-") . " " . $self->encode_utf8($tx->error->{message}));
                 next;
             }
         }
-        $self->warn($tx->req->url->to_abs . " 请求失败: " . ($tx->error->{code}||"-") . " " . encode("utf8",$tx->error->{message})) if defined $tx;
+        $self->warn($tx->req->url->to_abs . " 请求失败: " . ($tx->error->{code}||"-") . " " . $self->encode_utf8($tx->error->{message})) if defined $tx;
+        $cb->($r,$ua,$tx) if defined $cb;
         return wantarray?(undef,$self->ua,$tx):undef;
     }
 }
@@ -133,7 +139,7 @@ sub load_cookie{
     return if not -f $cookie_path;
     eval{require Storable;$cookie_jar = Storable::retrieve($cookie_path)};
     if($@){
-        $self->warn("客户端加载cookie失败: $@");
+        $self->warn("客户端加载cookie[ $cookie_path ]失败: $@");
         return;
     }
     else{
@@ -145,10 +151,9 @@ sub load_cookie{
 sub save_cookie{
     my $self = shift;
     return if not $self->keep_cookie;
-    return if not defined $self->wxuin;
     my $cookie_path = $self->cookie_path;
     eval{Storable::nstore($self->ua->cookie_jar,$cookie_path);};
-    $self->warn("客户端保存cookie失败: $@") if $@;
+    $self->warn("客户端保存cookie[ $cookie_path ]失败: $@") if $@;
 }
 
 sub search_cookie{

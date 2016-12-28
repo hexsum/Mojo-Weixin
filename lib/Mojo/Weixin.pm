@@ -12,13 +12,13 @@ has http_debug          => sub{$ENV{MOJO_WEIXIN_HTTP_DEBUG} || 0 } ;
 has ua_debug            => sub{$_[0]->http_debug};
 has ua_debug_req_body   => sub{$_[0]->ua_debug};
 has ua_debug_res_body   => sub{$_[0]->ua_debug};
-has log_level           => 'info';     #debug|info|warn|error|fatal
+has log_level           => 'info';     #debug|info|msg|warn|error|fatal
 has log_path            => undef;
 has log_encoding        => undef;      #utf8|gbk|...
 has log_head            => undef;
-has log_unicode         => 0;
 has log_console         => 1;
 has download_media      => 1;
+has disable_color       => 0;           #是否禁用终端打印颜色
 
 has is_init_group_member => 0;
 has is_update_group_member => 1;
@@ -50,31 +50,13 @@ has data    => sub {+{}};
 has version => $Mojo::Weixin::VERSION;
 has plugins => sub{+{}};
 has log     => sub{
-    my $self = $_[0];
     Mojo::Weixin::Log->new(
         encoding    =>  $_[0]->log_encoding,
         path        =>  $_[0]->log_path,
         level       =>  $_[0]->log_level,
-        unicode_support => $_[0]->log_unicode,
+        head        =>  $_[0]->log_head,
+        disable_color   => $_[0]->disable_color,
         console_output  => $_[0]->log_console,
-        format      =>  sub{
-            my ($time, $level, @lines) = @_;
-            my $title = "";
-            my $head  = $self->log_head || "";
-            if(ref $lines[0] eq "HASH"){
-                my $opt = shift @lines; 
-                $time = $opt->{"time"} if defined $opt->{"time"};
-                $title = $opt->{"title"} . " " if defined $opt->{"title"};
-                $level  = $opt->{"level"} if defined $opt->{"level"};
-                $head  = $opt->{"head"} if defined $opt->{"head"};
-            }
-            @lines = split /\n/,join "",@lines;
-            my $return = "";
-            $time = $time?POSIX::strftime('[%y/%m/%d %H:%M:%S]',localtime($time)):"";
-            $level = $level?"[$level]":"";
-            for(@lines){$return .= $head . $time . " " . $level . " " . $title . $_ . "\n";}
-            return $return;
-        }
     )
 };
 
@@ -89,20 +71,38 @@ has login_state             => 'init';
 has qrcode_count            => 0;
 has qrcode_count_max        => 10;
 has ua                      => sub {
+    my $self = $_[0];
     #local $ENV{MOJO_USERAGENT_DEBUG} = $_[0]->ua_debug;
     local $ENV{MOJO_MAX_MESSAGE_SIZE} = $_[0]->http_max_message_size if defined $_[0]->http_max_message_size;
     require Mojo::UserAgent;
     require Mojo::UserAgent::Proxy;
     require Storable if $_[0]->keep_cookie;
+    my $transactor = Mojo::UserAgent::Transactor->new(
+        name =>  'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/37.0.2062'
+    );
+    my $default_form_generator = $transactor->generators->{form};
+    $transactor->add_generator(form => sub{
+        #my ($self, $tx, $form, %options) = @_;
+        $self->reform($_[2],unicode=>1,recursive=>1,filter=>sub{
+            my($type,$deep,$key) = @_;
+            return 1 if $type ne 'HASH';
+            return 1 if $deep == 0;
+            return 0 if $deep == 1 and $key =~ /^filename|file|content$/;
+            return 1;
+        });
+        $default_form_generator->(@_);
+    });
+    $transactor->add_generator(json=>sub{
+        $_[1]->req->body($self->to_json($_[2]))->headers->content_type('application/json');
+        return $_[1];
+    });
     Mojo::UserAgent->new(
         proxy              => sub{ my $proxy = Mojo::UserAgent::Proxy->new;$proxy->detect;$proxy}->(),
         max_redirects      => 7,
         connect_timeout    => $_[0]->ua_connect_timeout,
         request_timeout    => $_[0]->ua_request_timeout,
         inactivity_timeout => $_[0]->ua_inactivity_timeout,
-        transactor => Mojo::UserAgent::Transactor->new( 
-            name =>  'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/37.0.2062'
-        ),
+        transactor         => $transactor,
     );
 };
 

@@ -2,7 +2,6 @@ package Mojo::Weixin::Model::Base;
 use Mojo::Weixin::Base -base;
 use Data::Dumper;
 use Scalar::Util qw(blessed);
-use Encode qw(decode_utf8);
 use List::Util qw(first);
 
 sub client {
@@ -15,8 +14,8 @@ sub to_json_hash{
     for(keys %$self){
         next if substr($_,0,1) eq "_";
         next if $_ eq "member";
-        $hash->{$_} = decode_utf8($self->{$_});
-        $hash->{displayname} = decode_utf8 $self->displayname;
+        $hash->{$_} = $self->{$_};
+        $hash->{displayname} = $self->displayname;
     }
     if($is_keep_member and exists $self->{member} ){
         $hash->{member} = [];

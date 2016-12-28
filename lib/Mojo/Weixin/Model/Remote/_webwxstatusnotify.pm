@@ -1,12 +1,11 @@
 use strict;
-use Mojo::Util qw(url_escape);
 sub Mojo::Weixin::_webwxstatusnotify {
     my $self = shift;
     my $id = shift;
     my $code = shift || 3;
     $self->debug("发送状态通知...");
     my $api = "https://". $self->domain . "/cgi-bin/mmwebwx-bin/webwxstatusnotify";
-    my @query_string = (pass_ticket =>  url_escape($self->pass_ticket)) if $self->pass_ticket;
+    my @query_string = (pass_ticket =>  $self->url_escape($self->pass_ticket)) if $self->pass_ticket;
     my $post = {
         BaseRequest =>  {
             Uin         =>  $self->wxuin,

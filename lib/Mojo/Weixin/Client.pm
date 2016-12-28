@@ -9,7 +9,6 @@ use Mojo::Weixin::Client::Remote::_sync;
 use Mojo::Weixin::Message::Handle;
 use Mojo::IOLoop;
 use Mojo::IOLoop::Delay;
-use Mojo::Util qw();
 
 use base qw(Mojo::Weixin::Request);
 
@@ -344,7 +343,8 @@ sub save_state{
         log_encoding 
         log_path 
         log_level 
-        log_unicode
+        log_console
+        disable_color
         download_media
         tmpdir
         media_dir
@@ -366,14 +366,14 @@ sub save_state{
     eval{
         my $json = {plugin => []};
         for my $attr (@attr){
-            $json->{$attr} = defined $self->$attr?Mojo::Util::decode("utf8",$self->$attr): undef;
+            $json->{$attr} = $self->$attr;
         }
         $json->{pid} = $$;
         $json->{os}  = $^O;
         for my $p (keys %{ $self->plugins }){
             push @{ $json->{plugin} } , { name=>$self->plugins->{$p}{name},priority=>$self->plugins->{$p}{priority},auto_call=>$self->plugins->{$p}{auto_call},call_on_load=>$self->plugins->{$p}{call_on_load} } ;
         }
-        $self->spurt($self->encode_json($json),$self->state_path);
+        $self->spurt($self->to_json($json),$self->state_path);
     };
     $self->warn("客户端状态信息保存失败：$@") if $@;
 }

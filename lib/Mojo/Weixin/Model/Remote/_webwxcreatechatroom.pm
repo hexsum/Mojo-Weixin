@@ -1,5 +1,4 @@
 use strict;
-use Mojo::Util qw(url_escape decode);
 use Mojo::Weixin::Const;
 use Mojo::Weixin::Group;
 sub Mojo::Weixin::_webwxcreatechatroom {
@@ -16,7 +15,7 @@ sub Mojo::Weixin::_webwxcreatechatroom {
     my @query_string = (
         r => $self->now(),
     );
-    push @query_string,(pass_ticket =>  url_escape($self->pass_ticket)) if $self->pass_ticket;
+    push @query_string,(pass_ticket =>  $self->url_escape($self->pass_ticket)) if $self->pass_ticket;
     my $post = {
         BaseRequest =>  {
             Uin         =>  $self->wxuin,
@@ -26,7 +25,7 @@ sub Mojo::Weixin::_webwxcreatechatroom {
         },
         MemberCount     =>  0+@$friends,
         MemberList      =>  [map { +{UserName=>$_->id} } @$friends],
-        Topic           =>  (defined $chatroom_displayname?decode("utf8",$chatroom_displayname):""),
+        Topic           =>  $chatroom_displayname // "",
     };
     
     my $json = $self->http_post($self->gen_url($api,@query_string),{json=>1,Referer=>'https://' . $self->domain . '/'},json=>$post);
@@ -36,7 +35,7 @@ sub Mojo::Weixin::_webwxcreatechatroom {
     for my $m (@{ $json->{MemberList} }){
         my $member = {};
         for(keys %Mojo::Weixin::Const::KEY_MAP_GROUP_MEMBER){
-            $member->{$_} = defined $m->{$KEY_MAP_GROUP_MEMBER{$_}}?encode("utf8", $m->{$KEY_MAP_GROUP_MEMBER{$_}} ):"";
+            $member->{$_} = $m->{$KEY_MAP_GROUP_MEMBER{$_}} // "";
         }
         $member->{sex} = $self->code2sex($member->{sex});
         push @{$group->{member}},$member;

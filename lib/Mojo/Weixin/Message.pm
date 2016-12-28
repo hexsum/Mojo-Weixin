@@ -16,6 +16,7 @@ has [qw( media_id media_type media_code media_mime media_name media_size media_d
 has [qw( app_id app_title app_url app_name app_desc)];
 has [qw( revoke_id )];
 has data => undef;
+has [qw(code msg info)];
 
 sub new {
     my $s = shift;

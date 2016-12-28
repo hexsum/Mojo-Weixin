@@ -1,7 +1,5 @@
 package Mojo::Weixin::Plugin::SmartReply;
 use POSIX;
-use Encode;
-use Mojo::Util;
 my $api = 'http://www.tuling123.com/openapi/api';
 my %limit;
 my %ban;
@@ -54,10 +52,10 @@ sub call{
         my $json = {
             "key"       =>  $data->{apikey} || "bbdaba85b5cf47bc80e27cbaee7a77df",
             "userid"    =>  $msg->sender->id,
-            "info"      =>  decode("utf8",$input),
+            "info"      =>  $input,
         };
 
-        $json->{"loc"} = decode("utf8",$msg->sender->city) if $msg->type eq "group_message" and  $msg->sender->city;
+        $json->{"loc"} = $msg->sender->city if $msg->type eq "group_message" and  $msg->sender->city;
         $client->http_post($api,{json=>1},json=>$json,sub{
             my $json = shift;
             return unless defined $json;
@@ -65,10 +63,10 @@ sub call{
             my $reply;
             if($json->{code} == 100000){
                 return unless $json->{text};
-                $reply = encode("utf8",$json->{text});
+                $reply = $json->{text};
             } 
             elsif($json->{code} == 200000){
-                $reply = encode("utf8","$json->{text}$json->{url}");
+                $reply = "$json->{text}$json->{url}";
             }
             else{return}
             $reply=~s#<br(\s*/)?>#\n#g;

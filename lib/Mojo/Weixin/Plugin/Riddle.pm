@@ -1,6 +1,5 @@
 package Mojo::Weixin::Plugin::Riddle;
 our $PRIORITY = 92;
-use Encode;
 use List::Util qw(first);
 sub call{
     my $client = shift;
@@ -28,9 +27,9 @@ sub call{
                         return if not defined $json;
                         return if $json->{status} != 0;
                         return if ref $json->{data} ne "ARRAY";
-                        my $answer = encode("utf8",$json->{data}[0]{body});
+                        my $answer = $json->{data}[0]{body};
                         $flag = 1; 
-                        $msg->reply("文曲星君题戏三界($json->{data}[0]{id}):\n" . encode("utf8",$json->{data}[0]{title}),sub{$_[1]->from("bot")}); 
+                        $msg->reply("文曲星君题戏三界($json->{data}[0]{id}):\n" . $json->{data}[0]{title},sub{$_[1]->from("bot")}); 
 
                         $client->wait(
                             $data->{timeout} || 30,#等待答案超时时间

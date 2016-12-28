@@ -1,6 +1,6 @@
 package Mojo::Weixin::Plugin::Translation;
 use strict;
-use Mojo::Util qw(url_escape encode md5_sum decode);
+use Mojo::Util qw(url_escape md5_sum );
 our $PRIORITY = 93;
 sub call {
     my ($client,$data) = @_;
@@ -17,7 +17,7 @@ sub call {
             $msg->allow_plugin(0);
             my $salt = time;
             $client->http_get($api,{json=>1},form=>{
-                q     => decode("utf8",$query),
+                q     => $query,
                 from  => 'auto',
                 to    => 'auto',
                 appid => $appid,
@@ -27,10 +27,10 @@ sub call {
                 my $json = shift;
                 if( not defined $json ){$msg->reply("翻译失败: api接口不可用")}
                 elsif(defined $json and exists $json->{error_code}){
-                    $msg->reply("翻译失败: api接口不可用(" . encode("utf8", $json->{error_code} . " " . $json->{error_msg} ) . ")"); 
+                    $msg->reply("翻译失败: api接口不可用(" . $json->{error_code} . " " . $json->{error_msg} . ")"); 
                 }
                 elsif(defined $json){
-                    $msg->reply( encode("utf8",join " ",map {$_->{dst}} @{ $json->{trans_result} } ));
+                    $msg->reply( join " ",map {$_->{dst}} @{ $json->{trans_result} } );
                 }
             });
         } 

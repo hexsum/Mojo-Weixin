@@ -157,7 +157,7 @@ sub Mojo::Weixin::_upload_media {
                     :   ($msg->media_type eq "video" or $msg->media_type eq "microvideo")       ?   "video"
                     :                                                                               "doc"
                 ),
-                uploadmediarequest=>$self->encode_json($uploadmediarequest),
+                uploadmediarequest=>$self->to_json($uploadmediarequest),
                 webwx_data_ticket=>$self->search_cookie("webwx_data_ticket"),
                 pass_ticket => $self->pass_ticket,
                 filename =>{

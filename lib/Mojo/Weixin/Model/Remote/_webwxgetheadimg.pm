@@ -1,7 +1,5 @@
 use strict;
 use File::Temp qw/:seekable/;
-use Mojo::Util ();
-use File::Basename qw(basename);
 sub Mojo::Weixin::_webwxgetheadimg {
     my $self = shift;
     my $object = shift;

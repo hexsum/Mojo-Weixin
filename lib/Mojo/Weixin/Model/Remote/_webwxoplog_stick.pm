@@ -1,11 +1,10 @@
-use Mojo::Util qw();
 sub Mojo::Weixin::_webwxoplog_stick {
     my $self = shift;
     my $id = shift;
     my $op = shift // 1;
     my $api = 'https://' .$self->domain . '/cgi-bin/mmwebwx-bin/webwxoplog';
     my @query_string = (
-        pass_ticket => Mojo::Util::url_escape($self->pass_ticket),
+        pass_ticket => $self->url_escape($self->pass_ticket),
     );
     #push @query_string,(pass_ticket =>  url_escape($self->pass_ticket)) if $self->pass_ticket;
     my $post = {

@@ -1,5 +1,6 @@
 package Mojo::Weixin::Util;
 use Carp qw();
+use Encode ();
 use Mojo::Util ();
 use Mojo::JSON qw();
 use Mojo::Weixin::Const qw(%FACE_MAP_QQ %FACE_MAP_EMOJI);
@@ -50,6 +51,36 @@ sub spurt {
     my $self = shift;
     return Mojo::Util::spurt(@_);
 }
+sub from_json{
+    my $self = shift;
+    my $r = eval{
+        Mojo::JSON::from_json(@_);
+    };
+    if($@){
+        $self->warn($@);
+        $self->warn(__PACKAGE__ . "::from_json return undef value");
+        return undef;
+    }
+    else{
+        $self->warn(__PACKAGE__ . "::from_json return undef value") if not defined $r;
+        return $r;
+    }
+}
+sub to_json{
+    my $self = shift;
+    my $r = eval{
+        Mojo::JSON::to_json(@_);
+    };
+    if($@){
+        $self->warn($@);
+        $self->warn(__PACKAGE__ . "::to_json return undef value");
+        return undef;
+    }
+    else{
+        $self->warn(__PACKAGE__ . "::to_json return undef value") if not defined $r;
+        return $r;
+    }
+}
 sub decode_json{
     my $self = shift;
     my $r = eval{
@@ -99,20 +130,69 @@ sub truncate {
     }
     return $out_and_err. ($is_truncated?"\n(已截断)":"");
 }
-sub reform_hash{
+sub reform{
     my $self = shift;
-    my $hash = shift;
-    my $flag = shift || 0;
-    for(keys %$hash){
-        $self->die("不支持的hash结构\n") if ref $hash->{$_} ne "";
-        if($flag){
-            Encode::_utf8_on($hash->{$_}) if not Encode::is_utf8($hash->{$_}); 
+    my $ref = shift;
+    my %opt = @_;
+    my $unicode = $opt{unicode} // 0;
+    my $recursive = $opt{recursive} // 1;
+    my $cb = $opt{filter};
+    my $deep = $opt{deep} // 0;
+    if(ref $ref eq 'HASH'){
+        my @reform_hash_keys;
+        for (keys %$ref){
+            next if ref $cb eq "CODE" and !$cb->("HASH",$deep,$_,$ref->{$_});
+            if($_ !~ /^[[:ascii:]]+$/){
+                if($unicode and not Encode::is_utf8($_)){
+                    push @reform_hash_keys,[ $_,Encode::decode_utf8($_) ];
+                }
+                elsif(!$unicode and Encode::is_utf8($_)){ 
+                    push @reform_hash_keys,[ $_,Encode::encode_utf8($_) ];
+                }
+            }
+        
+            if(ref $ref->{$_} eq ""){
+                if($unicode and not Encode::is_utf8($ref->{$_}) ){
+                    Encode::_utf8_on($ref->{$_});
+                }
+                elsif( !$unicode and Encode::is_utf8($ref->{$_}) ){
+                    Encode::_utf8_off($ref->{$_});
+                }
+            }
+            elsif( $recursive and ref $ref->{$_} eq "ARRAY" or ref $ref->{$_} eq "HASH"){
+                $self->reform($ref->{$_},@_,deep=>$deep+1);
+            }
+            #else{
+            #    $self->die("不支持的hash结构\n");
+            #}
         }
-        else{Encode::_utf8_off($hash->{$_}) if Encode::is_utf8($hash->{$_});}
+
+        for(@reform_hash_keys){ $ref->{$_->[1]} = delete $ref->{$_->[0]} }
+    }
+    elsif(ref $ref eq 'ARRAY'){
+        for(@$ref){
+            next if ref $cb eq "CODE" and !$cb->("ARRAY",$deep,$_);
+            if(ref $_ eq ""){
+                if($unicode and not Encode::is_utf8($_) ){
+                    Encode::_utf8_on($_);
+                }
+                elsif( !$unicode and Encode::is_utf8($_) ){
+                    Encode::_utf8_off($_);
+                }
+            }
+            elsif($recursive and ref $_ eq "ARRAY" or ref $_ eq "HASH"){
+                $self->reform($_,@_,deep=>$deep+1);
+            }
+            #else{
+            #    $self->die("不支持的hash结构\n");
+            #}
+        }
+    }
+    else{
+        $self->die("不支持的数据结构");
     }
     $self;
 }
-
 sub array_diff{
     my $self = shift;
     my $old = shift;
@@ -178,21 +258,38 @@ sub info{
 }
 sub warn{
     my $self = shift;
+    ref $_[0] eq 'HASH' ?
+        ($_[0]->{level_color} //= 'yellow' and $_[0]->{content_color} //= 'yellow')
+    :   unshift @_,{level_color=>'yellow',content_color=>'yellow'};
     $self->log->warn(@_);
+    $self;
+}
+sub msg{
+    my $self = shift;
+    $self->log->msg(@_);
     $self;
 }
 sub error{
     my $self = shift;
+    ref $_[0] eq 'HASH' ?
+        ($_[0]->{level_color} //= 'red' and $_[0]->{content_color} //= 'red')
+    :   unshift @_,{level_color=>'red',content_color=>'red'};
     $self->log->error(@_);
     $self;
 }
 sub fatal{
     my $self = shift;
+    ref $_[0] eq 'HASH' ?
+        ($_[0]->{level_color} //= 'red' and $_[0]->{content_color} //= 'red')
+    :   unshift @_,{level_color=>'red',content_color=>'red'};
     $self->log->fatal(@_);
     $self;
 }
 sub debug{
     my $self = shift;
+    ref $_[0] eq 'HASH' ?
+        ($_[0]->{level_color} //= 'blue' and $_[0]->{content_color} //= 'blue')
+    :   unshift @_,{level_color=>'blue',content_color=>'blue'};
     $self->log->debug(@_);
     $self;
 }

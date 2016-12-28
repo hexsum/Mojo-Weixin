@@ -1,6 +1,5 @@
 #该源码文件已临时废弃
 use strict;
-use Mojo::Util qw(encode url_escape);
 use Mojo::Weixin::Const qw(%KEY_MAP_USER %KEY_MAP_GROUP %KEY_MAP_GROUP_MEMBER %KEY_MAP_FRIEND);
 sub Mojo::Weixin::_webwxbatchgetcontact{
     my $self  = shift;
@@ -32,12 +31,12 @@ sub Mojo::Weixin::_webwxbatchgetcontact{
             if($self->is_group($e->{UserName})){
                 my $group = {};
                 for(keys %KEY_MAP_GROUP){
-                    $group->{$_} = defined $e->{$KEY_MAP_GROUP{$_}}?encode("utf8",$e->{$KEY_MAP_GROUP{$_}}):"";
+                    $group->{$_} = $e->{$KEY_MAP_GROUP{$_}} // "";
                 }
                 for my $m (@{$e->{MemberList}}){
                     my $member = {};
                     for(keys %KEY_MAP_GROUP_MEMBER){
-                        $member->{$_} = defined $m->{$KEY_MAP_GROUP_MEMBER{$_}}?encode("utf8", $m->{$KEY_MAP_GROUP_MEMBER{$_}} ):"";
+                        $member->{$_} = $m->{$KEY_MAP_GROUP_MEMBER{$_}}  // "";
                     }
                     $member->{sex} = $self->code2sex($member->{sex});
                     push @{$group->{member}},$member;
@@ -47,7 +46,7 @@ sub Mojo::Weixin::_webwxbatchgetcontact{
             else{
                 my $friend = {};
                 for(keys %KEY_MAP_FRIEND){
-                    $friend->{$_} = defined $e->{$KEY_MAP_FRIEND{$_}}?encode("utf8",$e->{$KEY_MAP_FRIEND{$_}}):"";
+                    $friend->{$_} = $e->{$KEY_MAP_FRIEND{$_}} // "";
                 }
                 $friend->{sex} = $self->code2sex($friend->{sex});
                 push @friends,$friend;

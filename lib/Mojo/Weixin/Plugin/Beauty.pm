@@ -34,7 +34,7 @@ sub call{
         if(defined $html){
             if($html=~m#\Qapp.page["board"]\E\s*=\s*(.*?);#){
                 my $data = $1;
-                my $json = $client->decode_json($data);
+                my $json = $client->from_json($data);
                 if(defined $json and defined  $json->{pins}){
                     for(@{ $json->{pins} }){
                         push @{$db->{$url}{pins}},{id=>$_->{pin_id}, url=>'http://img.hb.aicdn.com/' . $_->{file}{key}};
@@ -80,7 +80,7 @@ sub call{
                             if(defined $html){
                                 if($html=~m#\Qapp.page["board"]\E\s*=\s*(.*?);#){
                                     my $data = $1;
-                                    my $json = $client->decode_json($data);
+                                    my $json = $client->to_json($data);
                                     if(defined $json and defined  $json->{pins}){
                                         for(@{ $json->{pins} }){
                                             push @{$board->{pins}},{id=>$_->{pin_id}, url=>'http://img.hb.aicdn.com/' . $_->{file}{key}};

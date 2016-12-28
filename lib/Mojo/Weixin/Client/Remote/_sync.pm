@@ -1,4 +1,3 @@
-use Mojo::Util qw(url_escape);
 sub Mojo::Weixin::_sync {
     my $self = shift;
     #if($self->_synccheck_running or $self->_sync_running){
@@ -13,7 +12,7 @@ sub Mojo::Weixin::_sync {
         sid     => $self->wxsid,
     );
     push @query_string,(skey => $self->skey) if $self->skey;
-    push @query_string,(pass_ticket    => url_escape($self->pass_ticket)) if $self->pass_ticket;
+    push @query_string,(pass_ticket    => $self->url_escape($self->pass_ticket)) if $self->pass_ticket;
     my $post = {
         BaseRequest =>  {Uin => $self->wxuin,Sid=>$self->wxsid,},
         SyncKey     =>  $self->sync_key,

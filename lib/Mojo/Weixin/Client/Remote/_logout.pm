@@ -1,4 +1,3 @@
-use Mojo::Util qw(url_escape);
 sub Mojo::Weixin::_logout {
     my $self = shift;
     my $type = shift || 0;
@@ -6,7 +5,7 @@ sub Mojo::Weixin::_logout {
     my @query_string = (
         redirect    =>  1,
         type        =>  $type,
-        skey        =>  url_escape($self->skey),
+        skey        =>  $self->url_escape($self->skey),
     );
     my $post = {
         sid => $self->wxsid,

@@ -1,21 +1,75 @@
 package Mojo::Weixin::Plugin::KnowledgeBase;
-our $PRIORITY = 2;
+our $PRIORITY = 3;
 use List::Util qw(first);
-use Storable qw(retrieve nstore);
+sub retrieve_db {
+    my ($client,$db,$file) = @_;
+    my $new_db = {};
+    my $fd;
+    if(! open $fd,"<",$file){
+        $client->warn("无法加载知识库数据文件 $file : $!");
+        return;
+    }
+    while(<$fd>){
+        s/\r?\n$//;
+        my($space,$key,$content) = split /\s*(?<!\\)#\s*/,$_,3;
+        next if not $space && $key && $content;
+        $content =~ s/(\\r)?\\n/\n/g;
+        $content =~ s/\\t/\t/g;
+        push @{ $new_db->{$space}{$key} }, $content;
+    }
+    close $fd;
+    %$db = %$new_db;
+}
+sub store_db {
+    my($client,$db,$file) = @_;
+    my $fd;
+    if(!open $fd,">",$file){
+        $client->warn("无法加载知识库数据文件 $file : $!");
+        return;
+    }
+    for my $space (keys %$db){
+        for my $key (keys %{$db->{$space}}){
+            #print $key,$space,join("|",@{$hash->{$space}{$key}});
+            for $answer (@{$db->{$space}{$key}}){
+                my $key_n= $key;
+                my $answer_n = $answer;
+                $answer_n =~ s/\r?\n/\\n/g;
+                $answer_n =~ s/\t/\\t/g;
+                $answer_n =~ s/\|/\\|/g;
+                print $fd $space," # ",$key," # ",$answer_n,"\n";
+            }
+        }
+    }
+    close $fd;
+}
 sub call{
     my $client = shift;
     my $data = shift;
+    my ($file_size, $file_mtime);
     $data->{mode} = 'fuzzy' if not defined $data->{mode};
-    my $file = $data->{file} || './KnowledgeBase.dat';
+    my $file = $data->{file} || './KnowledgeBase2.txt';
     my $learn_command = defined $data->{learn_command}?quotemeta($data->{learn_command}):'learn|学习';
     my $delete_command = defined $data->{delete_command}?quotemeta($data->{delete_command}):'delete|del|删除';
     my $base = {};
-    $base = retrieve($file) if -e $file;
-    #$client->timer(120,sub{nstore $base,$file});
+    if(-e $file){
+        ($file_size, $file_mtime) = (stat $file)[7, 9];
+        retrieve_db($client,$base,$file);        
+    }
+    $client->interval($data->{check_time} || 10,sub{
+        return if not -e $file;
+        return if not defined $file_size; 
+        return if not defined $file_mtime; 
+        my ($size, $mtime) = (stat $file)[7, 9]; 
+        if($size != $file_size or $mtime != $file_mtime){
+            $file_size = $size;
+            $file_mtime = $mtime;
+            retrieve_db($client,$base,$file);        
+        }
+    });
     my $callback = sub{
         my($client,$msg) = @_;
         return if not $msg->allow_plugin;
-        return if $msg->class eq "send" and $msg->from ne "api" and $msg->from ne "irc" and $msg->source ne "outer";
+        return if $msg->class eq "send" and $msg->from ne "api" and $msg->from ne "irc" and $msg->source ne 'outer';
         return if $msg->type !~ /^friend_message|group_message$/;
         if($msg->type eq 'group_message'){
             return if $data->{is_need_at} and $msg->type eq "group_message" and !$msg->is_at;
@@ -44,7 +98,8 @@ sub call{
             $a=~s/^\s+|\s+$//g;
             $a=~s/\\n/\n/g;
             push @{ $base->{$space}{$q} }, $a;
-            nstore($base,$file);
+            store_db($client,$base,$file);
+            ($file_size, $file_mtime)= (stat $file)[7, 9];
             $client->reply_message($msg,"知识库[ $q →  $a ]" . ($space eq '__全局__'?"*":"") . "添加成功",sub{$_[1]->from("bot")}); 
 
         }   
@@ -66,10 +121,12 @@ sub call{
                 $space = $msg->type eq "friend_message"?"__我的好友__":$msg->group->displayname;
             }
             delete $base->{$space}{$q}; 
-            nstore($base,$file);
+            store_db($client,$base,$file);
+            ($file_size, $file_mtime)= (stat $file)[7, 9];
             $client->reply_message($msg,"知识库[ $q ]". ($space eq '__全局__'?"*":"") . "删除成功"),sub{$_[1]->from("bot")};
         }
         else{
+            #return if $msg->msg_class eq "send" and $msg->from ne "api" and $msg->from ne "irc" and $msg->source ne 'outer';
             my $content = $msg->content;
             $content =~s/^[a-zA-Z0-9_]+: ?// if $msg->from eq "irc";
             my $space = $msg->type eq "friend_message"?"__我的好友__":$msg->group->displayname;
@@ -92,7 +149,7 @@ sub call{
                 my $keyword = $match_keyword[int rand @match_keyword];
                 my $len = @{$base->{$space}{$keyword}};
                 my $reply = $base->{$space}{$keyword}->[int rand $len];
-                $reply .= "\n--匹配模式『$keyword』" . ($space eq '__全局__'?"*":"") if $data->{show_keyword};;
+                $reply .= "\n--匹配模式『$keyword』" . ($space eq '__全局__'?"*":"") if $data->{show_keyword};
                 $client->reply_message($msg,$reply,sub{$_[1]->from("bot")});
             }
             elsif($data->{mode} eq 'fuzzy'){
@@ -113,7 +170,7 @@ sub call{
                 my $keyword = $match_keyword[int rand @match_keyword];
                 my $len = @{$base->{$space}{$keyword}};
                 my $reply = $base->{$space}{$keyword}->[int rand $len];
-                $reply .= "\n--匹配关键字『$keyword』" . ($space eq '__全局__'?"*":"") if $data->{show_keyword};;
+                $reply .= "\n--匹配关键字『$keyword』" . ($space eq '__全局__'?"*":"") if $data->{show_keyword};
                 $client->reply_message($msg,$reply,sub{$_[1]->from("bot")});
             }
             else{

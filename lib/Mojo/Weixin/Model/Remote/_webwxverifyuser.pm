@@ -1,4 +1,3 @@
-use Mojo::Util ();
 sub Mojo::Weixin::_webwxverifyuser {
     my $self = shift;
     my $id = shift;
@@ -14,7 +13,7 @@ sub Mojo::Weixin::_webwxverifyuser {
     my @query_string = (
         r => $self->now(),
     ); 
-    push @query_string,(pass_ticket=>Mojo::Util::url_escape($self->pass_ticket)) if $self->pass_ticket;
+    push @query_string,(pass_ticket=>$self->url_escape($self->pass_ticket)) if $self->pass_ticket;
     my $post = {
         BaseRequest =>  {
             Uin         =>  $self->wxuin,

@@ -1,8 +1,6 @@
 package Mojo::Weixin::Run;
 use List::Util qw(first);
-use base qw(Mojo::Base);
-sub has { Mojo::Base::attr(__PACKAGE__, @_) }
-
+use Mojo::Weixin::Base -base;
 use bytes;
 use Carp;
 use Errno;

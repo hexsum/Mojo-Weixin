@@ -1,5 +1,4 @@
 use strict;
-use Mojo::Util qw();
 use Mojo::Weixin::Const qw(%KEY_MAP_GROUP_MEMBER);
 sub Mojo::Weixin::_webwxbatchgetcontact_group_member{
     my $self  = shift;
@@ -30,7 +29,7 @@ sub Mojo::Weixin::_webwxbatchgetcontact_group_member{
         for my $e (@{$json->{ContactList}}){
             my $member = {};
             for(keys %KEY_MAP_GROUP_MEMBER){
-                $member->{$_} = defined $e->{$KEY_MAP_GROUP_MEMBER{$_}}?Mojo::Util::encode("utf8", $e->{$KEY_MAP_GROUP_MEMBER{$_}} ):"";
+                $member->{$_} = $e->{$KEY_MAP_GROUP_MEMBER{$_}} // "";
             }
             $member->{sex} = $self->code2sex($member->{sex});
             push @return,$member;

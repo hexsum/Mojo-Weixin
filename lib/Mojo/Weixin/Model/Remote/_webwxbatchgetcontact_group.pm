@@ -1,5 +1,4 @@
 use strict;
-use Mojo::Util qw();
 use Mojo::Weixin::Const qw(%KEY_MAP_GROUP %KEY_MAP_GROUP_MEMBER);
 use Mojo::Weixin::Model::Remote::_webwxbatchgetcontact_group_member;
 sub Mojo::Weixin::_webwxbatchgetcontact_group{
@@ -32,7 +31,7 @@ sub Mojo::Weixin::_webwxbatchgetcontact_group{
             next if not $self->is_group($e->{UserName});
             my $group = {};
             for(keys %KEY_MAP_GROUP){
-                $group->{$_} = defined $e->{$KEY_MAP_GROUP{$_}}?Mojo::Util::encode("utf8",$e->{$KEY_MAP_GROUP{$_}}):"";
+                $group->{$_} = $e->{$KEY_MAP_GROUP{$_}} // "";
             }
             if($is_update_group_member_detail){
                 my @member = $self->_webwxbatchgetcontact_group_member($group->{_eid},map {$_->{UserName}} @{$e->{MemberList}});
@@ -43,7 +42,7 @@ sub Mojo::Weixin::_webwxbatchgetcontact_group{
                     for my $m (@{$e->{MemberList}}){
                         my $member = {};
                         for(keys %KEY_MAP_GROUP_MEMBER){
-                            $member->{$_} = defined $m->{$KEY_MAP_GROUP_MEMBER{$_}}?Mojo::Util::encode("utf8", $m->{$KEY_MAP_GROUP_MEMBER{$_}} ):"";
+                            $member->{$_} = $m->{$KEY_MAP_GROUP_MEMBER{$_}} // "";
                         }
                         $member->{sex} = $self->code2sex($member->{sex});
                         push @{$group->{member}},$member;
@@ -54,7 +53,7 @@ sub Mojo::Weixin::_webwxbatchgetcontact_group{
                 for my $m (@{$e->{MemberList}}){
                     my $member = {};
                     for(keys %KEY_MAP_GROUP_MEMBER){
-                        $member->{$_} = defined $m->{$KEY_MAP_GROUP_MEMBER{$_}}?Mojo::Util::encode("utf8", $m->{$KEY_MAP_GROUP_MEMBER{$_}} ):"";
+                        $member->{$_} = $m->{$KEY_MAP_GROUP_MEMBER{$_}} // "";
                     }
                     $member->{sex} = $self->code2sex($member->{sex});
                     push @{$group->{member}},$member;

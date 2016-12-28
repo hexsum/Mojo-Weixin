@@ -387,18 +387,41 @@ sub run {
     $self->ioloop->start if not $self->ioloop->is_running;
 }
 
+package Mojo::Weixin::Controller::App::Controller;
+use Mojo::JSON ();
+use Mojo::Util ();
+use base qw(Mojolicious::Controller);
+sub render{
+    my $self = shift;
+    if($_[0] eq 'json'){
+        $self->res->headers->content_type('application/json');
+        $self->SUPER::render(data=>Mojo::JSON::to_json($_[1]),@_[2..$#_]);
+    }
+    else{$self->SUPER::render(@_)}
+}
+sub safe_render{
+    my $self = shift;
+    $self->render(@_) if (defined $self->tx and !$self->tx->is_finished);
+}
+sub param{
+    my $self = shift;
+    my $data = $self->SUPER::param(@_);
+    defined $data?Mojo::Util::encode("utf8",$data):undef;
+}
+sub params {
+    my $self = shift;
+    my $hash = $self->req->params->to_hash ;
+    $c->stash('wxc')->reform($hash);
+    return $hash;
+}
 package Mojo::Weixin::Controller::App;
 use Mojolicious::Lite;
 use Mojo::Transaction::HTTP;
-helper safe_render =>sub {
-    my $c = shift;
-    $c->render(@_) if (defined $c->tx and !$c->tx->is_finished);
-};
+app->controller_class('Mojo::Weixin::Controller::App::Controller');
 under sub {
     my $c = shift;
     if(ref $c->stash('wxc')->auth eq "CODE"){
-        my $hash  = $c->req->params->to_hash;
-        $c->stash('wxc')->reform_hash($hash);
+        my $hash  = $c->params;
         my $ret = 0;
         eval{
             $ret = $c->stash('wxc')->auth->($hash,$c);
@@ -411,13 +434,13 @@ under sub {
 };
 get '/openwx/start_client' => sub{
     my $c = shift;
-    my $hash   = $c->req->params->to_hash;
+    my $hash   = $c->params;
     my $result =  $c->stash('wxc')->start_client($hash);
     $c->safe_render(json=>$result);
 };
 get '/openwx/stop_client' => sub{
     my $c = shift;
-    my $hash   = $c->req->params->to_hash;
+    my $hash   = $c->params;
     my $result = $c->stash('wxc')->stop_client($hash);
     $c->safe_render(json=>$result);
 };
@@ -471,7 +494,7 @@ get '/openwx/check_client' => sub{
             my @client;
             for my $client ( values %{ $c->stash('wxc')->backend }){
                 my $state_path = $client->{_state_path};
-                my $json = $c->stash('wxc')->decode_json($c->stash('wxc')->slurp($state_path));
+                my $json = $c->stash('wxc')->from_json($c->stash('wxc')->slurp($state_path));
                 $json->{port} = $client->{port};
                 push @client,$json;
             }
