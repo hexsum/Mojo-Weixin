@@ -1,7 +1,5 @@
 package Mojo::Weixin::Controller;
 use strict;
-use warnings;
-use Carp;
 use Config;
 use File::Spec;
 use Mojo::Weixin::Base 'Mojo::EventEmitter';
@@ -55,39 +53,23 @@ has backend_path        => sub {File::Spec->catfile($_[0]->tmpdir,join('','mojo_
 has template_path        => sub {File::Spec->catfile($_[0]->tmpdir,join('','mojo_weixin_controller_template','.pl'))};
 has check_interval      => 5;
 
-has log_level           => 'info';     #debug|info|warn|error|fatal
+has log_level           => 'info';     #debug|info|msg|warn|error|fatal
 has log_path            => undef;
 has log_encoding        => undef;      #utf8|gbk|...
 has log_head            => "[wxc][$$]";
 has log_console         => 1;
+has disable_color       => 0;
 
 has version             => sub{$Mojo::Weixin::Controller::VERSION};
 
 has log     => sub{
-    my $self = $_[0];
     Mojo::Weixin::Log->new(
         encoding    =>  $_[0]->log_encoding,
         path        =>  $_[0]->log_path,
         level       =>  $_[0]->log_level,
-        console_output => $_[0]->log_console,
-        format      =>  sub{
-            my ($time, $level, @lines) = @_;
-            my $title = "";
-            my $head  = $self->log_head || "";
-            if(ref $lines[0] eq "HASH"){
-                my $opt = shift @lines; 
-                $time = $opt->{"time"} if defined $opt->{"time"};
-                $title = $opt->{"title"} . " " if defined $opt->{"title"};
-                $level  = $opt->{"level"} if defined $opt->{"level"};
-                $head  = $opt->{"head"} if defined $opt->{"head"};
-            }
-            @lines = split /\n/,join "",@lines;
-            my $return = "";
-            $time = $time?POSIX::strftime('[%y/%m/%d %H:%M:%S]',localtime($time)):"";
-            $level = $level?"[$level]":"";
-            for(@lines){$return .= $head . $time . " " . $level . " " . $title . $_ . "\n";}
-            return $return;
-        }
+        head        =>  $_[0]->log_head,
+        disable_color   => $_[0]->disable_color,
+        console_output  => $_[0]->log_console,
     )
 };
 sub new {
@@ -241,7 +223,6 @@ sub start_client {
         $poll_api =  $url->to_string;
     }
     $param->{account} = $param->{client};
-    $self->reform_hash($param);
 
     for my $env(keys %ENV){
         delete $ENV{$env} if $env=~/^MOJO_WEIXIN_([A-Z_]+)$/;
@@ -411,7 +392,7 @@ sub param{
 sub params {
     my $self = shift;
     my $hash = $self->req->params->to_hash ;
-    $c->stash('wxc')->reform($hash);
+    $self->stash('wxc')->reform($hash);
     return $hash;
 }
 package Mojo::Weixin::Controller::App;

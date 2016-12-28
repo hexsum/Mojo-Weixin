@@ -125,7 +125,7 @@ sub Mojo::Weixin::_upload_media {
 
         if(not defined $msg->media_type){
             my $media_type = $msg->media_mime=~/^image\/gif/i         ?   "emoticon"
-                        :    $msg->media_mime=~/^video\/mp4/i         ?   "video"
+                        :    $msg->media_mime=~/^video\/(mp4|mpeg)/i         ?   "video"
             #           :    $msg->media_mime=~/^audio\/mp3/i         ?   "voice"
                         :    $msg->media_mime=~/^image\//             ?   "image"
                         :                                                 "file"
