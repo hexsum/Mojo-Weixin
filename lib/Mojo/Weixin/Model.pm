@@ -186,6 +186,7 @@ sub is_group{
     return $gid=~/^\@\@|\@chatroom$/ ? 1 : 0;
 }
 sub code2sex{
+    my $self = shift;
     my $c = shift;
     my %h = (
         0 => "",

@@ -282,6 +282,16 @@ sub _parse_sync_data {
                 $msg->{app_title} = $e->{FileName};
                 $msg->{app_url}   = $e->{Url};
             }
+            elsif($e->{MsgType} == 42){#名片消息
+                $msg->{format} = "card";
+                $msg->{card_name} = $e->{RecommendInfo}{NickName};
+                $msg->{card_id} = $e->{RecommendInfo}{UserName};
+                $msg->{card_province} = $e->{RecommendInfo}{Province};
+                $msg->{card_city} = $e->{RecommendInfo}{City};
+                $msg->{card_account} = $e->{RecommendInfo}{Alias};
+                $msg->{card_sex} = $self->code2sex($e->{RecommendInfo}{Sex});
+                #$msg->{card_avatar} = '';
+            }
             #elsif($e->{MsgType} == 51){#系统通知
             #    $msg->{format} = "text";
             #}
@@ -386,6 +396,22 @@ sub _parse_sync_data {
                     $self->warn("app message xml parse fail: $@") if $@;
                     $msg->{content} = "[撤回消息]";
                 }
+            }
+            elsif($msg->{format} eq "card"){
+                #<msg bigheadimgurl="http://wx.qlogo.cn/mmhead/ver_1/k99g2RHrEeib9KMhGmXZGSIGDjgnmiaX2acT2wl04so2ibsq8ysVPRkRRNQyRLmUVptBpcHt6lvUZym5JgOSd4fug/0" smallheadimgurl="http://wx.qlogo.cn/mmhead/ver_1/k99g2RHrEeib9KMhGmXZGSIGDjgnmiaX2acT2wl04so2ibsq8ysVPRkRRNQyRLmUVptBpcHt6lvUZym5JgOSd4fug/132" username="xxx" nickname="xxx"  shortpy="" alias="" imagestatus="3" scene="17" province="xxx" city="xxx" sign="" sex="1" certflag="0" certinfo="" brandIconUrl="" brandHomeUrl="" brandSubscriptConfigUrl="" brandFlags="0" regionCode="CN_Shanghai_Pudong New District" />
+                $msg->{content}=~s/<br\/>/\n/g;
+                eval{
+                    require Mojo::DOM;
+                    my $dom = Mojo::DOM->new($msg->{content});
+                    $msg->{card_avatar} = $dom->at('msg')->attr->{bigheadimgurl};
+                    $msg->{card_name} = $dom->at('msg')->attr->{nickname};
+                    $msg->{card_account} = $dom->at('msg')->attr->{alias};
+                    $msg->{card_province} = $dom->at('msg')->attr->{province};
+                    $msg->{card_city} = $dom->at('msg')->attr->{city};
+                    $msg->{card_sex} = $self->code2sex($dom->at('msg')->attr->{sex});
+                };
+                $self->warn("app message xml parse fail: $@") if $@;
+                $msg->{content} = "[名片]昵称：@{[$msg->{card_name} || '未知']}\n[名片]性别：@{[$msg->{card_sex} || '未知']}\n[名片]位置：@{[$msg->{card_province} || '未知']} @{[$msg->{card_city} || '未知']}\n[名片]头像：@{[$msg->{card_avatar} || '未知']}";
             }
             $self->message_queue->put(Mojo::Weixin::Message->new($msg)); 
         }

@@ -447,7 +447,7 @@ $client->load("Openwx",data=>{
 |id          |-|消息的id
 |type        |friend_message<br>group_message<br>group_notice|消息类型细分:<br>好友消息<br>群消息<br>群提示消息  |
 |class       |send<br>recv|表明是发送消息还是接收消息
-|format      |text<br>media<br>app<br>revoke|消息的格式：<br>文本消息<br>媒体（图片、视频、语音）<br>应用分享<br>撤回消息|
+|format      |text<br>media<br>app<br>revoke<br>card|消息的格式：<br>文本消息<br>媒体（图片、视频、语音）<br>应用分享<br>撤回消息<br>名片分享|
 |sender_id   |-|消息发送者id（注意不是所有的消息类型都存在这个属性）
 |receiver_id |-|消息接收者id（注意不是所有的消息类型都存在这个属性）
 |group_id    |-|消息相关的群组id（注意不是所有的消息类型都存在这个属性）
@@ -636,6 +636,28 @@ Content-Type: application/json
     "type":"group_message",
     "format": "revoke",
     "post_type": "send_message"
+}
+
+```
+
+### 名片消息上报
+
+```
+{
+    'card_avatar' => 'http://wx.qlogo.cn/mmhead/ver_1/k99g2RHrEeib9KMhGmXZGSIGDjgnmiaX2acT2wl04so2ibsq8ysVPRkRRNQyRLmUVptBpcHt6lvUZym5JgOSd4fug/0',
+    'card_id' => '@bc9b2967ec91315f4dd47e5e3d0e33ee'
+    'card_account' => '',
+    'card_city' => '中国',
+    'card_province' => '上海',
+    'card_name' => 'xxx',
+    'card_sex' => 'male',
+    'sender_id' => '@b2c5637bb8e158a5a29eca00ac9ed0f9',
+    'receiver_id' => 'filehelper',
+    'id' => '5604497552796809997',
+    'format' => 'card',
+    'type' => 'friend_message',
+    'class' => 'send',
+    'time' => '1482985638',
 }
 
 ```
