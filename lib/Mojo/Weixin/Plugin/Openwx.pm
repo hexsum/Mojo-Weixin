@@ -13,6 +13,7 @@ sub call{
     my $data   =  shift;
     $check_event_list = Mojo::Weixin::List->new(max_size=>$data->{check_event_list_max_size} || 20);
     $data->{post_media_data} = 1 if not defined $data->{post_media_data};
+    $data->{post_event} = 1 if not defined $data->{post_event};
     $data->{post_event_list} = [qw(login stop state_change input_qrcode new_group new_friend new_group_member lose_group lose_friend lose_group_member)] 
         if ref $data->{post_event_list} ne 'ARRAY'; 
 
@@ -77,7 +78,7 @@ sub call{
                     $client->debug("插件[".__PACKAGE__ ."]事件[".$event."]上报成功");
                 }
                 else{
-                    $client->warn("插件[".__PACKAGE__ . "]事件[".$event."]上报失败: ".encode("utf8",$tx->error->{message}));
+                    $client->warn("插件[".__PACKAGE__ . "]事件[".$event."]上报失败: ".$client->encode("utf8",$tx->error->{message}));
                 }
             }) if defined $data->{post_api};
         }
@@ -95,7 +96,7 @@ sub call{
                     $client->debug("插件[".__PACKAGE__ ."]事件[".$event."]上报成功");
                 }
                 else{
-                    $client->warn("插件[".__PACKAGE__ . "]事件[".$event."]上报失败: ".encode("utf8",$tx->error->{message}));
+                    $client->warn("插件[".__PACKAGE__ . "]事件[".$event."]上报失败: ".$client->encode("utf8",$tx->error->{message}));
                 }
             }) if defined $data->{post_api};
 
@@ -113,7 +114,7 @@ sub call{
                     $client->debug("插件[".__PACKAGE__ ."]事件[".$event."]上报成功");
                 }
                 else{
-                    $client->warn("插件[".__PACKAGE__ . "]事件[".$event."]上报失败: ".tx->error->{message});
+                    $client->warn("插件[".__PACKAGE__ . "]事件[".$event."]上报失败: ".$client->encode("utf8",$tx->error->{message}));
                 }
             }) if defined $data->{post_api};
         }
@@ -132,7 +133,7 @@ sub call{
                 if($tx->res->headers->content_type =~m#text/json|application/json#){
                     #文本类的返回结果必须是json字符串
                     my $json;
-                    eval{$json = $tx->res->json};
+                    eval{$json = $client->from_json($tx->res->body)};
                     if($@){$client->warn($@);return}
                     if(defined $json){
                         #暂时先不启用format的属性
@@ -150,7 +151,7 @@ sub call{
                 #}
             }
             else{
-                $client->warn("插件[".__PACKAGE__ . "]接收消息[".$msg->id."]上报失败: ".$tx->error->{message}); 
+                $client->warn("插件[".__PACKAGE__ . "]接收消息[".$msg->id."]上报失败: ". $client->encode("utf8",$tx->error->{message})); 
             }
         }) if defined $data->{post_api};
     });
@@ -183,7 +184,7 @@ sub call{
                 #}
             }
             else{
-                $client->warn("插件[".__PACKAGE__ . "]发送消息[".$msg->id."]上报失败: ".$tx->error->{message}); 
+                $client->warn("插件[".__PACKAGE__ . "]发送消息[".$msg->id."]上报失败: ".$client->encode("utf8",$tx->error->{message})); 
             }
         }) if defined $data->{post_api};
     });
@@ -215,6 +216,7 @@ sub call{
         return $hash;
     }
     package Mojo::Weixin::Plugin::Openwx::App;
+    no strict;
     use Encode ();
     use Mojo::IOLoop;
     use Mojolicious::Lite;
