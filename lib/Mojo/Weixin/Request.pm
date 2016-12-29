@@ -37,7 +37,6 @@ sub http_post{
     my $self = shift;
     return $self->_http_request("post",@_);
 }
-
 sub _ua_debug {
     my ($self,$ua,$tx,$opt,$is_blocking) = @_;
     return if not $opt->{ua_debug};

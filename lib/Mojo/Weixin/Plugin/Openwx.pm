@@ -293,14 +293,16 @@ sub call{
         my $c = shift;
         my $p = $c->params;
         if(defined $p->{id} and $p->{id} eq '@all'){#群发给所有好友
+            $c->render_later;
             for my $f ($client->friends){
                 $client->send_message($f,$p->{content},sub{my $msg= $_[1];$msg->from("api");}) if defined $p->{content};
                 if(defined $p->{media_data} or defined $p->{media_path}){
+                    $c->inactivity_timeout(120);
                     $client->send_media($f,{map {/media_/?($_=>$p->{$_}):()} keys %$p},sub{my $msg= $_[1];$msg->from("api");}
                     );
                 }
             }
-            $c->safe_render(json=>{msg_id=>0,code=>0,status=>'request already executed'});
+            $c->safe_render(json=>{id=>0,code=>0,status=>'request already executed'});
             return;
         }
         my $object = $client->search_friend(id=>$p->{id},account=>$p->{account},displayname=>$p->{displayname},markname=>$p->{markname});
@@ -310,22 +312,23 @@ sub call{
                 my $msg= $_[1];
                 $msg->cb(sub{
                     my($client,$msg)=@_;
-                    $c->safe_render(json=>{msg_id=>$msg->id,code=>$msg->code,status=>$msg->msg});
+                    $c->safe_render(json=>{id=>$msg->id,code=>$msg->code,status=>$msg->info});
                 });
                 $msg->from("api");
             }) if defined $p->{content};
             if(defined $p->{media_data} or defined $p->{media_path} or defined $p->{media_id}){
+                $c->inactivity_timeout(120);
                 $client->send_media($object,{map {/media_/?($_=>$p->{$_}):()} keys %$p},sub{
                     my $msg= $_[1];
                     $msg->cb(sub{
                         my($client,$msg)=@_;
-                        $c->safe_render(json=>{msg_id=>$msg->id,media_id=>join(":",$msg->media_id,$msg->media_code),code=>$msg->code,status=>$msg->msg});
+                        $c->safe_render(json=>{id=>$msg->id,media_id=>$msg->is_success?join(":",$msg->media_id,$msg->media_code):"",code=>$msg->code,status=>$msg->info});
                     });
                     $msg->from("api");
                 });
             }
         }
-        else{$c->safe_render(json=>{msg_id=>undef,code=>100,status=>"object not found"});}
+        else{$c->safe_render(json=>{id=>undef,code=>100,status=>"object not found"});}
     };
     any [qw(GET POST)] => '/openwx/send_group_message'         => sub{
         my $c = shift;
@@ -337,22 +340,23 @@ sub call{
                 my $msg= $_[1];
                 $msg->cb(sub{
                     my($client,$msg)=@_;
-                    $c->safe_render(json=>{msg_id=>$msg->id,code=>$msg->code,status=>$msg->msg});
+                    $c->safe_render(json=>{id=>$msg->id,code=>$msg->code,status=>$msg->info});
                 });
                 $msg->from("api");
             }) if defined $p->{content};
             if(defined $p->{media_data} or defined $p->{media_path} or defined $p->{media_id}){
+                $c->inactivity_timeout(120);
                 $client->send_media($object,{map {/media_/?($_=>$p->{$_}):()} keys %$p},sub{
                     my $msg= $_[1];
                     $msg->cb(sub{
                         my($client,$msg)=@_;
-                        $c->safe_render(json=>{msg_id=>$msg->id,media_id=>join(":",$msg->media_id,$msg->media_code),code=>$msg->code,status=>$msg->msg});
+                        $c->safe_render(json=>{id=>$msg->id,media_id=>$msg->is_success?join(":",$msg->media_id,$msg->media_code):"",code=>$msg->code,status=>$msg->info});
                     });
                     $msg->from("api");
                 });
             }
         }
-        else{$c->safe_render(json=>{msg_id=>undef,code=>100,status=>"object not found"});}
+        else{$c->safe_render(json=>{id=>undef,code=>100,status=>"object not found"});}
     }; 
     any [qw(GET POST)] => '/openwx/consult'         => sub{
         my $c = shift;
@@ -367,28 +371,29 @@ sub call{
                     my ($timer,$cb);
                     $timer = Mojo::IOLoop->timer($p->{timeout} || 30,sub{
                         $client->unsubscribe(receive_message=>$cb);
-                        $c->safe_render(json=>{msg_id=>$msg->id,code=>$msg->code,status=>$msg->msg,reply_status=>"reply timeout",reply=>undef});
+                        $c->safe_render(json=>{id=>$msg->id,code=>$msg->code,status=>$msg->info,reply_status=>"reply timeout",reply=>undef});
                     });
                     $cb = $client->once(receive_message=>sub{
                         my($client,$msg) = @_;
                         Mojo::IOLoop->remove($timer);
-                        $c->safe_render(json=>{reply=>$msg->content,msg_id=>$msg->id,code=>$msg->code,status=>$msg->msg}); 
+                        $c->safe_render(json=>{reply=>$msg->content,id=>$msg->id,code=>$msg->code,status=>$msg->info}); 
                     });
                 });
                 $msg->from("api");
             }) if defined $p->{content};
             if(defined $p->{media_data} or defined $p->{media_path} or defined $p->{media_id}){
+                $c->inactivity_timeout(120);
                 $client->send_media($object,{map {/media_/?($_=>$p->{$_}):()} keys %$p },sub{
                     my $msg= $_[1];
                     $msg->cb(sub{
                         my($client,$msg)=@_;
-                        $c->safe_render(json=>{msg_id=>$msg->id,media_id=>join(":",$msg->media_id,$msg->media_code),code=>$msg->code,status=>$msg->msg});
+                        $c->safe_render(json=>{id=>$msg->id,media_id=>$msg->is_success?join(":",$msg->media_id,$msg->media_code):"",code=>$msg->code,status=>$msg->info});
                     });
                     $msg->from("api");
                 });
             }
         }
-        else{$c->safe_render(json=>{msg_id=>undef,code=>100,status=>"object not found"});}
+        else{$c->safe_render(json=>{id=>undef,code=>100,status=>"object not found"});}
     };
     any [qw(GET POST)] => '/openwx/create_group' => sub{
         my $c = shift;
@@ -609,7 +614,7 @@ sub call{
                 $c->safe_render(data=>$data,);  
             });
         }
-        else{$c->safe_render(json=>{msg_id=>undef,code=>100,status=>"object not found"});}
+        else{$c->safe_render(json=>{id=>undef,code=>100,status=>"object not found"});}
 
     };
     any [qw(GET POST)] => '/openwx/get_client_info' => sub{
@@ -645,6 +650,7 @@ sub call{
         my $c = shift;
         my $p = $c->params;
         $c->render_later;
+        $c->inactivity_timeout(120);
         $client->upload_media({map {/media_/?($_=>$p->{$_}):()} keys %$p },
             sub{my $json = shift;$client->reform_hash($json,1);$c->safe_render(json=>$json) if defined $c}
         );

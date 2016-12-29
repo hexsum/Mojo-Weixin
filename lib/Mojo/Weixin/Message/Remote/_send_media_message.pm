@@ -29,9 +29,9 @@ sub Mojo::Weixin::_send_media_message {
             defined $msg->media_id ? $delay->begin(0)->($msg): $self->_upload_media($msg,$delay->begin(0,));
         },
         sub{
-            my($delay,$msg) = @_;
-            if(not defined $msg->media_id){
-                $msg->send_status(code=>-1,msg=>"发送失败",info=>"media_id无效");
+            my($delay,$msg,$error) = @_;
+            if(!defined $msg->media_id or $error){
+                $msg->send_status(code=>-1,msg=>"发送失败",info=>$error);
                 if(ref $msg->cb eq 'CODE'){
                     $msg->cb->($self, $msg);
                 }

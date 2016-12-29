@@ -16,8 +16,12 @@ has [qw( media_id media_type media_code media_mime media_name media_size media_d
 has [qw( app_id app_title app_url app_name app_desc)];
 has [qw( card_id card_name card_province card_city card_account card_avatar card_sex)];
 has [qw( revoke_id )];
-has data => undef;
 has [qw(code msg info)];
+has media_chunks   => undef;  #分片上传数量，0表示没有进行分片
+has media_chunk    => 0;  #当前已经上传的分片数量
+has media_clientid => undef;
+has 'media_md5';
+has data => undef;
 
 sub new {
     my $s = shift;

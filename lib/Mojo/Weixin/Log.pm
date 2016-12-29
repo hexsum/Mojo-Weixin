@@ -39,7 +39,7 @@ sub _format {
     $time = $opt{time} if defined $opt{time};
     $time = $time?POSIX::strftime('[%y/%m/%d %H:%M:%S]',localtime($time)):"";
     my $log = {
-        head        =>  $opt{head} // $self->head,
+        head        =>  ($opt{head} // $self->head),
         head_color  =>  $opt{head_color},
         'time'      =>  $time,
         time_color  =>  $opt{time_color},

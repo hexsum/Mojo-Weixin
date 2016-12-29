@@ -1,5 +1,5 @@
 package Mojo::Weixin::Message::Base;
-use Mojo::Weixin::Base -base;
+use Mojo::Weixin::Base 'Mojo::EventEmitter';
 use Data::Dumper;
 use Mojo::Util qw();
 use Scalar::Util qw(blessed);
@@ -24,15 +24,15 @@ sub _parse_send_status_data {
             $self->send_status(
                         code=>$json->{BaseResponse}{Ret},
                         msg=>"发送失败",
-                        info=>($json->{BaseResponse}{ErrMsg}||""),
+                        info=>($json->{BaseResponse}{ErrMsg}||"unknown erro"),
                     );
         }
         else{
-            $self->send_status(code=>0,msg=>"发送成功",info=>"");
+            $self->send_status(code=>0,msg=>"发送成功",info=>"success");
         }
     }
     else{
-        $self->send_status(code=>-1,msg=>"发送失败",info=>"数据格式错误");
+        $self->send_status(code=>-1,msg=>"发送失败",info=>"unknown data");
     }
 }
 sub to_json_hash{
@@ -65,6 +65,7 @@ sub to_json_hash{
         elsif($key eq "media_data"){
             $json->{$key} = defined $self->{$key}?Mojo::Util::b64_encode($self->{$key}):"";
         }
+        elsif($key eq 'events'){next}
         elsif(ref $self->{$key} eq ""){
             $json->{$key} = $self->{$key} || "";
         }
@@ -131,6 +132,9 @@ sub dump{
         }
         elsif($_ eq 'media_data'){
             $clone->{$_} = '[binary data not shown]';
+        }
+        elsif($_ eq 'events'){
+            next;
         }
         else{
             $clone->{$_} = $self->{$_};
