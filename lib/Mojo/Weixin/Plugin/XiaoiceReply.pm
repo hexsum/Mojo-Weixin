@@ -1,5 +1,6 @@
 package Mojo::Weixin::Plugin::XiaoiceReply;
 our $PRIORITY = 1;
+use List::Util qw(first);
 sub call{
     my $client = shift;
     my $data = shift;
@@ -30,11 +31,23 @@ sub call{
             return if $msg->format !~ /^text|media$/;
             return if not $msg->allow_plugin;
             return if not $onoff_flag;
-            return if $is_need_at and $msg->type eq "group_message" and !$msg->is_at;
             my $xiaoice = $client->search_friend(account=>'xiaoice-ms');
             if(not defined $xiaoice){
                 $client->error("未能在通讯录中搜索到 微软小冰 帐号信息，请确认是否已经关注 微软小冰 公众号");
                 return;
+            }
+            if($msg->sender->id ne $xiaoice->id){
+                if($msg->type eq "group_message"){
+                    return if ref $data->{ban_group}  eq "ARRAY" and first {$msg->group->displayname eq $_} @{$data->{ban_group}};
+                    return if ref $data->{allow_group}  eq "ARRAY" and !first {$msg->group->displayname eq $_} @{$data->{allow_group}};
+                    return if ref $data->{ban_group_member}  eq "ARRAY" and first {$msg->sender->displayname eq $_} @{$data->{ban_group_user}};
+                    return if ref $data->{allow_group_member}  eq "ARRAY" and !first {$msg->sender->displayname eq $_} @{$data->{allow_group_user}};
+                    return if $is_need_at and !$msg->is_at;
+                }
+                else{
+                    return if ref $data->{ban_friend} eq "ARRAY" and first {$msg->sender->displayname eq $_} @{$data->{ban_user}};
+                    return if ref $data->{allow_friend} eq "ARRAY" and !first {$msg->sender->displayname eq $_} @{$data->{allow_user}};
+                }
             }
             if($msg->sender->id eq $xiaoice->id){
                 my $binder = $db[0];

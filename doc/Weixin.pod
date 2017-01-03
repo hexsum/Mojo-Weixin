@@ -996,6 +996,12 @@ Linux系统下直接打印二维码到终端，作者 hyvinlam L<https://github.
         is_need_at  => 1,           #可选，是否需要艾特我来触发智能回复
         comamnd_on  => "小冰启动",  #可选，启动智能回复的命令，在手机端发送给任何人/群该消息内容即可
         comamnd_off => "小冰停止",  #可选，停止智能回复的命令，在手机端发送给任何人/群该消息内容即可
+        allow_group        => ["PERL学习交流"],    #可选，允许插件的群显示名称
+        ban_group          => ["私人群","测试群"], #可选，禁用该插件的群显示名称
+        allow_group_member => ["王大锤"],          #可选，允许该插件的群成员显示名称
+        ban_group_member   => ["王小二","坏蛋"],   #可选，禁用该插件的群成员显示名称
+        ban_friend         => ["坏蛋","小灰"],     #可选，禁用该插件的好友显示名称
+        allow_friend       => ["可爱"],            #可选，允许该插件的好友显示名称
     });
 
 =head2 Mojo::Weixin::Plugin::SmartReply
