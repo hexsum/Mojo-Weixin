@@ -8,6 +8,7 @@ WriteMakefile(
     DISTNAME            => 'Mojo-Weixin',
     LICENSE             => "perl",
     PREREQ_PM         => {
+        "Compress::Raw::Zlib"   => 0,
         "Time::HiRes"           => 0,
         "Time::Piece"           => 0,
         "Time::Seconds"         => 0,
