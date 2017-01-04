@@ -229,31 +229,31 @@ sub _parse_sync_data {
                 $msg->{format} = "media";
                 $msg->{media_type} = "image";
                 $msg->{media_code} = $e->{MsgType};
-                $msg->{media_id} = $msg->{id};
+                $msg->{media_id} = $msg->{id} . ":" . $msg->{media_code};
             }
             elsif($e->{MsgType} == 47){#表情或gif图片
                 $msg->{format} = "media";
                 $msg->{media_type} = "emoticon";
                 $msg->{media_code} = $e->{MsgType};
-                $msg->{media_id} = $msg->{id};
+                $msg->{media_id} = $msg->{id} . ":" . $msg->{media_code};
             }
             elsif($e->{MsgType} == 62){#小视频
                 $msg->{format} = "media";
                 $msg->{media_type} = "microvideo";
                 $msg->{media_code} = $e->{MsgType};
-                $msg->{media_id} = $msg->{id};
+                $msg->{media_id} = $msg->{id} . ":" . $msg->{media_code};
             }
             elsif($e->{MsgType} == 43){#视频
                 $msg->{format} = "media";
                 $msg->{media_type} = "video";
                 $msg->{media_code} = $e->{MsgType};
-                $msg->{media_id} = $msg->{id};
+                $msg->{media_id} = $msg->{id} . ":" . $msg->{media_code};
             }
             elsif($e->{MsgType} == 34){#语音
                 $msg->{format} = "media";
                 $msg->{media_type} = "voice";
                 $msg->{media_code} = $e->{MsgType};
-                $msg->{media_id} = $msg->{id};
+                $msg->{media_id} = $msg->{id} . ":" . $msg->{media_code};
             }
             elsif($e->{MsgType} == 37){#好友推荐消息
                 $msg->{format} = "text";
@@ -468,7 +468,13 @@ sub send_media {
         if(defined $media_info->{media_id}){#定义了media_id意味着不会上传文件，忽略media_path
             my ($id,$code) = split(/:/,$media_info->{media_id},2);
             $media_info->{media_id} = $id if $id;
-            $media_info->{media_code} = $code || 6 if not defined $media_info->{media_code} ;
+            $media_info->{media_code} = $code if $code;
+            if(!defined $media_info->{media_code} and defined $media_info->{media_type}){
+               $media_info->{media_code} = $KEY_MAP_MEDIA_CODE{$media_info->{media_type}} // 6; 
+            }
+            elsif(!defined $media_info->{media_code}){
+                $media_info->{media_code} = 6;
+            }
         }
         if(defined $media_info->{media_code} and !defined $media_info->{media_type}){
             $media_info->{media_type} = $KEY_MAP_MEDIA_TYPE{$media_info->{media_code}} || 'file';
@@ -518,7 +524,9 @@ sub upload_media {
     $self->_upload_media($msg,sub{
         my($msg,$json) = @_;
         $callback->({
-            media_id    => join(":",$msg->media_id,$msg->media_code),
+            media_id    => $msg->media_id,
+            media_code  => $msg->media_code,
+            media_type  => $msg->media_type,
             media_path  => $msg->media_path,
             media_name  => $msg->media_name,
             media_size  => $msg->media_size,

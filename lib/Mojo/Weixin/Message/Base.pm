@@ -24,7 +24,7 @@ sub _parse_send_status_data {
             $self->send_status(
                         code=>$json->{BaseResponse}{Ret},
                         msg=>"发送失败",
-                        info=>($json->{BaseResponse}{ErrMsg}||"unknown erro"),
+                        info=>($json->{BaseResponse}{ErrMsg}||"unknown error"),
                     );
         }
         else{

@@ -244,7 +244,7 @@ sub _upload_chunk{
             }
             else{
                 $msg->media_chunk( 1+$msg->media_chunk );
-                $msg->media_id($json->{MediaId}) if $json->{MediaId};
+                $msg->media_id(defined $msg->media_code?$json->{MediaId} . ":" . $msg->media_code : $json->{MediaId}) if $json->{MediaId};
                 $callback->($msg);
                 return;
             }

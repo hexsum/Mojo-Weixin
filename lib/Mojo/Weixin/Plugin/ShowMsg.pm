@@ -40,7 +40,7 @@ sub call{
                 my $level = $sender_category eq '系统帐号'?"系统消息":"好友消息";
                 #my $receiver_nick = $msg->receiver->nick;
                 my $receiver_nick = "我";
-                $client->info({time=>$msg->time,level_color=>'yellow',level=>$level,title_color=>'yellow',title=>"$sender_nick|$sender_category :",content_color=>'yellow'},$msg->content);
+                $client->info({time=>$msg->time,level_color=>'green',level=>$level,title_color=>'green',title=>"$sender_nick|$sender_category :",content_color=>'green'},$msg->content);
                 
             }
             elsif($msg->type eq 'group_message'){
@@ -59,7 +59,7 @@ sub call{
             if($msg->type eq 'friend_message'){
                 my $sender_nick = "我";
                 my $receiver_nick = $msg->receiver->displayname;
-                $client->info({time=>$msg->time,level_color=>'yellow',level=>"好友消息",title_color=>'yellow',title=>"$sender_nick->$receiver_nick :",content_color=>'yellow'},$msg->content . $attach);
+                $client->info({time=>$msg->time,level_color=>'green',level=>"好友消息",title_color=>'green',title=>"$sender_nick->$receiver_nick :",content_color=>'green'},$msg->content . $attach);
             }
             elsif($msg->type eq 'group_message'){
                 my $gname = $msg->group->displayname;

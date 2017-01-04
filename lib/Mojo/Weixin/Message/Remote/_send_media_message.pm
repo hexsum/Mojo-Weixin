@@ -55,7 +55,7 @@ sub Mojo::Weixin::_send_media_message {
                 Msg             => {
                     ClientMsgId     =>  $t,
                     FromUserName    =>  $msg->sender_id,
-                    MediaId         =>  $msg->media_id,
+                    MediaId         =>  (split ":",$msg->media_id)[0],
                     LocalID         =>  $t,
                     ToUserName      =>  ($msg->type eq "group_message"?$msg->group_id:$msg->receiver_id),
                     #Type            =>  $Mojo::Weixin::Const::KEY_MAP_MEDIA_CODE{$msg->media_type} || 6,
@@ -93,7 +93,7 @@ sub Mojo::Weixin::_send_media_message {
                     "<lowurl></lowurl>" .
                     "<appattach>" .
                         "<totallen>" . $msg->media_size . "</totallen>" .
-                        "<attachid>" . $msg->media_id . "</attachid>" .
+                        "<attachid>" . (split ":",$msg->media_id)[0] . "</attachid>" .
                         "<fileext>"  . $msg->media_ext  ."</fileext>" .
                     "</appattach>" .
                     "<extinfo></extinfo>" . 

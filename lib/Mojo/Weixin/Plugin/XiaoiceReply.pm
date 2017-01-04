@@ -53,7 +53,7 @@ sub call{
                 my $binder = $db[0];
                 return if not defined $binder;
                 if($msg->format eq "media" and (defined $msg->media_id or  -e $msg->media_path) ){
-                    $binder->send_media({media_id=>$msg->media_id,media_path=>$msg->media_path});
+                    $binder->send_media(media_path=>$msg->media_path);
                 }
                 else{
                     $binder->send($msg->content);
@@ -65,7 +65,7 @@ sub call{
                     $db[0] = $object;
                     $msg->remove_at();
                     if($msg->format eq "media" and (defined $msg->media_id or -e $msg->media_path) ){
-                        $xiaoice->send_media({media_id=>$msg->media_id,media_path=>$msg->media_path});
+                        $xiaoice->send_media(media_path=>$msg->media_path);
                     }
                     else{
                         $xiaoice->send($msg->content);
@@ -74,7 +74,7 @@ sub call{
                 elsif(@db > 0 and $db[0]->id eq $object->id){
                     $msg->remove_at();
                     if($msg->format eq "media" and (defined $msg->media_id or -e $msg->media_path )){
-                        $xiaoice->send_media({media_id=>$msg->media_id,media_path=>$msg->media_path});
+                        $xiaoice->send_media(media_path=>$msg->media_path);
                     }
                     else{
                         $xiaoice->send($msg->content); 

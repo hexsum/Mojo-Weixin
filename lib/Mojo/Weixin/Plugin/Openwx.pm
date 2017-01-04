@@ -216,7 +216,7 @@ sub call{
         return $hash;
     }
     package Mojo::Weixin::Plugin::Openwx::App;
-    no strict;
+    no utf8;
     use Encode ();
     use Mojo::IOLoop;
     use Mojolicious::Lite;
@@ -322,7 +322,7 @@ sub call{
                     my $msg= $_[1];
                     $msg->cb(sub{
                         my($client,$msg)=@_;
-                        $c->safe_render(json=>{id=>$msg->id,media_id=>$msg->is_success?join(":",$msg->media_id,$msg->media_code):"",code=>$msg->code,status=>$msg->info});
+                        $c->safe_render(json=>{id=>$msg->id,media_id=>$msg->is_success?$msg->media_id:"",code=>$msg->code,status=>$msg->info});
                     });
                     $msg->from("api");
                 });
@@ -350,7 +350,7 @@ sub call{
                     my $msg= $_[1];
                     $msg->cb(sub{
                         my($client,$msg)=@_;
-                        $c->safe_render(json=>{id=>$msg->id,media_id=>$msg->is_success?join(":",$msg->media_id,$msg->media_code):"",code=>$msg->code,status=>$msg->info});
+                        $c->safe_render(json=>{id=>$msg->id,media_id=>$msg->is_success?$msg->media_id:"",code=>$msg->code,status=>$msg->info});
                     });
                     $msg->from("api");
                 });
@@ -387,7 +387,7 @@ sub call{
                     my $msg= $_[1];
                     $msg->cb(sub{
                         my($client,$msg)=@_;
-                        $c->safe_render(json=>{id=>$msg->id,media_id=>$msg->is_success?join(":",$msg->media_id,$msg->media_code):"",code=>$msg->code,status=>$msg->info});
+                        $c->safe_render(json=>{id=>$msg->id,media_id=>$msg->is_success?$msg->media_id:"",code=>$msg->code,status=>$msg->info});
                     });
                     $msg->from("api");
                 });
@@ -652,7 +652,7 @@ sub call{
         $c->render_later;
         $c->inactivity_timeout(120);
         $client->upload_media({map {/media_/?($_=>$p->{$_}):()} keys %$p },
-            sub{my $json = shift;$client->reform_hash($json,1);$c->safe_render(json=>$json) if defined $c}
+            sub{my $json = shift;$c->safe_render(json=>$json) if defined $c}
         );
         
     };

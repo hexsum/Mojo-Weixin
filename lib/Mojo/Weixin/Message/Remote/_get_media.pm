@@ -7,7 +7,7 @@ sub Mojo::Weixin::_get_media {
     my $msg = shift;
     my $callback = shift;
 
-    my $media_id = $msg->media_id; 
+    my $media_id = (split ":",$msg->media_id)[0]; 
     my $api;
     my @query_string;
     my $headers = {};
