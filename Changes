@@ -1,5 +1,22 @@
 2016-12-29 Mojo::Weixin v1.2.6
-1）
+1）修复由于官方改对导致误发正常发送视频文件的bug
+   文件最大不能超过20M，大于512KB会采用分片上传机制，每个分片大小512K
+2）增加 before_send_message 事件，方便全局设置发送消息的小尾巴
+3）new中新增属性 is_init_group_member，控制是否在客户端初始登录时获取详细的群成员信息（比如account/sex）等
+   默认为0，如果你很在意这些群成员属性，可以设置为1，但可能会极大降低启动速度
+4）修复 AutoVerify 插件不可用的问题，感谢 @Hector.X 的反馈
+5）UploadQRcode插件采用新的https://sm.ms/的图床接口，感谢 @那谁 的建议
+6）修复在多账号Controller控制下，/openwx/check_event接口无法正常工作的问题
+7）修复/openwx/get_avatar无法获取登录帐号头像的问题
+8）XiaoiceReply插件修复不可用问题，插件进一步完善 感谢 @NeverMin @活在当下 反馈
+   修复XiaoiceReply插件无法转发图片的问题
+   XiaoiceReply插件新增allow_group/ban_group/allow_friend/ban_friend/allow_group_member/ban_group_member等参数支持
+9）修复性别获取为空的bug
+10）Openwx插件增加名片消息的接收识别和上报
+11）开启http_debug后，debug日志不打印http post上传文件的二进制内容
+12）修复日志打印在某些情况下产生大量警告错误的问题
+13）版本内部编码重构，通过http_get/http_post发送或接收json/form数据不再需要encode/decode
+14）日志打印支持颜色显示，可以通过new中的disable_color=>0来禁用颜色显示
 
 2016-12-02 Mojo::Weixin v1.2.5
 1）紧急修复1.2.4版本Controller调用api大量报错的问题
