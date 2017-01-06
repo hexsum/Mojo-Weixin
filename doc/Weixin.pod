@@ -1002,6 +1002,8 @@ Linux系统下直接打印二维码到终端，作者 hyvinlam L<https://github.
         ban_group_member   => ["王小二","坏蛋"],   #可选，禁用该插件的群成员显示名称
         ban_friend         => ["坏蛋","小灰"],     #可选，禁用该插件的好友显示名称
         allow_friend       => ["可爱"],            #可选，允许该插件的好友显示名称
+        allow_group_reply  => 1,                   #可选，是否允许回复群消息，默认1
+        allow_friend_reply => 1,                   #可选，是否允许回复好友消息，默认1
     });
 
 =head2 Mojo::Weixin::Plugin::SmartReply
