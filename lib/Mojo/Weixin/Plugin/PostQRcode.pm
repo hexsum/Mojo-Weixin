@@ -36,7 +36,7 @@ sub call{
         $mime->attach(
             Path        => $filename,
             Disposition => 'attachment',
-            Type        => 'image/png',
+            Type        => 'image/jpg',
         );
         $data->{data} = $mime->as_string;
         my($is_success,$err) = $client->mail(%$data);
