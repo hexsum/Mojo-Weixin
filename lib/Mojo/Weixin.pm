@@ -68,6 +68,7 @@ has ua_request_timeout      => 35;
 has ua_inactivity_timeout   => 35;
 has is_first_login          => -1;
 has login_state             => 'init';
+has qrcode_upload_url       => undef;
 has qrcode_count            => 0;
 has qrcode_count_max        => 10;
 has media_size_max          => sub{20 * 1024 * 1024}; #运行上传的最大文件大小
