@@ -212,10 +212,13 @@ sub new {
     $SIG{INT}  = $SIG{TERM} = $SIG{HUP} = sub{
         return if $^O ne 'MSWin32' and $_[0] eq 'INT' and !-t;
         $self->info("捕获到停止信号[$_[0]]，准备停止...");
-        $self->clean_qrcode();
-        $self->clean_pid();
         $self->stop();
     };
+    $self->on(stop=>sub{
+        my $self = shift;
+        $self->clean_qrcode();
+        $self->clean_pid();
+    });
     $self->on(state_change=>sub{
         my $self = shift;
         $self->save_state();
