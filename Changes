@@ -1,3 +1,15 @@
+2017-01-10 Mojo::Weixin v1.2.7
+1）修复XiaoiceReply插件无法转发文件图片的bug
+   XiaoiceReply插件增加allow_friend_reply/allow_group_reply参数
+2）修复二维码邮件乱码
+3）移除非开源推荐
+4）加载了UploadQRcode插件之后，Openwx插件input_qrcode事件上报也会带上上传的二维码url
+5）压缩或删除一些图片，减少这个项目的体积
+6）Openwx插件auth认证失败时返回json格式数据而非原来的文本错误信息
+7）修复客户端正常调用->stop() 退出时无法清理临时文件的bug
+   修复客户端正常调用->stop() 退出时无法正常上报事件的bug
+   修复ctrl+c时客户端报错 Mojo::IOLoop already running at /usr/local/share/perl5/Mojo/UserAgent.pm line 60
+
 2016-12-29 Mojo::Weixin v1.2.6
 1）修复由于官方改对导致误发正常发送视频文件的bug
    文件最大不能超过20M，大于512KB会采用分片上传机制，每个分片大小512K
