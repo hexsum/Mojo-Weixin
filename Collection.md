@@ -9,3 +9,11 @@
 网址：https://www.douban.com/note/591996320/
 
 ![作品预览](https://img3.doubanio.com/view/note/large/public/p38683520.jpg)
+
+* **支持发图的命令行版的微信聊天**
+
+作者：csrgxtu
+
+网址：https://github.com/csrgxtu/Drogo
+
+![作品预览](https://github.com/csrgxtu/Drogo/blob/master/img/output.gif)
