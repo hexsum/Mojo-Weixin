@@ -17,6 +17,7 @@ has log_path            => undef;
 has log_encoding        => undef;      #utf8|gbk|...
 has log_head            => undef;
 has log_console         => 1;
+has log_unicode         => 0;
 has download_media      => 1;
 has disable_color       => 0;           #是否禁用终端打印颜色
 
@@ -52,6 +53,7 @@ has plugins => sub{+{}};
 has log     => sub{
     Mojo::Weixin::Log->new(
         encoding    =>  $_[0]->log_encoding,
+        unicode_support => $_[0]->log_unicode,
         path        =>  $_[0]->log_path,
         level       =>  $_[0]->log_level,
         head        =>  $_[0]->log_head,
