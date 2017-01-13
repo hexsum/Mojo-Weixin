@@ -958,9 +958,9 @@ Server: Mojolicious (Perl)
 |--------|:------------------------------------------|
 |uri     |/openwx/create_group|
 |请求方法|GET\|POST|
-|请求参数|**friend**: 好友的id（多个好友id用逗号分割）<br>**displayname**: 可选，群组的显示名称<br>|
+|请求参数|**friends**: 好友的id（多个好友id用逗号分割）<br>**displayname**: 可选，群组的显示名称<br>|
 |数据格式|application/x-www-form-urlencoded|
-|调用示例|http://127.0.0.1:3000/openwx/create_group?displayname=xxxxxx&friend=xxxx,xxxx|
+|调用示例|http://127.0.0.1:3000/openwx/create_group?displayname=xxxxxx&friends=xxxx,xxxx|
 返回JSON结果:
 
 ```
@@ -976,9 +976,9 @@ Server: Mojolicious (Perl)
 |--------|:------------------------------------------|
 |uri     |/openwx/invite_friend|
 |请求方法|GET\|POST|
-|请求参数|**friend**: 好友的id（多个好友id用逗号分割）<br>**id**: 群组对象的id<br>**displayname**: 群组的显示名称<br>|
+|请求参数|**friends**: 好友的id（多个好友id用逗号分割）<br>**id**: 群组对象的id<br>**displayname**: 群组的显示名称<br>|
 |数据格式|application/x-www-form-urlencoded|
-|调用示例|http://127.0.0.1:3000/openwx/invite_friend?id=xxxxxx&friend=xxxx,xxxx<br>http://127.0.0.1:3000/openwx/invite_friend?displayname=xxxxxx&friend=xxxx,xxxx|
+|调用示例|http://127.0.0.1:3000/openwx/invite_friend?id=xxxxxx&friends=xxxx,xxxx<br>http://127.0.0.1:3000/openwx/invite_friend?displayname=xxxxxx&friends=xxxx,xxxx|
 返回JSON结果:
 
 ```
@@ -994,9 +994,9 @@ Server: Mojolicious (Perl)
 |--------|:------------------------------------------|
 |uri     |/openwx/kick_group_member|
 |请求方法|GET\|POST|
-|请求参数|**member**: 成员的id（多个成员id用逗号分割）<br>**id**: 群组的id<br>**displayname**: 群组的显示名称<br>|
+|请求参数|**members**: 成员的id（多个成员id用逗号分割）<br>**id**: 群组的id<br>**displayname**: 群组的显示名称<br>|
 |数据格式|application/x-www-form-urlencoded|
-|调用示例|http://127.0.0.1:3000/openwx/kick_group_member?id=xxxxxx&member=xxxx,xxxx<br>http://127.0.0.1:3000/openwx/kick_group_member?displayname=xxxxxx&member=xxxx,xxxx|
+|调用示例|http://127.0.0.1:3000/openwx/kick_group_member?id=xxxxxx&members=xxxx,xxxx<br>http://127.0.0.1:3000/openwx/kick_group_member?displayname=xxxxxx&members=xxxx,xxxx|
 返回JSON结果:
 
 ```

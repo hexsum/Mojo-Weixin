@@ -285,7 +285,7 @@ sub create_group {
         $self->error("创建群聊". (defined $displayname?"[ $displayname ]":"") . "失败");
         return;
     }
-    my $info = $self->_webwxbatchgetcontact($group_info->{id});
+    my $info = $self->_webwxbatchgetcontact_group($group_info->{id});
     my $group;
     if(defined $info){
         my(undef,$groups)=@$info;
