@@ -7,5 +7,7 @@ RUN apt-get update \
     && unzip -qo Mojo-Weixin.zip \
     && cd Mojo-Weixin-master \
     && cpanm . \
-    && rm -rf Mojo-Weixin-master Mojo-Weixin.zip 
-CMD perl -MMojo::Weixin -e 'Mojo::Weixin->new(log_encoding=>"utf8")->load(["ShowMsg","UploadQRcode"])->load("Openwx",data=>{listen=>[{port=>$ENV{MOJO_WEIXIN_PLUGIN_OPENWX_PORT}//3000}],post_api=>$ENV{MOJO_WEIXIN_PLUGIN_OPENWX_POST_API}})'
+    && cd .. \
+    && apt-get purge -y unzip && apt-get autoremove -y \
+    && rm -rf Mojo-Weixin-master Mojo-Weixin.zip /var/lib/apt/lists/*
+CMD perl -MMojo::Weixin -e 'Mojo::Weixin->new(log_encoding=>"utf8")->load(["ShowMsg","UploadQRcode"])->load("Openwx",data=>{listen=>[{port=>$ENV{MOJO_WEIXIN_PLUGIN_OPENWX_PORT}//3000}],post_api=>$ENV{MOJO_WEIXIN_PLUGIN_OPENWX_POST_API}})->run'

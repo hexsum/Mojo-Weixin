@@ -1,3 +1,16 @@
+2017-01-14 Mojo::Weixin v1.2.8
+1）对于请求失败重试，debug日志增加了n/m的重试过程，例如:
+[17/01/11 10:08:25] [warn] http://127.0.0.1:80/ 请求(0/2)失败: 404 Not Found
+[17/01/11 10:08:25] [warn] http://127.0.0.1:80/ 请求(1/2)失败: 404 Not Found
+[17/01/11 10:08:25] [warn] http://127.0.0.1:80/ 请求(2/2)失败: 404 Not Found
+2）减少Openwx插件事件上报失败的重试次数
+3）设置$client->log_unicode 为0 避免某些情况下产生的乱码问题
+4）修复Openwx插件如下api接口不可用问题，感谢 @霸牙 反馈
+/openwx/create_group
+/openwx/invite_friend
+/openwx/kick_group_member
+5）基于Docker Hub实现自动化集成
+
 2017-01-10 Mojo::Weixin v1.2.7
 1）修复XiaoiceReply插件无法转发文件图片的bug
    XiaoiceReply插件增加allow_friend_reply/allow_group_reply参数
