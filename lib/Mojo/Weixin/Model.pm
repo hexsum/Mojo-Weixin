@@ -285,20 +285,7 @@ sub create_group {
         $self->error("创建群聊". (defined $displayname?"[ $displayname ]":"") . "失败");
         return;
     }
-    my $info = $self->_webwxbatchgetcontact_group($group_info->{id});
-    my $group;
-    if(defined $info){
-        my(undef,$groups)=@$info;
-        if(ref $groups eq "ARRAY"){
-            $group = Mojo::Weixin::Group->new($groups->[0]);
-        }
-        else{
-            $group =Mojo::Weixin::Group->new($group_info);
-        }
-    }
-    else{
-        $group =Mojo::Weixin::Group->new($group_info);
-    }
+    my $group = Mojo::Weixin::Group->new($self->_webwxbatchgetcontact_group($group_info->{id}) // $group_info);
     $self->add_group($group);
     $self->info("创建群聊[ ". $group->displayname ." ]成功");
     return $group;
