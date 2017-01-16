@@ -7,6 +7,7 @@
 |[IRCShell]          |99       |已发布      |sjdy521      |Linux环境下通过irc客户端使用微信
 |[Openwx]            |98       |已发布      |sjdy521      |提供微信发送消息api接口
 |[Perlcode]          |97       |已发布      |sjdy521      |通过微信消息执行perl代码
+|[GCM]               |97       |已发布      |sjdy521      |接收消息通过GCM推送到android手机
 |[Perldoc]           |96       |已发布      |sjdy521      |通过微信消息查询perl文档
 |[Beauty]            |95       |已发布      |sjdy521      |识别指定关键字发送美女图片
 |[Translation]       |93       |已发布      |sjdy521      |多国语言翻译功能
@@ -41,3 +42,4 @@
 [ShowQRcode]: https://metacpan.org/pod/distribution/Mojo-Weixin/doc/Weixin.pod#Mojo::Weixin::Plugin::ShowQRcode
 [ShowQRCodeInTerm]: https://metacpan.org/pod/distribution/Mojo-Weixin/doc/Weixin.pod#Mojo::Weixin::Plugin::ShowQRCodeInTerm
 [SmartReply]: https://metacpan.org/pod/distribution/Mojo-Weixin/lib/Mojo/Weixin.pod#Mojo::Weixin::Plugin::SmartReply
+[GCM]: http://www.coolapk.com/apk/com.swjtu.gcmformojo
