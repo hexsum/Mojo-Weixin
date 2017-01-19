@@ -1006,6 +1006,18 @@ Linux系统下直接打印二维码到终端，作者 hyvinlam L<https://github.
         allow_friend_reply => 1,                   #可选，是否允许回复好友消息，默认1
     });
 
+=head2 Mojo::Weixin::Plugin::GCM
+
+接收消息通过谷歌提供的GCM接口发送到android手机
+
+    $client->load("GCM",data=>{
+        api_url         => 'https://gcm-http.googleapis.com/gcm/send',#可选
+        api_key         =>'xxx', #需要向谷歌申请
+        registration_ids=>["xxx"],#android设备的注册id
+        allow_group     =>["允许推送消息的群名称1","允许推送消息的群名称2"],
+        ban_group       =>["禁止推送消息的群名称"],
+    });
+
 =head2 Mojo::Weixin::Plugin::SmartReply
 
 实现机器人的智能回复，支持好友消息、群消息

@@ -61,14 +61,18 @@ sub call {
         my $type = 'Mojo-Sys';
         my $message;
         my $msgId = 2;
+        my $title;
         if($event eq 'login'){
             $message = "登录成功";
+            $title = "登录事件";
         }
         elsif($event eq 'input_qrcode'){
-            $message = "需要扫描二维码: $args[2]";
+            $message = "$args[2]";
+            $title = "扫描二维码事件";
         }
         elsif($event eq 'stop'){
             $message = "Mojo-Weixin已停止";
+            $title = "停止事件";
         }
         else{return}
         $client->http_post($api_url,
@@ -83,7 +87,7 @@ sub call {
                 registration_ids=> $registration_ids,
                 $collapse_key?(collapse_key=> $collapse_key):(),
                 priority=> $data->{priority} // 'high',
-                data=>{type=>$type,title=>'事件通知',message=>$message,msgId=>$msgId},
+                data=>{type=>$type,title=>$title,message=>$message,msgId=>$msgId},
             },
             sub{
                 my $json = shift;
