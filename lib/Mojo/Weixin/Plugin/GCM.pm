@@ -7,6 +7,7 @@ use List::Util qw(first);
 sub call {
     my $client = shift;
     my $data  = shift;
+    $client->load("UploadQRcode") if !$client->is_load_plugin('UploadQRcode');
     my $api_url = $data->{api_url} // 'https://gcm-http.googleapis.com/gcm/send';
     my $api_key = $data->{api_key} or $client->die("[".__PACKAGE__."]必须指定api_key");
     my $collapse_key = $data->{collapse_key};
@@ -16,6 +17,7 @@ sub call {
     }
     $client->on(receive_message=>sub{
         my($client,$msg) = @_;
+        my $type = 'Mojo-Weixin';
         my $title;
         my $message;
         my $msgId;
@@ -38,7 +40,7 @@ sub call {
                 registration_ids=> $registration_ids,
                 $collapse_key?(collapse_key=> $collapse_key):(),
                 priority=> $data->{priority} // 'high',
-                data=>{type=>$data->{type} // 'Mojo-Weixin',title=>$title,message=>$message,msgId=>$msgId},
+                data=>{type=>$type,title=>$title,message=>$message,msgId=>$msgId},
             },
             sub{
                 #"{"multicast_id":9016211065189210367,"success":1,"failure":0,"canonical_ids":0,"results":[{"message_id":"0:1484103730761325%9b9e6c13f9fd7ecd"}]}"
@@ -52,6 +54,48 @@ sub call {
                 }
             }
         );
+    });
+
+    $client->on(all_event => sub{
+        my($client,$event,@args) =@_;
+        my $type = 'Mojo-Sys';
+        my $message;
+        my $msgId = 2;
+        if($event eq 'login'){
+            $message = "登录成功";
+        }
+        elsif($event eq 'input_qrcode'){
+            $message = "需要扫描二维码: $args[2]";
+        }
+        elsif($event eq 'stop'){
+            $message = "Mojo-Weixin已停止";
+        }
+        else{return}
+        $client->http_post($api_url,
+            {   'Authorization'=>"key=$api_key",
+                is_blocking=>1,
+                ua_connect_timeout=>5,
+                ua_request_timeout=>5,
+                ua_inactivity_timeout=>5,
+                ua_retry_times=>1
+            },
+            json=>{
+                registration_ids=> $registration_ids,
+                $collapse_key?(collapse_key=> $collapse_key):(),
+                priority=> $data->{priority} // 'high',
+                data=>{type=>$type,title=>'事件通知',message=>$message,msgId=>$msgId},
+            },
+            sub{
+                my $json = shift;
+                if(not defined $json){
+                    $client->debug("[".__PACKAGE__."]GCM消息推送失败: 返回结果异常");
+                    return;
+                }
+                else{
+                    $client->debug("[".__PACKAGE__."]GCM消息推送完成：$json->{multicast_id}/$json->{success}/$json->{failure}");
+                }
+            }
+        ); 
     });
 }
 1;
