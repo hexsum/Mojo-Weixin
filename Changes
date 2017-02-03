@@ -1,3 +1,16 @@
+2017-02-03 Mojo::Weixin v1.3.0
+1）修复/openwx/get_user_info接口返回的个人信息中account属性为空的bug 感谢 @超 反馈
+2）移植 PostQRCodeToTelegram插件到Weixin
+3）新增 is_load_plugin 方法 检测客户端是否加载某个插件
+4）GCM插件支持推送事件，修复GCM插件二维码url错误,无视GCM插件设置allow_group=>[]的情况
+5) IRCShell插件完善
+    插件参数master_irc_user更名为master_irc_nick
+    插件参数image_api更名为upload_api
+    上传api替换为https://sm.ms/api/upload接口
+    新增群组、群组名称修改irc上也能够自动同步
+    修复irc无法正常发送好友、群组消息的问题
+6）完善MakeFile.PL文件
+
 2017-01-16 Mojo::Weixin v1.2.9
 1）新增GCM插件
 2）修复/openwx/create_group创建的群组，上报new_group事件时群组id为空的bug 感谢 @霸牙 反馈
