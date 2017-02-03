@@ -2,7 +2,6 @@ package Mojo::Weixin::Plugin::ImageStore;
 our $PRIORITY = 100;
 use POSIX qw(strftime);
 use File::Path qw(make_path);
-use Mojo::Util qw(spurt);
 use File::Basename qw(basename);
 sub call{
     my $client = shift;
@@ -26,7 +25,7 @@ sub call{
                     $file_path =~ s/(\.[^\.]+$)/.1$1/;
                 }
             }
-            spurt $bin,$file_path;
+            $client->spurt($bin,$file_path);
             $msg->media_path($file_path);
             $msg->media_name(basename($file_path));
             $msg->content("[media](". $msg->media_path . ")");

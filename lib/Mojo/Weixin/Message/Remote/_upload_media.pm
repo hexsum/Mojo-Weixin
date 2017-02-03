@@ -101,7 +101,7 @@ sub Mojo::Weixin::_upload_media {
                     return;
                 }
                 my $name = File::Basename::basename($msg->media_path);
-                my $data = Mojo::Util::slurp $msg->media_path;
+                my $data  = $self->slurp($msg->media_path);
                 my $mtime = (stat($msg->media_path))[9];
                 my $mime = 'application/octet-stream';
                 if($name=~/\.($mime_reg)$/) {
