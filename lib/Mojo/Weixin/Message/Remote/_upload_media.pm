@@ -161,7 +161,7 @@ sub Mojo::Weixin::_upload_media {
 sub _upload_chunk{
     my ($self,$msg,$callback) = @_;
     if(!defined $msg->media_chunks){
-        $msg->media_chunks(int($msg->media_size/$self->media_chunk_size) +1);
+        $msg->media_chunks(POSIX::ceil($msg->media_size/$self->media_chunk_size));
     }
     if(!defined $msg->media_clientid){
         #$msg->media_clientid($self->now);
@@ -218,8 +218,8 @@ sub _upload_chunk{
             id=>'WU_FILE_0',
             name=>$msg->media_name,
             type=>$msg->media_mime,
-            ($msg->media_chunks>0?(chunks=>$msg->media_chunks):()),
-            ($msg->media_chunks>0?(chunk=>$msg->media_chunk):()),
+            ($msg->media_chunks>1?(chunks=>$msg->media_chunks):()),
+            ($msg->media_chunks>1?(chunk=>$msg->media_chunk):()),
             lastModifiedDate=>POSIX::strftime('%a %b %d %Y %H:%M:%S GMT+0800 (中国标准时间)',gmtime($msg->media_mtime)),
             size=>$msg->media_size,
             mediatype=>(
