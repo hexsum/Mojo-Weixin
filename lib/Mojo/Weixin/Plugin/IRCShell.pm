@@ -58,8 +58,24 @@ sub call{
         elsif($user->nick eq $master_irc_nick or $user->is_localhost){
             my $nick =  $msg->{params}[0];
             my $content = $msg->{params}[1];
-            my $u = $ircd->search_user(nick=>$nick,virtual=>1);
-            return if not defined $u;
+            my $u = $ircd->search_user(nick=>$nick);
+            #return if not defined $u;
+            if(not defined $u){
+                my $friend = $client->search_friend(displayname=>$nick);
+                return if not defined $friend;
+                my $channel = $ircd->search_channel(name=>'#我的好友') || $ircd->new_channel(name=>'#我的好友',mode=>"Pis");
+                return if not defined $channel;
+                $u = $ircd->new_user(
+                    id      =>$friend->id,
+                    name    =>$friend->displayname . ":虚拟用户",,
+                    user    =>$friend->id,
+                    nick    =>$friend->displayname,
+                    virtual => 1,
+                );
+                $u->join_channel($channel);
+                $user->send($user->ident,"PRIVMSG",$nick,"[系统提示]已从微信好友中搜索到对应昵称好友并生成irc用户，现在可以继续和好友聊天了");
+            
+            }
             my $friend = $client->search_friend(id=>$u->id);
             if(defined $friend){
                 $friend->send($content,sub{
@@ -170,30 +186,35 @@ sub call{
             else{
                 $user->join_channel($channel) if $user->is_virtual and !$user->is_join_channel($channel);
             }
-            for (grep { $_->nick eq $master_irc_nick or $_->is_localhost} grep {!$_->is_virtual} $ircd->users){
-                for my $line (split /\r?\n/,$msg->content){
-                    $_->send($user->ident,"PRIVMSG",$_->nick,$line);
-                    $user->send($user->ident,"PRIVMSG",$_->nick,$line);
+
+            if(defined $upload_api and $msg->format eq 'media'){
+                my $content = $msg->content;
+                #接收的图片上传到图床
+                $client->http_post($upload_api,{json=>1},form=>{format=>'json',smfile=>{content=>$msg->media_data}},sub{
+                    my($json,$ua,$tx)=@_;
+                    if(not defined $json){
+                        $client->warn("二维码图片上传云存储失败: 响应数据异常");
+                    }
+                    elsif(defined $json and $json->{code} ne 'success' ){
+                        $client->warn("二维码图片上传云存储失败: " . $json->{msg});
+                    }
+                    else{$content =~ s/^\[(.+?)\]\(.+?\)/[$1]($json->{data}{url})/g;}
+                    for (grep { $_->nick eq $master_irc_nick or $_->is_localhost} grep {!$_->is_virtual} $ircd->users){
+                        for my $line (split /\r?\n/,$content){
+                            $_->send($user->ident,"PRIVMSG",$_->nick,$line);
+                            $user->send($user->ident,"PRIVMSG",$_->nick,$line);
+                        }
+                    }
+                });
+            }
+            else{
+                for (grep { $_->nick eq $master_irc_nick or $_->is_localhost} grep {!$_->is_virtual} $ircd->users){
+                    for my $line (split /\r?\n/,$msg->content){
+                        $_->send($user->ident,"PRIVMSG",$_->nick,$line);
+                        $user->send($user->ident,"PRIVMSG",$_->nick,$line);
+                    }
                 }
             }
-
-
-            #接收的图片上传到图床
-            $client->http_post($upload_api,{json=>1},form=>{format=>'json',smfile=>{content=>$msg->media_data}},sub{
-                my($json,$ua,$tx)=@_;
-                if(not defined $json){
-                    $client->warn("二维码图片上传云存储失败: 响应数据异常");
-                    return;
-                }
-                elsif(defined $json and $json->{code} ne 'success' ){
-                    $client->warn("二维码图片上传云存储失败: " . $json->{msg});
-                    return;
-                }
-                for (grep { $_->nick eq $master_irc_nick or $_->is_localhost} grep {!$_->is_virtual} $ircd->users){
-                    $_->send($user->ident,"PRIVMSG",$_->nick,"图片链接: $json->{data}{url}");
-                    $user->send($user->ident,"PRIVMSG",$_->nick,"图片链接: $json->{data}{url}");
-                }
-            }) if defined $upload_api and $msg->format eq 'media';
         }
 
         elsif($msg->type eq "group_message"){
@@ -222,31 +243,48 @@ sub call{
                 $user->join_channel($channel) if not $user->is_join_channel($channel);
             }
 
-            #接收的图片上传到图床
-            $client->http_post($upload_api,{json=>1},form=>{format=>'json',smfile=>{content=>$msg->media_data}},sub{
-                my($json,$ua,$tx)=@_;
-                if(not defined $json){
-                    $client->warn("二维码图片上传云存储失败: 响应数据异常");
-                    return;
-                }
-                elsif(defined $json and $json->{code} ne 'success' ){
-                    $client->warn("二维码图片上传云存储失败: " . $json->{msg});
-                    return;
-                }
-                $channel->broadcast($user->ident,"PRIVMSG",$channel->name,"图片链接: $json->{data}{url}");
-            }) if defined $upload_api and $msg->format eq 'media';
-
-            for(grep {!$_->is_virtual} $channel->users){
-                my @content = split /\r?\n/,$msg->content;
-                if($content[0]=~/^\@([^\s]+?) /){
-                    my $at_nick = $1;
-                    if($ircd->search_user(nick=>$at_nick)){
-                        $content[0] =~s/^\@([^\s]+?) //;
-                        $_ = "$at_nick: " . $_ for @content;
+            
+            if(defined $upload_api and $msg->format eq 'media'){
+                my $content = $msg->content;
+                #接收的图片上传到图床
+                $client->http_post($upload_api,{json=>1},form=>{format=>'json',smfile=>{content=>$msg->media_data}},sub{
+                    my($json,$ua,$tx)=@_;
+                    if(not defined $json){
+                        $client->warn("二维码图片上传云存储失败: 响应数据异常");
                     }
-                }
-                for my $line (@content){
-                    $_->send($user->ident,"PRIVMSG",$channel->name,$line);
+                    elsif(defined $json and $json->{code} ne 'success' ){
+                        $client->warn("二维码图片上传云存储失败: " . $json->{msg});
+                    }
+                    else{$content =~ s/^\[(.+?)\]\(.+?\)/[$1]($json->{data}{url})/g;}
+                    for(grep {!$_->is_virtual} $channel->users){
+                        my @content = split /\r?\n/,$content;
+                        if($content[0]=~/^\@([^\s]+?) /){
+                            my $at_nick = $1;
+                            if($ircd->search_user(nick=>$at_nick)){
+                                $content[0] =~s/^\@([^\s]+?) //;
+                                $_ = "$at_nick: " . $_ for @content;
+                            }
+                        }
+                        for my $line (@content){
+                            $_->send($user->ident,"PRIVMSG",$channel->name,$line);
+                        }
+                    }
+
+                });
+            }
+            else{
+                for(grep {!$_->is_virtual} $channel->users){
+                    my @content = split /\r?\n/,$msg->content;
+                    if($content[0]=~/^\@([^\s]+?) /){
+                        my $at_nick = $1;
+                        if($ircd->search_user(nick=>$at_nick)){
+                            $content[0] =~s/^\@([^\s]+?) //;
+                            $_ = "$at_nick: " . $_ for @content;
+                        }
+                    }
+                    for my $line (@content){
+                        $_->send($user->ident,"PRIVMSG",$channel->name,$line);
+                    }
                 }
             }
         }
@@ -272,28 +310,40 @@ sub call{
             elsif($user->is_virtual){
                 $user->join_channel($channel)  if not $user->is_join_channel($channel);
             }
-            #接收的图片上传到图床
-            $client->http_post($upload_api,{json=>1},form=>{format=>'json',smfile=>{content=>$msg->media_data}},sub{
-                my($json,$ua,$tx)=@_;
-                if(not defined $json){
-                    $client->warn("二维码图片上传云存储失败: 响应数据异常");
-                    return;
-                }
-                elsif(defined $json and $json->{code} ne 'success' ){
-                    $client->warn("二维码图片上传云存储失败: " . $json->{msg});
-                    return;
-                }
-                $channel->broadcast($user->ident,"PRIVMSG",$channel->name,"图片链接: $json->{data}{url}");
-            }) if defined $upload_api and $msg->format eq 'media';
-
-            for(
-                grep {$_->nick eq $master_irc_nick or $_->is_localhost} 
-                grep {!$_->is_virtual} $ircd->users
-            )
-            {
-                for my $line (split /\r?\n/,$msg->content){
-                    $_->send($_->ident,"PRIVMSG",$user->nick,$line);
-                    $user->send($_->ident,"PRIVMSG",$user->nick,$line);
+            if(defined $upload_api and $msg->format eq 'media'){
+                my $content = $msg->content;
+                #发送的图片上传到图床
+                $client->http_post($upload_api,{json=>1},form=>{format=>'json',smfile=>{content=>$msg->media_data}},sub{
+                    my($json,$ua,$tx)=@_;
+                    if(not defined $json){
+                        $client->warn("二维码图片上传云存储失败: 响应数据异常");
+                    }
+                    elsif(defined $json and $json->{code} ne 'success' ){
+                        $client->warn("二维码图片上传云存储失败: " . $json->{msg});
+                    }   
+                    else{$content =~ s/^\[(.+?)\]\(.+?\)/[$1]($json->{data}{url})/g;}
+                    for(
+                        grep {$_->nick eq $master_irc_nick or $_->is_localhost}
+                        grep {!$_->is_virtual} $ircd->users
+                    )
+                    {
+                        for my $line (split /\r?\n/,$content){
+                            $_->send($_->ident,"PRIVMSG",$user->nick,$line);
+                            $user->send($_->ident,"PRIVMSG",$user->nick,$line);
+                        }
+                    }
+                });
+            }
+            else{
+                for(
+                    grep {$_->nick eq $master_irc_nick or $_->is_localhost} 
+                    grep {!$_->is_virtual} $ircd->users
+                )
+                {
+                    for my $line (split /\r?\n/,$msg->content){
+                        $_->send($_->ident,"PRIVMSG",$user->nick,$line);
+                        $user->send($_->ident,"PRIVMSG",$user->nick,$line);
+                    }
                 }
             }
         }
@@ -301,21 +351,54 @@ sub call{
             return if @groups and not first {$msg->group->displayname eq $_} @groups;
             my $channel = $ircd->search_channel(id=>$msg->group->id);
             return unless defined $channel;
-            for my $master_irc_client (
-                grep {$_->nick eq $master_irc_nick or $_->is_localhost}
-                grep {!$_->is_virtual} $ircd->users
-            ){
-                for(grep {!$_->{virtual}} $channel->users){
-                    my @content = split /\r?\n/,$msg->content;
-                    if($content[0]=~/^\@([^\s]+?) /){
-                        my $at_nick = $1;
-                        if($ircd->search_user(nick=>$at_nick)){
-                            $content[0] =~s/^\@([^\s]+?) //;
-                            map {$_ = "$at_nick: " . $_} @content;
+            if(defined $upload_api and $msg->format eq 'media'){
+                my $content = $msg->content;
+                $client->http_post($upload_api,{json=>1},form=>{format=>'json',smfile=>{content=>$msg->media_data}},sub{
+                    my($json,$ua,$tx)=@_;
+                    if(not defined $json){
+                        $client->warn("二维码图片上传云存储失败: 响应数据异常");
+                    }
+                    elsif(defined $json and $json->{code} ne 'success' ){
+                        $client->warn("二维码图片上传云存储失败: " . $json->{msg});
+                    }
+                    else{$content =~ s/^\[(.+?)\]\(.+?\)/[$1]($json->{data}{url})/g;}
+                    for my $master_irc_client (
+                        grep {$_->nick eq $master_irc_nick or $_->is_localhost}
+                        grep {!$_->is_virtual} $ircd->users
+                    ){
+                        for(grep {!$_->{virtual}} $channel->users){
+                            my @content = split /\r?\n/,$content;
+                            if($content[0]=~/^\@([^\s]+?) /){
+                                my $at_nick = $1;
+                                if($ircd->search_user(nick=>$at_nick)){
+                                    $content[0] =~s/^\@([^\s]+?) //;
+                                    map {$_ = "$at_nick: " . $_} @content;
+                                }
+                            }
+                            for my $line (@content){
+                                $_->send($master_irc_client->ident,"PRIVMSG",$channel->name,$line);
+                            }
                         }
                     }
-                    for my $line (@content){
-                        $_->send($master_irc_client->ident,"PRIVMSG",$channel->name,$line);
+                });
+            }
+            else{
+                for my $master_irc_client (
+                    grep {$_->nick eq $master_irc_nick or $_->is_localhost}
+                    grep {!$_->is_virtual} $ircd->users
+                ){
+                    for(grep {!$_->{virtual}} $channel->users){
+                        my @content = split /\r?\n/,$msg->content;
+                        if($content[0]=~/^\@([^\s]+?) /){
+                            my $at_nick = $1;
+                            if($ircd->search_user(nick=>$at_nick)){
+                                $content[0] =~s/^\@([^\s]+?) //;
+                                map {$_ = "$at_nick: " . $_} @content;
+                            }
+                        }
+                        for my $line (@content){
+                            $_->send($master_irc_client->ident,"PRIVMSG",$channel->name,$line);
+                        }
                     }
                 }
             }
