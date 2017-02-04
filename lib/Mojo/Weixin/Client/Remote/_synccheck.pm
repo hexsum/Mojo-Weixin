@@ -27,7 +27,7 @@ sub Mojo::Weixin::_synccheck{
         sid         =>  $self->wxsid,
         uin         =>  $self->wxuin,
         deviceid    =>  $self->deviceid,
-        synckey     =>  join("|",map {$_->{Key} . "_" . $_->{Val};} @{$self->sync_key->{List}}),
+        synckey     =>  join("|",map {$_->{Key} . "_" . $_->{Val};} @{$self->synccheck_key->{List}}),
         _           =>  $self->now(),
     );
     my $id = $self->http_get($self->gen_url2($api,@query_string),{Referer=>"https://" .$self->domain . "/"},$callback);

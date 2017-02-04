@@ -57,7 +57,8 @@ sub relogin{
     $self->login_state("relogin");
     #$self->clear_cookie();
 
-    $self->sync_key(+{});
+    $self->sync_key(+{LIST=>[]});
+    $self->synccheck_key(+{LIST=>[]});
     $self->pass_ticket('');
     $self->skey('');
     $self->wxsid('');

@@ -112,8 +112,6 @@ has ua                      => sub {
 };
 
 has message_queue => sub{$_[0]->gen_message_queue()};
-
-has sync_key => sub{+{}};
 has pass_ticket => '';
 has skey => '';
 has wxsid => '';
@@ -125,6 +123,9 @@ has _sync_running => 0;
 has _synccheck_running => 0;
 has _synccheck_error_count => 0;
 has _synccheck_connection_id => undef;
+
+has sync_key => sub{+{List=>[]}};
+has synccheck_key =>sub{$_[0]->sync_key };
 
 sub deviceid { return "e" . substr(rand() . ("0" x 15),2,15);}
 sub state {

@@ -154,6 +154,7 @@ sub _parse_sync_data {
         return;
     }
     $self->sync_key($json->{SyncKey}) if $json->{SyncKey}{Count}!=0;
+    $self->synccheck_key($json->{SyncCheckKey}) if $json->{SyncCheckKey}{Count}!=0;
     $self->skey($json->{SKey}) if $json->{SKey};
 
 
@@ -309,7 +310,8 @@ sub _parse_sync_data {
                     $msg->{receiver_id} = $e->{ToUserName};
                 }
             }
-            elsif($e->{ToUserName} eq $self->user->id){#接收的消息
+            #elsif($e->{ToUserName} eq $self->user->id){#接收的消息
+            else{#接收的消息
                 $msg->{class} = "recv";
                 $msg->{receiver_id} = $self->user->id;
                 $msg->{type} = "group_message";
