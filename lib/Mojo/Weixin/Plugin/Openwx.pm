@@ -14,7 +14,7 @@ sub call{
     $check_event_list = Mojo::Weixin::List->new(max_size=>$data->{check_event_list_max_size} || 20);
     $data->{post_media_data} = 1 if not defined $data->{post_media_data};
     $data->{post_event} = 1 if not defined $data->{post_event};
-    $data->{post_event_list} = [qw(login stop state_change input_qrcode new_group new_friend new_group_member lose_group lose_friend lose_group_member)] 
+    $data->{post_event_list} = [qw(login stop state_change input_qrcode new_group new_friend new_group_member lose_group lose_friend lose_group_member friend_request)] 
         if ref $data->{post_event_list} ne 'ARRAY'; 
 
     if(defined $data->{poll_api}){
@@ -101,6 +101,24 @@ sub call{
                 }
             }) if defined $data->{post_api};
 
+        }
+        elsif($event eq 'friend_request'){
+            my($id,$displayname,$verify,$ticket) = @args;
+            my $post_json = {
+                post_type => "event",
+                event     => $event,
+                params    => [$id,$displayname,$verify,$ticket],
+            };
+            $check_event_list->append($post_json);
+            $client->http_post($data->{post_api},json=>$post_json,sub{
+                my($data,$ua,$tx) = @_;
+                if($tx->success){
+                    $client->debug("插件[".__PACKAGE__ ."]事件[".$event."]上报成功");
+                }
+                else{
+                    $client->warn("插件[".__PACKAGE__ . "]事件[".$event."]上报失败: ".$client->encode("utf8",$tx->error->{message}));
+                }
+            }) if defined $data->{post_api};
         }
         elsif($event =~ /^update_user|update_friend|update_group$/){
             my ($ref) = @args;
@@ -617,6 +635,13 @@ sub call{
         }
         else{$c->safe_render(json=>{id=>undef,code=>100,status=>"object not found"});}
 
+    };
+    any [qw(GET POST)] => '/openwx/accept_friend_request' =>sub{
+        my $c = shift;
+        my $p = $c->params;
+        my($id,$displayname,$ticket) = @$p{qw( id displayname ticket)};
+        my $ret = $client->accept_friend_request($id,$displayname,$ticket);
+        $c->safe_render(json=>{code=>($ret?0:-1),status=>($ret?"success":"failure"),id=>$id,displayname=>$displayname,ticket=>$ticket});
     };
     any [qw(GET POST)] => '/openwx/get_client_info' => sub{
         my $c = shift;
