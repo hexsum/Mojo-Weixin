@@ -125,7 +125,16 @@ has _synccheck_error_count => 0;
 has _synccheck_connection_id => undef;
 
 has sync_key => sub{+{List=>[]}};
-has synccheck_key =>sub{$_[0]->sync_key };
+sub synccheck_key {
+    my $self = shift;
+    if(@_==0){
+        return $self->{synccheck_key} // $self->sync_key;
+    }
+    else{
+        $self->{synccheck_key} = $_[0];
+        return $self;
+    }
+}
 
 sub deviceid { return "e" . substr(rand() . ("0" x 15),2,15);}
 sub state {
@@ -210,6 +219,7 @@ sub new {
         $self->error(Carp::longmess($err));
     });
     $self->check_pid();
+    $self->load_cookie();
     $self->save_state();
     $SIG{CHLD} = 'IGNORE';
     $SIG{INT}  = $SIG{TERM} = $SIG{HUP} = sub{

@@ -11,9 +11,9 @@ sub Mojo::Weixin::_login {
             return 1;
         }
     }
-    else{
-        $self->clear_cookie();
-    }
+    #else{
+    #    $self->clear_cookie();
+    #}
     my $qrcode_uuid = $self->_get_qrcode_uuid(); 
     if(not defined $qrcode_uuid){
         $self->info("无法获取到登录二维码，登录失败");

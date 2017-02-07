@@ -22,9 +22,9 @@ sub login{
         $self->is_first_login(0);
     }
 
-    if($self->is_first_login){
-        $self->load_cookie();
-    }
+    #if($self->is_first_login){
+    #    #$self->load_cookie();#转移到new的时候就调用，这里不再需要
+    #}
     while(1){
         my $ret = $self->_login();
         $self->clean_qrcode();
@@ -58,7 +58,7 @@ sub relogin{
     #$self->clear_cookie();
 
     $self->sync_key(+{LIST=>[]});
-    $self->synccheck_key(+{LIST=>[]});
+    $self->synccheck_key(undef);
     $self->pass_ticket('');
     $self->skey('');
     $self->wxsid('');

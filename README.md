@@ -108,7 +108,7 @@ Mojo-Weixin v1.3.0 [![Build Status](https://travis-ci.org/sjdy521/Mojo-Weixin.sv
   
     注意：
     
-    [Mojo-CentosPerl](https://github.com/sjdy521/Mojo-CentosPerl)是基于Centos系统编译打包而成，适合Centos6.5已上的x86_64系统
+    [Mojo-CentosPerl](https://github.com/sjdy521/Mojo-CentosPerl)是基于Centos系统编译打包而成，适合Centos6.5以上的x86_64系统
     
     [Mojo-ActivePerl](https://github.com/sjdy521/Mojo-ActivePerl)是基于ActivePerl打包的而成，适用于linux x86_64系统，并且系统glibc 2.15+
     
