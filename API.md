@@ -1210,7 +1210,7 @@ Server: Mojolicious (Perl)
 |--------|:------------------------------------------|
 |uri     |/openwx/accept_friend_request|
 |请求方法|GET\|POST|
-|请求参数|**id**: 申请者id<br>**displayname**：申请者显示名称（中文需要urlencode）<br>**ticket**：接受申请需要的ticket（frient_request事件上报中会提供）|
+|请求参数|**id**: 申请者id<br>**displayname**：申请者显示名称（frient_request事件中会提供,中文需要urlencode）<br>**ticket**：接受申请需要的ticket（frient_request事件中会提供）|
 |数据格式|application/x-www-form-urlencoded|
 |调用示例|http://127.0.0.1:3000/openwx/accept_friend_request?id=xxx&displayname=%85%c0%0f%2b&ticket=xxx|
 
