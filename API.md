@@ -20,6 +20,7 @@
 |[/openwx/kick_group_member](API.md#移除群组成员)    |running |移除群组成员|
 |[/openwx/set_markname](API.md#修改好友或群成员备注名称)         |running |修改好友或群成员备注名称|
 |[/openwx/stick](API.md#设置或取消聊天置顶)                |running |设置或取消群组、好友置顶|
+|[/openwx/accept_friend_request](API.md#接受好友验证申请)                |running |接受好友验证申请|
 |发送消息相关                  |        |                |
 |[/openwx/send_friend_message](API.md#发送好友消息)  |running |发送好友消息     |
 |[/openwx/send_group_message](API.md#发送群组消息)   |running |发送群组消息     |
@@ -359,7 +360,7 @@ API只能工作在非阻塞模式下,功能受限，不如POST上报的方式获
 
 发送消息、接收消息 以及如下一部分事件: 
 
-`new_group`,`new_friend`,`new_group_member`,`lose_group`,`lose_friend`,`lose_group_member`,
+`new_group`,`new_friend`,`new_group_member`,`lose_group`,`lose_friend`,`lose_group_member`,`friend_request`
 
 ```
 * Connected to 127.1 (127.0.0.1) port 3000 (#0)
@@ -712,10 +713,11 @@ Server: Mojolicious (Perl)
 |update_user                   |初始化(更新)帐号信息|帐号对象
 |update_friend                 |初始化(更新)好友信息|好友对象列表
 |update_group                  |初始化(更新)群组信息|群组对象列表
+|friend_request                |好友验证申请
 
 可以在Openwx插件中，通过 `post_event_list` 参数来指定上报的事件
 
-默认 `post_event_list => ['login','stop','state_change','input_qrcode','new_group','new_friend','new_group_member','lose_group','lose_friend','lose_group_member']`
+默认 `post_event_list => ['login','stop','state_change','input_qrcode','new_group','new_friend','new_group_member','lose_group','lose_friend','lose_group_member','friend_request']`
 
 需要注意：属性变化类的事件可能触发的会比较频繁，导致产生大量的上报请求，默认不开启
 
@@ -800,6 +802,22 @@ Content-Type: application/json
         }
     ],
 
+}
+
+```
+
+好友验证申请事件
+
+```
+{
+    "post_type":"event",
+    "event":"friend_request",
+    "params":[
+        "@75ab55c416dbe3a", #申请者的id
+        "小灰", #申请者的显示名称
+        "小灰请求加你为好友", #申请者的验证信息
+        "v2_85c00f264eed801fee7@stranger" #接受好友验证申请时需要用到的ticket
+    ]
 }
 
 ```
@@ -1183,5 +1201,27 @@ Server: Mojolicious (Perl)
     "media_name":"\/tmp\/test.mp4",
     "media_path":"\/tmp\/test.mp4",
     "media_size":66947
+}
+```
+
+### 接受好友验证申请
+
+|   API  |接受好友验证申请
+|--------|:------------------------------------------|
+|uri     |/openwx/accept_friend_request|
+|请求方法|GET\|POST|
+|请求参数|**id**: 申请者id<br>**displayname**：申请者显示名称（中文需要urlencode）<br>**ticket**：接受申请需要的ticket（frient_request事件上报中会提供）|
+|数据格式|application/x-www-form-urlencoded|
+|调用示例|http://127.0.0.1:3000/openwx/accept_friend_request?id=xxx&displayname=%85%c0%0f%2b&ticket=xxx|
+
+返回JSON结果:
+
+```
+{
+    "code": 0,
+    "status": "success",
+    "id": "xxx",
+    "displayname": "xxx",
+    "ticket": "xxx"
 }
 ```
