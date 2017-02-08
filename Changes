@@ -1,3 +1,19 @@
+2017-02-08 Mojo::Weixin v1.3.1
+1）IRCShell插件完善
+   /query xxxx 如果用户不存在时，会实时从好友中搜索并创建用户
+   设置了upload_api时，url地址会直接替换原始的本地文件路径
+2）修复产生 "Mojo::Util::slurp is DEPRECATED" 的警告
+3）修复分片上传分片处理上的错误导致上传文件不正确或无法上传文件问题
+4）改进了判断消息是否为接收消息的判断逻辑，兼容更多服务端数据异常的情况
+5）synccheck/sync时采用的实际上是两个独立的key：syncCheckKey和syncKey
+   程序原来是混为一起，可能导致重复接收消息或接收消息异常，现已修复
+6）GCM插件添加发送者类别支持回复功能
+7）修复在开启事件上报之后短时内内重启程序，无法重用之前的登录cookie实现免扫码登录的bug
+8）修复controller设置了log_path的情况下，创建的客户端运行日志无法打印到log_path指定路径的bug
+9）Openwx插件相关改进
+   新增好友验证事件 friend_request 上报
+   新增/openwx/accept_friend_request 接口用于接受好友请求
+
 2017-02-03 Mojo::Weixin v1.3.0
 1）修复/openwx/get_user_info接口返回的个人信息中account属性为空的bug 感谢 @超 反馈
 2）移植 PostQRCodeToTelegram插件到Weixin
