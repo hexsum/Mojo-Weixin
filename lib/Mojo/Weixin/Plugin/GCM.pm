@@ -23,7 +23,7 @@ sub call {
         my $msgId;
         my $senderType;
         if($msg->type eq 'friend_message'){
-            return if $data->{ban_official} and $msg->sender->category eq '公众号';
+            return if $data->{is_ban_official} and $msg->sender->category eq '公众号';
             $msgId = $msg->sender->id;
             $title = $msg->sender->displayname;
             $message = $msg->content;
