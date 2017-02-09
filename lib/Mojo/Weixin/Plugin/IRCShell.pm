@@ -37,23 +37,30 @@ sub call{
                 $raw_content = $content;
             }
             if($user->nick ne $master_irc_nick and !$user->is_localhost){
-                #$content = $user->nick . ": $content"; 
+                #$content = $user->nick . ": $content";
                 $content .= "\n(来自irc用户 - ".$user->nick.")";
             }
-            $group->send($content,sub{
+
+            # 群组会话里面发送文件的二级命令解析 i.e. sendFile /tmp/dog.png
+            if ($content =~ m/^sendFile /i) {
+                my @commands = split ' ', $content;
+                $group->send_media($commands[1]);
+            } else {
+              $group->send($content,sub{
                 $_[1]->from("irc");
                 $_[1]->cb(sub{
-                    my($client,$msg)=@_;
-                    if($msg->is_success){
-                        if($msg->content ne $raw_content){
-                            $msg->content($raw_content);
-                        }
+                  my($client,$msg)=@_;
+                  if($msg->is_success){
+                    if($msg->content ne $raw_content){
+                      $msg->content($raw_content);
                     }
-                    else{
-                        $user->send($user->ident,"PRIVMSG",$channel_name,$content . "[发送失败]");
-                    }
+                  }
+                  else{
+                    $user->send($user->ident,"PRIVMSG",$channel_name,$content . "[发送失败]");
+                  }
                 });
-            });
+              });
+            }
         }
         elsif($user->nick eq $master_irc_nick or $user->is_localhost){
             my $nick =  $msg->{params}[0];
@@ -74,23 +81,29 @@ sub call{
                 );
                 $u->join_channel($channel);
                 $user->send($user->ident,"PRIVMSG",$nick,"[系统提示]已从微信好友中搜索到对应昵称好友并生成irc用户，现在可以继续和好友聊天了");
-            
+
             }
             my $friend = $client->search_friend(id=>$u->id);
             if(defined $friend){
-                $friend->send($content,sub{
+                # 好友会话里面发送文件二级命令解析 sendFile /tmp/dog.png
+                if ($content =~ m/^sendFile /i) {
+                    my @commands = split ' ', $content;
+                    $friend->send_media($commands[1]);
+                } else {
+                  $friend->send($content,sub{
                     $_[1]->from("irc");
                     $_[1]->cb(sub{
-                        my($client,$msg)=@_;
-                        return if $msg->is_success;
-                        $user->send($user->ident,"PRIVMSG",$nick,$content . "[发送失败]");
+                      my($client,$msg)=@_;
+                      return if $msg->is_success;
+                      $user->send($user->ident,"PRIVMSG",$nick,$content . "[发送失败]");
                     });
-                });
+                  });
+                }
             }
             else{
                 $user->send($user->ident,"PRIVMSG",$nick,$content . "[发送失败]");
                 $user->send($user->ident,"PRIVMSG",$nick,"你和 [$nick] 并非好友关系");
-            } 
+            }
         }
     });
 
@@ -233,7 +246,7 @@ sub call{
                     nick    =>$member->displayname,
                     virtual => 1,
                 );
-                
+
                 $user->join_channel($channel);
             }
             elsif($user->is_virtual){
@@ -243,7 +256,7 @@ sub call{
                 $user->join_channel($channel) if not $user->is_join_channel($channel);
             }
 
-            
+
             if(defined $upload_api and $msg->format eq 'media'){
                 my $content = $msg->content;
                 #接收的图片上传到图床
@@ -288,7 +301,7 @@ sub call{
                 }
             }
         }
-    
+
     });
     $client->on(send_message=>sub{
         my($client,$msg) = @_;
@@ -320,7 +333,7 @@ sub call{
                     }
                     elsif(defined $json and $json->{code} ne 'success' ){
                         $client->warn("二维码图片上传云存储失败: " . $json->{msg});
-                    }   
+                    }
                     else{$content =~ s/^\[(.+?)\]\(.+?\)/[$1]($json->{data}{url})/g;}
                     for(
                         grep {$_->nick eq $master_irc_nick or $_->is_localhost}
@@ -336,7 +349,7 @@ sub call{
             }
             else{
                 for(
-                    grep {$_->nick eq $master_irc_nick or $_->is_localhost} 
+                    grep {$_->nick eq $master_irc_nick or $_->is_localhost}
                     grep {!$_->is_virtual} $ircd->users
                 )
                 {
@@ -414,7 +427,7 @@ sub call{
             $user->set_nick($object->displayname) if $object->displayname ne $user->nick;
         }
         elsif($object->is_group_member){
-            return if $property ne "name" and $property ne "markname"; 
+            return if $property ne "name" and $property ne "markname";
             my $user = $ircd->search_user(id=>$object->id,virtual=>1);
             return unless defined $user;
             $user->set_nick($object->displayname) if $object->displayname ne $user->nick;
