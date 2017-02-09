@@ -16,7 +16,7 @@ sub call{
     my $data = shift;
     $client->die("请先安装模块 Mojo::IRC::Server::Chinese") if not $Mojo::Weixin::Plugin::IRCShell::has_mojo_irc_server;
     my $master_irc_nick = $data->{master_irc_nick};
-    my $upload_api = $data->{upload_api} // 'https://sm.ms/api/upload';
+    my $upload_api = $data->{upload_api}; #'http://img.vim-cn.com/';
     my $is_load_friend = defined $data->{load_friend}?$data->{load_friend}:0;
     my @groups = ref($data->{group}) eq "ARRAY"?@{$data->{group}}:();
     my %mode = ref($data->{mode}) eq "HASH"?%{$data->{mode}}:();
@@ -42,9 +42,9 @@ sub call{
             }
 
             # 群组会话里面发送文件的二级命令解析 i.e. sendFile /tmp/dog.png
-            if ($content =~ m/^sendFile /i) {
-                my @commands = split ' ', $content;
-                $group->send_media($commands[1]);
+            if ($content =~ m/^(?:sendFile |!!)([^\s]+)$/i) {
+                my $media_path = $1;
+                $group->send_media($media_path) if (-f $media_path or $media_path=~/^https?:\/\//);
             } else {
               $group->send($content,sub{
                 $_[1]->from("irc");
@@ -86,9 +86,9 @@ sub call{
             my $friend = $client->search_friend(id=>$u->id);
             if(defined $friend){
                 # 好友会话里面发送文件二级命令解析 sendFile /tmp/dog.png
-                if ($content =~ m/^sendFile /i) {
-                    my @commands = split ' ', $content;
-                    $friend->send_media($commands[1]);
+                if ($content =~ m/^(?:sendFile |!!)([^\s]+)$/i) {
+                    my $media_path = $1;
+                    $friend->send_media($media_path) if (-f $media_path or $media_path=~/^https?:\/\//);
                 } else {
                   $friend->send($content,sub{
                     $_[1]->from("irc");
@@ -203,15 +203,12 @@ sub call{
             if(defined $upload_api and $msg->format eq 'media'){
                 my $content = $msg->content;
                 #接收的图片上传到图床
-                $client->http_post($upload_api,{json=>1},form=>{format=>'json',smfile=>{content=>$msg->media_data}},sub{
-                    my($json,$ua,$tx)=@_;
-                    if(not defined $json){
+                $client->http_post($upload_api,form=>{image=>{content=>$msg->media_data}},sub{
+                    my($url,$ua,$tx)=@_;
+                    if(not defined $url or $url!~/https?:\/\//){
                         $client->warn("二维码图片上传云存储失败: 响应数据异常");
                     }
-                    elsif(defined $json and $json->{code} ne 'success' ){
-                        $client->warn("二维码图片上传云存储失败: " . $json->{msg});
-                    }
-                    else{$content =~ s/^\[(.+?)\]\(.+?\)/[$1]($json->{data}{url})/g;}
+                    else{$content =~ s/^\[(.+?)\]\(.+?\)/[$1]($url)/g;}
                     for (grep { $_->nick eq $master_irc_nick or $_->is_localhost} grep {!$_->is_virtual} $ircd->users){
                         for my $line (split /\r?\n/,$content){
                             $_->send($user->ident,"PRIVMSG",$_->nick,$line);
@@ -260,15 +257,12 @@ sub call{
             if(defined $upload_api and $msg->format eq 'media'){
                 my $content = $msg->content;
                 #接收的图片上传到图床
-                $client->http_post($upload_api,{json=>1},form=>{format=>'json',smfile=>{content=>$msg->media_data}},sub{
-                    my($json,$ua,$tx)=@_;
-                    if(not defined $json){
+                $client->http_post($upload_api,form=>{image=>{content=>$msg->media_data}},sub{
+                    my($url,$ua,$tx)=@_;
+                    if(not defined $url or $url!~/https?:\/\//){
                         $client->warn("二维码图片上传云存储失败: 响应数据异常");
                     }
-                    elsif(defined $json and $json->{code} ne 'success' ){
-                        $client->warn("二维码图片上传云存储失败: " . $json->{msg});
-                    }
-                    else{$content =~ s/^\[(.+?)\]\(.+?\)/[$1]($json->{data}{url})/g;}
+                    else{$content =~ s/^\[(.+?)\]\(.+?\)/[$1]($url)/g;}
                     for(grep {!$_->is_virtual} $channel->users){
                         my @content = split /\r?\n/,$content;
                         if($content[0]=~/^\@([^\s]+?) /){
@@ -326,15 +320,12 @@ sub call{
             if(defined $upload_api and $msg->format eq 'media'){
                 my $content = $msg->content;
                 #发送的图片上传到图床
-                $client->http_post($upload_api,{json=>1},form=>{format=>'json',smfile=>{content=>$msg->media_data}},sub{
-                    my($json,$ua,$tx)=@_;
-                    if(not defined $json){
+                $client->http_post($upload_api,form=>{image=>{content=>$msg->media_data}},sub{
+                    my($url,$ua,$tx)=@_;
+                    if(not defined $url or $url!~/https?:\/\//){
                         $client->warn("二维码图片上传云存储失败: 响应数据异常");
                     }
-                    elsif(defined $json and $json->{code} ne 'success' ){
-                        $client->warn("二维码图片上传云存储失败: " . $json->{msg});
-                    }
-                    else{$content =~ s/^\[(.+?)\]\(.+?\)/[$1]($json->{data}{url})/g;}
+                    else{$content =~ s/^\[(.+?)\]\(.+?\)/[$1]($url)/g;}
                     for(
                         grep {$_->nick eq $master_irc_nick or $_->is_localhost}
                         grep {!$_->is_virtual} $ircd->users
@@ -366,15 +357,12 @@ sub call{
             return unless defined $channel;
             if(defined $upload_api and $msg->format eq 'media'){
                 my $content = $msg->content;
-                $client->http_post($upload_api,{json=>1},form=>{format=>'json',smfile=>{content=>$msg->media_data}},sub{
-                    my($json,$ua,$tx)=@_;
-                    if(not defined $json){
+                $client->http_post($upload_api,form=>{image=>{content=>$msg->media_data}},sub{
+                    my($url,$ua,$tx)=@_;
+                    if(not defined $url or $url!~/https?:\/\//){
                         $client->warn("二维码图片上传云存储失败: 响应数据异常");
                     }
-                    elsif(defined $json and $json->{code} ne 'success' ){
-                        $client->warn("二维码图片上传云存储失败: " . $json->{msg});
-                    }
-                    else{$content =~ s/^\[(.+?)\]\(.+?\)/[$1]($json->{data}{url})/g;}
+                    else{$content =~ s/^\[(.+?)\]\(.+?\)/[$1]($url)/g;}
                     for my $master_irc_client (
                         grep {$_->nick eq $master_irc_nick or $_->is_localhost}
                         grep {!$_->is_virtual} $ircd->users

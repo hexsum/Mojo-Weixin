@@ -872,14 +872,15 @@ Mojo::Weixin - A Weixin Client Framework base on Mojolicious
                         # 表示监听127.0.0.1:6667和 127.0.0.1:6668两个端口
     master_irc_nick     #和微信匹配的irc帐号昵称，默认按照和微信号相同的昵称或者客户端ip是本机地址作为识别规则
     load_friend         #0|1 默认是0 是否初始为每个好友生成irc虚拟帐号并加入频道 #我的好友
-    upload_api          #图床api地址，将qq图片转为连接，方便在irc上查看图片
-                        ##默认采用的是 https://sm.ms/api/upload 接口文档 https://sm.ms/doc/
+    upload_api          #图床api地址，将图片转为连接，方便在irc上查看图片
+                        #支持兼容 http://img.vim-cn.com/ 的接口，考虑到隐私问题，默认不开启
 
 特殊自定义指令：
 
-    #irc消息中sendFile开头，则发送本地或者来自网络的图片、文件等媒体
+    #irc消息中 `sendFile `或者`!!`开头，则发送本地或者来自网络的图片、文件等媒体
     sendFile /tmp/abc.jpg
     sendFile http://example.com/abc.jpg
+    !!/tmp/abc.jpg
 
 微信好友会默认加入到irc的 '#我的好友' 频道中
 
