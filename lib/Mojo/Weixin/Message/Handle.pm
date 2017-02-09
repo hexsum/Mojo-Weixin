@@ -161,7 +161,7 @@ sub _parse_sync_data {
     #群组或联系人变更
     if($json->{ModContactCount}!=0){
         for my $e (@{$json->{ModContactList}}){
-            if($self->is_group($e->{UserName})){#群组
+            if($self->is_group_id($e->{UserName})){#群组
                 my $group = {member=>[]};
                 for(keys %KEY_MAP_GROUP){
                     $group->{$_} = $e->{$KEY_MAP_GROUP{$_}} // "";
@@ -205,7 +205,7 @@ sub _parse_sync_data {
 
     if($json->{DelContactCount}!=0){
         for my $e (@{$json->{DelContactList}}){
-            if($self->is_group($e->{UserName})){
+            if($self->is_group_id($e->{UserName})){
                 my $g = $self->search_group(id=>$e->{UserName});
                 $self->remove_group($g) if defined $g;
             }
@@ -293,15 +293,27 @@ sub _parse_sync_data {
                 $msg->{card_sex} = $self->code2sex($e->{RecommendInfo}{Sex});
                 #$msg->{card_avatar} = '';
             }
-            #elsif($e->{MsgType} == 51){#系统通知
-            #    $msg->{format} = "text";
-            #}
+            elsif($e->{MsgType} == 51){#会话、联系人信息同步
+                if($msg->{StatusNotifyCode} == 4 or $msg->{StatusNotifyCode} == 2){#联系人、群组信息需要同步
+                    my @id = split /,/,$msg->{StatusNotifyUserName};
+                    my @group_ids;
+                    my @friend_ids;
+                    for (@id){
+                        next if $_ eq $self->user->id;
+                        if($self->is_group_id($_)){push @group_ids,$_ if not $self->search_group(id=>$_);}
+                        else{push @friend_ids,$_ if not $self->search_friend(id=>$_);}
+                    } 
+                    $self->update_group(@group_ids) if @group_ids;
+                    $self->update_friend(@friend_ids) if @friend_ids;
+                }
+                next;
+            }
             else{next;}
             if($e->{FromUserName} eq $self->user->id){#发送的消息
                 $msg->{source} = 'outer';
                 $msg->{class} = "send";
                 $msg->{sender_id} = $self->user->id;
-                if($self->is_group($e->{ToUserName})){
+                if($self->is_group_id($e->{ToUserName})){
                     $msg->{type} = "group_message";
                     $msg->{group_id} = $e->{ToUserName};
                 }
@@ -315,7 +327,7 @@ sub _parse_sync_data {
                 $msg->{class} = "recv";
                 $msg->{receiver_id} = $self->user->id;
                 $msg->{type} = "group_message";
-                if($self->is_group($e->{FromUserName})){#接收到群组消息
+                if($self->is_group_id($e->{FromUserName})){#接收到群组消息
                     $msg->{group_id} = $e->{FromUserName};
                     if($e->{MsgType} == 10000){#群提示信息
                         $msg->{type} = "group_notice";

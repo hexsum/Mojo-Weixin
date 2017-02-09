@@ -28,7 +28,7 @@ sub Mojo::Weixin::_webwxbatchgetcontact{
         next unless defined $json;
         next if $json->{BaseResponse}{Ret}!=0;
         for my $e (@{$json->{ContactList}}){
-            if($self->is_group($e->{UserName})){
+            if($self->is_group_id($e->{UserName})){
                 my $group = {};
                 for(keys %KEY_MAP_GROUP){
                     $group->{$_} = $e->{$KEY_MAP_GROUP{$_}} // "";

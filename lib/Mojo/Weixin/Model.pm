@@ -100,22 +100,22 @@ sub update_user {
 }
 sub update_friend{
     my $self = shift;
-    if(defined $_[0]){
-        my $friend_id = ref $_[0] eq "Mojo::Weixin::Friend"?$_[0]->id:$_[0];
-        my $friend = $self->_webwxbatchgetcontact_friend($friend_id);
-        return if not defined $friend;
-        $self->add_friend(Mojo::Weixin::Friend->new($friend));
+    my @friend_ids = map {ref $_ eq "Mojo::Weixin::Friend"?$_->id:$_} @_;
+    if(@friend_ids){
+        my @return = $self->_webwxbatchgetcontact_friend(@friend_ids);
+        return if not @return;
+        $self->add_friend(Mojo::Weixin::Friend->new($_)) for @return;
         return 1;
     }
 }
 sub update_group{
     my $self = shift;
-    if(defined $_[0]){
-        my $group_id = ref $_[0] eq "Mojo::Weixin::Group"?$_[0]->id:$_[0];
-        my $is_update_group_member = $_[1] // $self->is_update_group_member;
-        my $group = $self->_webwxbatchgetcontact_group($is_update_group_member,$group_id);
-        return if not defined $group;
-        $self->add_group(Mojo::Weixin::Group->new($group));
+    my @group_ids = map {ref $_ eq "Mojo::Weixin::Group"?$_->id:$_} @_;
+    my $is_update_group_member = $_[1] // $self->is_update_group_member;
+    if(@group_ids){
+        my @return = $self->_webwxbatchgetcontact_group($is_update_group_member,@group_ids);
+        return if not @return;
+        $self->add_group(Mojo::Weixin::Group->new($_)) for @return;
         return 1;
     }
 }
@@ -191,7 +191,7 @@ sub remove_group{
     $self->emit(lose_group=>$group) if $self->_remove($self->group,$group) == 1;
 }
 
-sub is_group{
+sub is_group_id{
     my $self = shift;
     my $gid = shift;
     return $gid=~/^\@\@|\@chatroom$/ ? 1 : 0;

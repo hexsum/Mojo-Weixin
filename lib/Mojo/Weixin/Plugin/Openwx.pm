@@ -518,7 +518,7 @@ sub call{
     any [qw(GET POST)] => '/openwx/stick' => sub{
         my $c = shift;
         my($id,$op)= ($c->param("id"),$c->param("op"));
-        my $object = $client->is_group($id)?$client->search_group(id=>$id,):$client->search_friend(id=>$id);
+        my $object = $client->is_group_id($id)?$client->search_group(id=>$id,):$client->search_friend(id=>$id);
         if(defined $object){
             if($object->stick($op)){
                 $c->safe_render(json=>{code=>0,status=>"success"});
@@ -607,7 +607,7 @@ sub call{
         my $p = $c->params;
         my($id,$account,$displayname,$markname,$group_id) = @$p{qw( id account displayname markname group_id )};
         my $object =    (defined $id and $id eq $client->user->id) ? $client->user 
-                :       $client->is_group($id)? $client->search_group(id=>$id,displayname=>$displayname)
+                :       $client->is_group_id($id)? $client->search_group(id=>$id,displayname=>$displayname)
                 :       undef
         ;
         if(not defined $object){

@@ -27,7 +27,7 @@ sub Mojo::Weixin::_webwxgetcontact {
             $flag = 0;
         }
         for my $e ( @{ $json->{MemberList} } ){
-            if($self->is_group($e->{UserName})){
+            if($self->is_group_id($e->{UserName})){
                 my $group = {};
                 for(keys %KEY_MAP_GROUP){
                     $group->{$_} = $e->{$KEY_MAP_GROUP{$_}} // "";

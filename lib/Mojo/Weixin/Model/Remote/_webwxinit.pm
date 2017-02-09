@@ -30,7 +30,7 @@ sub Mojo::Weixin::_webwxinit{
     my @friends;
     my @groups;
     for my $e (@{ $json->{ContactList} }){
-        if($self->is_group($e->{UserName})){
+        if($self->is_group_id($e->{UserName})){
             my $group = {};
             for(keys %KEY_MAP_GROUP){
                 $group->{$_} = $e->{$KEY_MAP_GROUP{$_}} // "";
@@ -57,7 +57,7 @@ sub Mojo::Weixin::_webwxinit{
     
     my @id = $json->{ChatSet}?split /,/,$json->{ChatSet}:();
     for(@id){
-        if($self->is_group($_)){
+        if($self->is_group_id($_)){
             push @groups,{id=>$_}; 
         }
         else{
