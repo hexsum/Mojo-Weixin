@@ -20,6 +20,7 @@ sub call{
     my $is_load_friend = defined $data->{load_friend}?$data->{load_friend}:0;
     my @groups = ref($data->{group}) eq "ARRAY"?@{$data->{group}}:();
     my %mode = ref($data->{mode}) eq "HASH"?%{$data->{mode}}:();
+    $data->{auto_join_channel} = 1 if not defined $data->{auto_join_channel};
     $ircd = Mojo::IRC::Server::Chinese->new(listen=>$data->{listen},log=>$client->log);
     $ircd->on(privmsg=>sub{
         my($ircd,$user,$msg) = @_;
@@ -44,8 +45,14 @@ sub call{
             # 群组会话里面发送文件的二级命令解析 i.e. sendFile /tmp/dog.png
             if ($content =~ m/^(?:sendFile |!!)([^\s]+)$/i) {
                 my $media_path = $1;
-                $group->send_media($media_path) if (-f $media_path or $media_path=~/^https?:\/\//);
-            } else {
+                if(-f $media_path or $media_path=~/^https?:\/\//){
+                    $group->send_media($media_path);
+                }
+                else{
+                    $user->send($user->ident,"PRIVMSG",$channel->name,"[系统提示]无法发送，无效媒体：$media_path");
+                }
+            } 
+            else {
               $group->send($content,sub{
                 $_[1]->from("irc");
                 $_[1]->cb(sub{
@@ -88,8 +95,14 @@ sub call{
                 # 好友会话里面发送文件二级命令解析 sendFile /tmp/dog.png
                 if ($content =~ m/^(?:sendFile |!!)([^\s]+)$/i) {
                     my $media_path = $1;
-                    $friend->send_media($media_path) if (-f $media_path or $media_path=~/^https?:\/\//);
-                } else {
+                    if(-f $media_path or $media_path=~/^https?:\/\//){
+                        $friend->send_media($media_path);
+                    }
+                    else{
+                        $user->send($user->ident,"PRIVMSG",$nick,"[系统提示]无法发送，无效媒体：$media_path");
+                    }
+                } 
+                else {
                   $friend->send($content,sub{
                     $_[1]->from("irc");
                     $_[1]->cb(sub{
@@ -253,6 +266,13 @@ sub call{
                 $user->join_channel($channel) if not $user->is_join_channel($channel);
             }
 
+            #master用户如果没有加入到该频道就自动加入，防止漏收消息
+            if($data->{auto_join_channel}){
+                for(grep {$_->nick eq $master_irc_nick or $_->is_localhost}
+                    grep {!$_->is_virtual} $ircd->users){
+                    $_->join_channel($channel);
+                }
+            }
 
             if(defined $upload_api and $msg->format eq 'media'){
                 my $content = $msg->content;
@@ -280,7 +300,7 @@ sub call{
                 });
             }
             else{
-                for(grep {!$_->is_virtual} $channel->users){
+                for(grep {!$_->is_virtual} ($channel->users)){
                     my @content = split /\r?\n/,$msg->content;
                     if($content[0]=~/^\@([^\s]+?) /){
                         my $at_nick = $1;
@@ -317,6 +337,7 @@ sub call{
             elsif($user->is_virtual){
                 $user->join_channel($channel)  if not $user->is_join_channel($channel);
             }
+
             if(defined $upload_api and $msg->format eq 'media'){
                 my $content = $msg->content;
                 #发送的图片上传到图床
@@ -355,6 +376,15 @@ sub call{
             return if @groups and not first {$msg->group->displayname eq $_} @groups;
             my $channel = $ircd->search_channel(id=>$msg->group->id);
             return unless defined $channel;
+
+            #master用户如果没有加入到该频道就自动加入，防止漏收消息
+            if($data->{auto_join_channel}){
+                for(grep {$_->nick eq $master_irc_nick or $_->is_localhost}
+                    grep {!$_->is_virtual} $ircd->users){
+                    $_->join_channel($channel);
+                }
+            }
+
             if(defined $upload_api and $msg->format eq 'media'){
                 my $content = $msg->content;
                 $client->http_post($upload_api,form=>{image=>{content=>$msg->media_data}},sub{
