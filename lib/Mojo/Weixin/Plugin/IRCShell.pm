@@ -270,7 +270,7 @@ sub call{
             if($data->{auto_join_channel}){
                 for(grep {$_->nick eq $master_irc_nick or $_->is_localhost}
                     grep {!$_->is_virtual} $ircd->users){
-                    $_->join_channel($channel);
+                    $_->join_channel($channel) if not $_->is_join_channel($channel);
                 }
             }
 
@@ -381,7 +381,7 @@ sub call{
             if($data->{auto_join_channel}){
                 for(grep {$_->nick eq $master_irc_nick or $_->is_localhost}
                     grep {!$_->is_virtual} $ircd->users){
-                    $_->join_channel($channel);
+                    $_->join_channel($channel) if not $_->is_join_channel($channel);
                 }
             }
 
