@@ -45,6 +45,7 @@ sub Mojo::Weixin::_login {
                 $self->info("登录二维码已失效，重新获取二维码");
                 $qrcode_uuid = $self->_get_qrcode_uuid();
                 $self->_get_qrcode_image($qrcode_uuid);
+                $self->state('scaning');
                 $i = 1;
                 next;
             }
@@ -81,6 +82,7 @@ sub Mojo::Weixin::_login {
         elsif($data{code} == 400){
             $self->info("登录错误，客户端退出");
             $self->stop();
+            last;
         }
         elsif($data{code} == 500){
             $self->info("登录错误，客户端尝试重新登录...");
@@ -88,6 +90,7 @@ sub Mojo::Weixin::_login {
             $show_tip = 1;
             $qrcode_uuid = $self->_get_qrcode_uuid();
             $self->_get_qrcode_image($qrcode_uuid);
+            $self->state('scaning');
             next;
         }
     }
