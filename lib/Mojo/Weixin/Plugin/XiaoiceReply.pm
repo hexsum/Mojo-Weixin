@@ -58,7 +58,7 @@ sub call{
                     $binder->send_media($msg->media_path);
                 }
                 else{
-                    $binder->send($msg->content);
+                    $binder->send($msg->content,sub{$_[1]->from("bot")});
                 }
             }
             else{
