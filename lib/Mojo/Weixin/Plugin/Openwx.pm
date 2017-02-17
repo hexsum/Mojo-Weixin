@@ -242,6 +242,9 @@ sub call{
     app->controller_class('Mojo::Weixin::Plugin::Openwx::App::Controller');
     app->hook(after_render=>sub{
         my ($c, $output, $format) = @_;
+
+        $c->res->headers->header("Access-Control-Allow-Origin" => "*");
+
         my $datatype =  $c->param("datatype");
         return if not defined $datatype;
         return if defined $datatype and $datatype ne 'jsonp';
