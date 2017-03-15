@@ -1,4 +1,4 @@
-package Mojo::Webqq::Plugin::HwPush;
+package Mojo::Weixin::Plugin::HwPush;
 
 our $AUTHOR = 'heipidage';
 our $SITE = 'http://www.coolapk.com/apk/com.swjtu.gcmformojo';
