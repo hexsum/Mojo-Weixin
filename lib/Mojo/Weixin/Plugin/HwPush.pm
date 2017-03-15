@@ -17,11 +17,19 @@ sub call {
         $client->die("[".__PACKAGE__."]registration_ids无效");
     }
 	
-	
-	open(my $fh, $hwfile) or die "Could not open file '$hwfile $!";
+	if(!open(my $fh ,$hwfile)) {
+ 		my $getHwToken = $client->http_get('https://raw.githubusercontent.com/heipidage/HwPushForMojo/master/hw_access_token_gcm.txt');
+		if($getHwToken)  {
+		open(my $fhw, '>',$hwfile) or die "Could not open file '$hwfile' $!";
+                print $fhw $getHwToken;
+                close($fhw);
+		$access_token = $getHwToken;
+		}
+	}else{
 		my @lines = <$fh> ;
-	close($fh);
-	my $access_token = $lines[0];
+		close($fh);
+		$access_token = $lines[0];
+	}
 	
 		
     $client->on(receive_message=>sub{
