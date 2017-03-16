@@ -146,7 +146,7 @@ sub call {
         my($client,$event,@args) =@_;
         my $type = 'Mojo-Sys';
         my $message;
-        my $msgId = 1;
+        my $msgId = 2;
         my $title;
         if($event eq 'login'){
             $message = "登录成功";
@@ -157,7 +157,7 @@ sub call {
             $title = "扫描二维码事件";
         }
         elsif($event eq 'stop'){
-            $message = "Mojo-Webqq已停止";
+            $message = "Mojo-Weixin已停止";
             $title = "停止事件";
         }
         else{return}
