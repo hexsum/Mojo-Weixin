@@ -19,6 +19,7 @@ sub Mojo::Weixin::_login {
         $self->info("无法获取到登录二维码，登录失败");
         $self->stop();
     }
+    $self->qrcode_uuid($qrcode_uuid);
     if(not $self->_get_qrcode_image($qrcode_uuid)){
         $self->info("下载二维码失败，客户端退出");
         $self->stop();
