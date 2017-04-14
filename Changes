@@ -1,3 +1,11 @@
+2017-04-14 Mojo::Weixin v1.3.3
+1）修复微信confirming状态bug (https://github.com/sjdy521/Mojo-Weixin/issues/73)
+2）Openwx插件 增加 跨域响应头 Access-Control-Allow-Origin: *
+3）XiaoiceReply插件产生的智能回复消息 $msg->from 属性设置为"bot"
+4）state.json文件中增加previous_state属性，记录当前状态的前一个状态
+5）新增MiPush/HwPush/FmPush插件，支持小米手机、华为手机、魅族手机消息推送 感谢 @heipidage
+6）修复ShowQRCodeInTerm不可用问题
+
 2017-02-14 Mojo::Weixin v1.3.2
 1）GCM插件增加is_ban_official参数用于控制是否推送公众号消息
 2）IRCShel插件完善，非常感谢 @eleven @csrgxtu 等人在整个过程中的支持
