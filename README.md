@@ -3,11 +3,11 @@ Mojo-Weixin v1.3.3 [![Build Status](https://travis-ci.org/sjdy521/Mojo-Weixin.sv
 
 使用Perl语言编写的微信客户端框架，基于Mojolicious，要求Perl版本5.10+，可通过插件提供基于HTTP协议的api接口供其他语言或系统调用
 
-###郑重声明
+### 郑重声明
 
 本项目完全遵循微信官方提供的原始功能，不包含任何破坏、盗号等行为，本项目完全开源，目的是为了促进技术交流学习，禁止任何对国家、企业、个人等构成危害的非法用途，否则后果自负
 
-###特色功能
+### 特色功能
 
 * 支持 发送/接收文字、图片、视频、语音、表情、文件等多种媒体消息（网页版自身功能范围）
 * 支持 新增/失去好友、新增/退出群组、新增/失去群成员 等事件提醒
@@ -16,7 +16,7 @@ Mojo-Weixin v1.3.3 [![Build Status](https://travis-ci.org/sjdy521/Mojo-Weixin.sv
 * 提供 基于HTTP协议的API接口 ，简洁丰富，方便和其他编程语言集成
 * 一个产品狗的倾情之作，代码由内而外都更加注重“用户体验”，外加主人人品极好，你懂的
 
-###插件列表
+### 插件列表
 
 |名称                | 优先级  |当前状态    |github作者   | 功能说明                 
 |:-------------------|:--------|:-----------|:------------|:----------------------------
@@ -35,7 +35,7 @@ Mojo-Weixin v1.3.3 [![Build Status](https://travis-ci.org/sjdy521/Mojo-Weixin.sv
 
 更多插件参考[完整插件列表](Plugin.md)
 
-###效果展示
+### 效果展示
 
 敲一行命令就能启动一个智能聊天机器人，Perl 和你都如此优雅. Enjoy!
 
@@ -58,7 +58,7 @@ Mojo-Weixin v1.3.3 [![Build Status](https://travis-ci.org/sjdy521/Mojo-Weixin.sv
 [16/01/19 23:15:00] [群消息] 小灰|Perl语言交流 : Mojo::Weixin不错哦
 [16/01/19 23:15:58] [群消息] 我->Perl语言交流 : 多谢多谢
 ```
-####通过irc客户端在linux终端上使用微信
+#### 通过irc客户端在linux终端上使用微信
 
 ```
     +-------------------+                      +----------------+  
@@ -82,9 +82,9 @@ Mojo-Weixin v1.3.3 [![Build Status](https://travis-ci.org/sjdy521/Mojo-Weixin.sv
 
 ![IRCShell](screenshot/IRCShell.jpg)
 
-####更多应用效果 请参见[Mojo-Weixin作品展](Collection.md)
+#### 更多应用效果 请参见[Mojo-Weixin作品展](Collection.md)
 
-###安装方法
+### 安装方法
 
 推荐使用[cpanm](https://metacpan.org/pod/distribution/App-cpanminus/bin/cpanm)在线安装[Mojo::Weixin](https://metacpan.org/pod/distribution/Mojo-Weixin/doc/Weixin.pod)模块, 如果使用docker方式请参见[Docker镜像安装及使用方法](Docker.md)
 
@@ -165,7 +165,7 @@ Mojo-Weixin v1.3.3 [![Build Status](https://travis-ci.org/sjdy521/Mojo-Weixin.sv
     搞定了编译和运行环境之后，再重新回到 步骤2 安装Mojo::Weixin即可
         
 
-###如何使用
+### 如何使用
 
 1. *我对Perl很熟悉，是一个专业的Perler*
 
@@ -222,24 +222,24 @@ Mojo-Weixin v1.3.3 [![Build Status](https://travis-ci.org/sjdy521/Mojo-Weixin.sv
 
     请阅读[IRCShell插件使用步骤](IRC.md)
     
-###核心依赖模块
+### 核心依赖模块
 
 * [Mojolicious](https://metacpan.org/pod/Mojolicious)
 * [Encode::Locale](https://metacpan.org/pod/Encode::Locale)
 
-###相关文档
+### 相关文档
 
 * [更新日志](https://github.com/sjdy521/Mojo-Weixin/blob/master/Changes)
 * [开发文档](https://metacpan.org/pod/distribution/Mojo-Weixin/doc/Weixin.pod)
 * [API](API.md)
 * [FAQ](FAQ.md)
 
-###官方交流
+### 官方交流
 
 * [QQ群](http://jq.qq.com/?_wv=1027&k=kjVJzo)
 * [IRC](http://irc.perfi.wang/?channel=#Mojo-Webqq)
 
-###友情链接
+### 友情链接
 
 *JavaScript*
 
@@ -251,7 +251,7 @@ Mojo-Weixin v1.3.3 [![Build Status](https://travis-ci.org/sjdy521/Mojo-Weixin.sv
 * [WeixinBot](https://github.com/Urinx/WeixinBot) 网页版微信API，包含终端版微信及微信机器人
 * [ItChat](https://github.com/littlecodersh/ItChat) 微信个人号接口、微信机器人及命令行微信。三十行即可自定义个人号机器人
 
-###捐赠奖励
+### 捐赠奖励
 
 可以通过扫描支付宝付款二维码进行捐赠，感谢您的支持和鼓励
 
@@ -259,7 +259,7 @@ Mojo-Weixin v1.3.3 [![Build Status](https://travis-ci.org/sjdy521/Mojo-Weixin.sv
 
 特别致谢 [那些曾经捐赠的小伙伴们](https://github.com/sjdy521/Mojo-Thanks)
 
-###COPYRIGHT 和 LICENCE
+### COPYRIGHT 和 LICENCE
 
 Copyright (C) 2014 by sjdy521
 
