@@ -15,8 +15,8 @@ sub Mojo::Weixin::_webwxgetcontact {
         );
         push @query_string,(pass_ticket=>$self->url_escape($self->pass_ticket)) if $self->pass_ticket;
 
-        my $json = $self->http_post($self->gen_url($api,@query_string),{Referer=>'https://'.$self->domain . '/',json=>1},json=>{});
-        return unless defined $json;
+        my $json = $self->http_get($self->gen_url($api,@query_string),{Referer=>'https://'.$self->domain . '/',json=>1});
+        return if not defined $json;
         return if $json->{BaseResponse}{Ret}!=0;
         return if $json->{MemberCount} == 0;
         if (defined $json->{Seq} and $json->{Seq} != 0){#获取的不全，需要继续获取其余部分
