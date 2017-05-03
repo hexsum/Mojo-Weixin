@@ -19,7 +19,7 @@ sub Mojo::Weixin::_webwxgetcontact {
         return if not defined $json;
         return if $json->{BaseResponse}{Ret}!=0;
         return if $json->{MemberCount} == 0;
-        if (defined $json->{Seq} and $json->{Seq} != 0){#获取的不全，需要继续获取其余部分
+        if ($self->is_update_all_friend and defined $json->{Seq} and $json->{Seq} != 0){#获取的不全，需要继续获取其余部分
             $flag = 1 ;
             $seq = $json->{Seq};
         }
