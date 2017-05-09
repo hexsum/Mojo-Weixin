@@ -32,11 +32,23 @@ sub Mojo::Weixin::_get_media {
         @query_string = ('' => '',MsgID => $media_id,type=>'big');
         push @query_string,(skey=>Mojo::Util::url_escape($self->skey)) if $self->skey;
     }
+    elsif($msg->media_type eq "file"){
+        $api = 'https://file.' . $self->domain . '/cgi-bin/mmwebwx-bin/webwxgetmedia';
+        @query_string = (
+            sender=>$msg->sender_id,
+            mediaid=>$media_id,
+            filename=>$msg->media_name,
+            fromuser=>$self->wxuin,
+            pass_ticket=>($self->pass_ticket || 'undefined'),
+            webwx_data_ticket=>$self->search_cookie("webwx_data_ticket")
+        );
+        #push @query_string,(skey=>Mojo::Util::url_escape($self->skey)) if $self->skey;
+    }
     else{
         $self->error("获取media错误：不支持的media类型");
         return;
     }
-    $self->http_get($self->gen_url($api,@query_string),$headers, {Referer=>'https://' . $self->domain .'/'},sub{
+    $self->http_get($self->gen_url($api,@query_string), {Referer=>'https://' . $self->domain .'/'},sub{
         my ($data,$ua,$tx) = @_;
         if(not defined $data){
             $self->warn("media[ " . $msg->media_id . " ]下载失败");
@@ -59,8 +71,16 @@ sub Mojo::Weixin::_get_media {
         ; 
         return unless defined $type;
         $mime=~s/\s*;.*$//g;
-        $msg->media_mime($mime);
-        $msg->media_ext($type);
+        if($msg->format eq 'media' and $msg->media_type eq 'file'){
+            if($msg->media_name =~ /^.+?\.([^\.]+)$/ ){
+                if($1){
+                    $msg->media_ext($1);
+                    $msg->media_mime("application/octet-stream");
+                }
+            }
+        }
+        $msg->media_mime($mime) if not defined $msg->media_mime;
+        $msg->media_ext($type) if not defined $msg->media_ext;
         $msg->media_data($data);
         $msg->media_mtime(time);
         $msg->media_size(length($data));
@@ -77,7 +97,7 @@ sub Mojo::Weixin::_get_media {
         }
         my @opt = (
             TEMPLATE    => "mojo_weixin_media_XXXX",
-            SUFFIX      => ".$type",
+            SUFFIX      => "." . $msg->media_ext,
             UNLINK      => 0,
         );
         defined $self->media_dir?(push @opt,(DIR=>$self->media_dir)):(push @opt,(TMPDIR=>1));
