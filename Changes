@@ -1,3 +1,11 @@
+2017-05-11 Mojo::Weixin v1.3.4
+1）修复Openwx中存在的编码转换问题
+2）获取通讯录信息接口调用 POST 变更为 GET
+3）new中新增 is_update_all_friend 参数，控制是否获取全部的好友数据
+  当前发现分页获取全部好友数据可能会存在问题
+  增加这样一个调试参数，当获取通讯录信息异常时，可以收到将该参数设置为0,只获取第一页的好友数据
+4）支持接收和自动下载接收到的文件
+
 2017-04-14 Mojo::Weixin v1.3.3
 1）修复微信confirming状态bug (https://github.com/sjdy521/Mojo-Weixin/issues/73)
 2）Openwx插件 增加 跨域响应头 Access-Control-Allow-Origin: *
