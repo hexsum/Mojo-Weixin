@@ -150,7 +150,8 @@ sub _parse_sync_data {
         return;
     }
     elsif($json->{BaseResponse}{Ret} !=0){
-        $self->warn("收到无法识别消息，已将其忽略");
+        $self->warn("收到无法识别消息代码[$json->{BaseResponse}{Ret}]，已将其忽略");
+        $self->emit(unknown_retcode=>$json->{BaseResponse}{Ret});
         return;
     }
     $self->sync_key($json->{SyncKey}) if $json->{SyncKey}{Count}!=0;
