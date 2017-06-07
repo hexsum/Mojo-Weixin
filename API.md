@@ -302,7 +302,7 @@ API是通过加载`Openwx插件`的形式提供的，上述代码保存成 xxxx.
 |--------|:------------------------------------------|
 |uri     |/openwx/send_friend_message|
 |请求方法|GET\|POST|
-|请求参数|**id**: 好友的id<br>**account**: 好友的帐号<br>**displayname**: 好友显示名称<br>**markname**: 好友备注名称<br>**content**:发送的文本内容(中文需要做urlencode)<br>**media_id**:媒体id(发送媒体消息返回的媒体id，需要做urlencode)<br>**media_path**:媒体路径(可以是文件路径或url，需要做urlencode)<br>**async**: 0|1,可选,是否异步发送消息|
+|请求参数|**id**: 好友的id<br>**account**: 好友的帐号<br>**displayname**: 好友显示名称<br>**markname**: 好友备注名称<br>**content**:发送的文本内容(中文需要做urlencode)<br>**media_id**:媒体id(发送媒体消息返回的媒体id，需要做urlencode)<br>**media_path**:媒体路径(可以是文件路径或url，需要做urlencode)<br>**async**: 0或1,可选,是否异步发送消息|
 |数据格式|application/x-www-form-urlencoded|
 |调用示例|http://127.0.0.1:3000/openwx/send_friend_message?id=xxxx&content=hello<br>http://127.0.0.1:3000/openwx/send_friend_message?markname=xxx&content=%e4%bd%a0%e5%a5%bd<br>http://127.0.0.1:3000/openwx/send_friend_message?id=xxx&media_path=https%3a%2f%2fss0.bdstatic.com%2flogo.png<br>http://127.0.0.1:3000/openwx/send_friend_message?id=xxx&media_id=%40crypt_1eb0ba44_cb3de736e6ccd5ae8%3a3|
 特殊处理：id=@all 表示群发消息给所有的好友
@@ -326,7 +326,7 @@ API是通过加载`Openwx插件`的形式提供的，上述代码保存成 xxxx.
 |--------|:------------------------------------------|
 |uri     |/openwx/send_group_message|
 |请求方法|GET\|POST|
-|请求参数|**id**: 群组的id<br>**displayname**: 群组显示名称<br>**content**:发送的文本内容(中文需要做urlencode)<br>**media_id**:媒体id(发送媒体消息返回的媒体id，需要做urlencode)<br>**media_path**:媒体路径(可以是文件路径或url，需要做urlencode)<br>**async**: 0|1,可选,是否异步发送消息|
+|请求参数|**id**: 群组的id<br>**displayname**: 群组显示名称<br>**content**:发送的文本内容(中文需要做urlencode)<br>**media_id**:媒体id(发送媒体消息返回的媒体id，需要做urlencode)<br>**media_path**:媒体路径(可以是文件路径或url，需要做urlencode)<br>**async**: 0或1,可选,是否异步发送消息|
 |数据格式|application/x-www-form-urlencoded|
 |调用示例|http://127.0.0.1:3000/openwx/send_group_message?id=xxxx&content=hello<br>http://127.0.0.1:3000/openwx/send_group_message?displayname=xxx&content=%e4%bd%a0%e5%a5%bd<br>http://127.0.0.1:3000/openwx/send_group_message?id=xxx&media_path=https%3a%2f%2fss0.bdstatic.com%2flogo.png<br>http://127.0.0.1:3000/openwx/send_group_message?displayname=xxx&media_path=https%3a%2f%2fss0.bdstatic.com%2flogo.png<br>http://127.0.0.1:3000/openwx/send_group_message?id=xxx&media_id=%40crypt_1eb0ba44_cb3de736e6ccd5ae8%3a3|
 
