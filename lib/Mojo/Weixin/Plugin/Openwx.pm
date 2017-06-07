@@ -329,25 +329,39 @@ sub call{
         }
         my $object = $client->search_friend(id=>$p->{id},account=>$p->{account},displayname=>$p->{displayname},markname=>$p->{markname});
         if(defined $object){
-            $c->render_later;
-            $client->send_message($object,$p->{content},sub{
-                my $msg= $_[1];
-                $msg->cb(sub{
-                    my($client,$msg)=@_;
-                    $c->safe_render(json=>{id=>$msg->id,code=>$msg->code,status=>$msg->info});
-                });
-                $msg->from("api");
-            }) if defined $p->{content};
-            if(defined $p->{media_data} or defined $p->{media_path} or defined $p->{media_id}){
-                $c->inactivity_timeout(120);
-                $client->send_media($object,{map {/media_/?($_=>$p->{$_}):()} keys %$p},sub{
-                    my $msg= $_[1];
-                    $msg->cb(sub{
-                        my($client,$msg)=@_;
-                        $c->safe_render(json=>{id=>$msg->id,media_id=>$msg->is_success?$msg->media_id:"",code=>$msg->code,status=>$msg->info});
+            if(defined $p->{content}){
+                if($p->{async}){
+                    $client->send_message($object,$p->{content},sub{$_[1]->from("api")}); 
+                    $c->safe_render(json=>{code=>0,status=>"request already in execution"});
+                }
+                else{
+                    $c->render_later;
+                    $client->send_message($object,$p->{content},sub{
+                        my $msg= $_[1];
+                        $msg->cb(sub{
+                            my($client,$msg)=@_;
+                            $c->safe_render(json=>{id=>$msg->id,code=>$msg->code,status=>$msg->info});
+                        });
+                        $msg->from("api");
                     });
-                    $msg->from("api");
-                });
+                }
+            }
+            if(defined $p->{media_data} or defined $p->{media_path} or defined $p->{media_id}){
+                if($p->{async}){
+                    $client->send_media($object,{map {/media_/?($_=>$p->{$_}):()} keys %$p},sub{$_[1]->from("api")});
+                    $c->safe_render(json=>{code=>0,status=>"request already in execution"});
+                }
+                else{
+                    $c->inactivity_timeout(120);
+                    $client->send_media($object,{map {/media_/?($_=>$p->{$_}):()} keys %$p},sub{
+                        my $msg= $_[1];
+                        $msg->cb(sub{
+                            my($client,$msg)=@_;
+                            $c->safe_render(json=>{id=>$msg->id,media_id=>$msg->is_success?$msg->media_id:"",code=>$msg->code,status=>$msg->info});
+                        });
+                        $msg->from("api");
+                    });
+                }
             }
         }
         else{$c->safe_render(json=>{id=>undef,code=>100,status=>"object not found"});}
@@ -357,25 +371,39 @@ sub call{
         my $p = $c->params;
         my $object = $client->search_group(id=>$p->{id},displayname=>$p->{displayname});
         if(defined $object){
-            $c->render_later;
-            $client->send_message($object,$p->{content},sub{
-                my $msg= $_[1];
-                $msg->cb(sub{
-                    my($client,$msg)=@_;
-                    $c->safe_render(json=>{id=>$msg->id,code=>$msg->code,status=>$msg->info});
-                });
-                $msg->from("api");
-            }) if defined $p->{content};
-            if(defined $p->{media_data} or defined $p->{media_path} or defined $p->{media_id}){
-                $c->inactivity_timeout(120);
-                $client->send_media($object,{map {/media_/?($_=>$p->{$_}):()} keys %$p},sub{
-                    my $msg= $_[1];
-                    $msg->cb(sub{
-                        my($client,$msg)=@_;
-                        $c->safe_render(json=>{id=>$msg->id,media_id=>$msg->is_success?$msg->media_id:"",code=>$msg->code,status=>$msg->info});
+            if(defined $p->{content}){
+                if($p->{async}){
+                    $client->send_message($object,$p->{content},sub{$_[1]->from("api")});
+                    $c->safe_render(json=>{code=>0,status=>"request already in execution"});   
+                }
+                else{
+                    $c->render_later;
+                    $client->send_message($object,$p->{content},sub{
+                        my $msg= $_[1];
+                        $msg->cb(sub{
+                            my($client,$msg)=@_;
+                            $c->safe_render(json=>{id=>$msg->id,code=>$msg->code,status=>$msg->info});
+                        });
+                        $msg->from("api");
                     });
-                    $msg->from("api");
-                });
+                }
+            }
+            if(defined $p->{media_data} or defined $p->{media_path} or defined $p->{media_id}){
+                if($p->{async}){
+                    $client->send_media($object,{map {/media_/?($_=>$p->{$_}):()} keys %$p},sub{$_[1]->from("api")});
+                    $c->safe_render(json=>{code=>0,status=>"request already in execution"});
+                }
+                else{
+                    $c->inactivity_timeout(120);
+                    $client->send_media($object,{map {/media_/?($_=>$p->{$_}):()} keys %$p},sub{
+                        my $msg= $_[1];
+                        $msg->cb(sub{
+                            my($client,$msg)=@_;
+                            $c->safe_render(json=>{id=>$msg->id,media_id=>$msg->is_success?$msg->media_id:"",code=>$msg->code,status=>$msg->info});
+                        });
+                        $msg->from("api");
+                    });
+                }
             }
         }
         else{$c->safe_render(json=>{id=>undef,code=>100,status=>"object not found"});}

@@ -152,6 +152,7 @@ Mojo::Weixin - A Weixin Client Framework base on Mojolicious
     account         #可选，默认值default, 每个客户端的标识，多账号登录时需要设置，用于区分不同客户端保存的cookie路径
     http_debug      #设置该参数，打印调试信息
     keep_cookie     #默认为1，0表示不保存登录cookie，1表示保存登录cookie方便下次直接恢复登录
+    send_interval   #默认为3s，全局发送消息时间间隔，间隔太小会导致消息发送频繁，可能有被封号的风险
 
     log_level       #默认级别为info，可以设置debug|info|warn|error|fatal
     log_path        #默认客户端输出内容打印到STDOUT 设置该参数可以将客户端输出重定向到文件
@@ -576,6 +577,10 @@ Mojo::Weixin - A Weixin Client Framework base on Mojolicious
     cb          #消息发送完成后的回调函数，会在消息发送完之后执行
     content     #消息内容
     format      #消息格式，包括 text|media|app 三类
+
+    code        #消息发送状态，0发送成功，非0发送失败
+    msg         #消息发送状态，字符串形式："发送成功","发送失败"
+    info        #消息发送状态的附加信息，比如发送失败的原因
 
     sender_id   #群消息中发送对象的id
     receiver_id #消息接收对象的id

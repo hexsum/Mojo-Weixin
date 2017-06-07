@@ -20,6 +20,7 @@ has log_console         => 1;
 has log_unicode         => 0;
 has download_media      => 1;
 has disable_color       => 0;           #是否禁用终端打印颜色
+has send_interval       => 3;           #全局发送消息间隔
 
 has is_init_group_member => 0;
 has is_update_group_member => 1;
@@ -257,6 +258,7 @@ sub new {
             $msg->reply(" ") if $self->fix_media_loop == 2;
         });
     }
+    $Mojo::Weixin::Message::SEND_INTERVAL = $self->send_interval;
     $Mojo::Weixin::_CLIENT = $self;
     $self;
 }
