@@ -1,3 +1,9 @@
+2017-07-03 Mojo::Weixin v1.3.5
+1）对于接收消息中无法识别的消息代码，打印日志中增加具体的代码值，同时，客户端会触发 unknown_retcode事件
+2）修复由于正则匹配不严谨导致在某些情况下，无法正确获取群成员id的bug
+3）new中增加send_interval参数可以自定义全局发送消息时间间隔
+4）Openwx插件中 /openwx/send_friend_message 和 /openwx/send_group_message接口增加async=1来实现异步发送消息
+
 2017-05-11 Mojo::Weixin v1.3.4
 1）修复Openwx中存在的编码转换问题
 2）获取通讯录信息接口调用 POST 变更为 GET
