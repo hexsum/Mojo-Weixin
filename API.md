@@ -397,6 +397,8 @@ API只能工作在非阻塞模式下,功能受限，不如POST上报的方式获
     "receiver_name":"文件传输助手",
     "receiver_uid":"",
     "sender":"小灰",
+    "sender_markname":"xxx",
+    "sender_category":"系统帐号", #系统帐号|公众号|好友
     "time":"1479787946",
     "type":"friend_message"
     }

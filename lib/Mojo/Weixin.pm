@@ -38,7 +38,7 @@ has ioloop              => sub {Mojo::IOLoop->singleton};
 has keep_cookie         => 1;
 has fix_media_loop      => 1;
 has synccheck_interval  => 1;
-has synccheck_delay     => 10;
+has synccheck_delay     => 3;
 has _synccheck_interval => sub{ $_[0]->synccheck_interval};
 has sync_interval       => 0;
 has emoji_to_text       => 1;
@@ -258,6 +258,11 @@ sub new {
             $msg->reply(" ") if $self->fix_media_loop == 2;
         });
     }
+    $self->on(update_friend=>sub{
+        my $self = shift;
+        my $filehelper = Mojo::Weixin::Friend->new(name=>"文件传输助手",id=>"filehelper");
+        $self->add_friend($filehelper) if not $self->search_friend(id=>"filehelper");
+    });
     $Mojo::Weixin::Message::SEND_INTERVAL = $self->send_interval;
     $Mojo::Weixin::_CLIENT = $self;
     $self;

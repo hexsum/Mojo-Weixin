@@ -47,6 +47,7 @@ sub to_json_hash{
             $json->{sender_uid} = $self->sender->uid;
             $json->{sender_name} = $self->sender->name;
             $json->{sender_markname} = $self->sender->markname;
+            $json->{sender_category} = $self->sender->category if $self->sender->type eq 'friend';
         }
         elsif($key eq "receiver"){
             next if $self->type eq 'group_message' and $self->class eq 'send';

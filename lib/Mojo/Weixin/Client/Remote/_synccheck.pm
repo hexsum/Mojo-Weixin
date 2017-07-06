@@ -6,7 +6,7 @@ sub Mojo::Weixin::_synccheck{
         $self->debug("消息处理程序进行中，避免重复运行(1)");
         return;
     }
-    $self->debug("检查消息...");
+    $self->debug("检查消息(" . $self->_synccheck_interval  . ")...");
     $self->_synccheck_running(1);
     my $api = "https://webpush.". $self->domain . "/cgi-bin/mmwebwx-bin/synccheck";
     my $callback = sub {
