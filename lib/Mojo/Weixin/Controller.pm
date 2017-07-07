@@ -175,14 +175,16 @@ sub kill_process {
         $self->error("pid无效，无法终止进程");
         return;
     }
-    #if($^O  eq "MSWin32"){
+    if($^O  eq "MSWin32"){
     #    my $exitcode = 0;
     #    Win32::Process::KillProcess($_[0],$exitcode);
     #    return $exitcode;
-    #}
-    #else{ 
         kill POSIX::SIGINT,$_[0] ;
-    #}
+    }
+    else{ 
+        kill POSIX::SIGTERM,$_[0] ;
+    }
+    return !$self->check_process($_[0]);
 }
 sub check_process {
     my $self = shift;
@@ -242,6 +244,7 @@ sub start_client {
     $ENV{MOJO_WEIXIN_DISABLE_COLOR} = $self->disable_color;
     $ENV{MOJO_WEIXIN_HTTP_DEBUG} = $self->http_debug;
     $ENV{MOJO_WEIXIN_LOG_LEVEL} = $self->log_level;
+    $ENV{MOJO_WEIXIN_CONTROLLER_PID} = $$;
 
     $ENV{MOJO_WEIXIN_TMPDIR} = $self->tmpdir if not defined $ENV{MOJO_WEIXIN_TMPDIR};
     $ENV{MOJO_WEIXIN_STATE_PATH} = File::Spec->catfile($ENV{MOJO_WEIXIN_TMPDIR},join('','mojo_weixin_state_',$ENV{MOJO_WEIXIN_ACCOUNT},'.json')) if not defined $ENV{MOJO_WEIXIN_STATE_PATH};
@@ -252,9 +255,9 @@ sub start_client {
         my $template =<<'MOJO_WEIXIN_CLIENT_TEMPLATE';
 #!/usr/bin/env perl
 use Mojo::Weixin;
+$|=1;
 my $client = Mojo::Weixin->new(log_head=>"[$ENV{MOJO_WEIXIN_ACCOUNT}][$$]");
 $0 = "wxclient(" . $client->account . ")" if $^O ne "MSWin32";
-$SIG{INT} = 'IGNORE' if ($^O ne 'MSWin32' and !-t);
 $client->load(["ShowMsg","UploadQRcode"]);
 $client->load("Openwx",data=>{listen=>[{host=>"127.0.0.1",port=>$ENV{MOJO_WEIXIN_PLUGIN_OPENWX_PORT} }], post_api=>$ENV{MOJO_WEIXIN_PLUGIN_OPENWX_POST_API} || undef,post_event=>$ENV{MOJO_WEIXIN_PLUGIN_OPENWX_POST_EVENT} // 1,post_media_data=> $ENV{MOJO_WEIXIN_PLUGIN_OPENWX_POST_MEDIA_DATA} // 1, poll_api=>$ENV{MOJO_WEIXIN_PLUGIN_OPENWX_POLL_API} || undef, poll_interval => $ENV{MOJO_WEIXIN_PLUGIN_OPENWX_POLL_INTERVAL} },call_on_load=>1);
 $client->run();

@@ -28,6 +28,7 @@ sub Mojo::Weixin::_login {
     $self->info("等待手机微信扫描二维码...");
     $self->state('scaning');
     while(1){
+        $self->check_controller();
         my @query_string = (
             loginicon => 'true',
             uuid    =>  $qrcode_uuid,

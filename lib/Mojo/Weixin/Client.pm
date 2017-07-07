@@ -1,4 +1,5 @@
 package Mojo::Weixin::Client;
+use POSIX ();
 use Mojo::Weixin::Client::Remote::_login;
 use Mojo::Weixin::Client::Remote::_logout;
 use Mojo::Weixin::Client::Remote::_get_qrcode_uuid;
@@ -26,6 +27,7 @@ sub login{
     #    #$self->load_cookie();#转移到new的时候就调用，这里不再需要
     #}
     while(1){
+        $self->check_controller();
         my $ret = $self->_login();
         $self->clean_qrcode();
         sleep 2;
@@ -391,5 +393,25 @@ sub is_load_plugin {
         $plugin = "Mojo::Weixin::Plugin::$plugin";
     }
     return exists $self->plugins->{$plugin};
+}
+
+sub check_controller {
+    my $self = shift;
+    my $once = shift;
+    if($^O ne 'MSWin32' and defined $self->controller_pid ){
+        if($once){
+            $self->info("启用Controller[". $self->controller_pid ."]状态检查");
+            $self->interval(5=>sub{
+                $self->check_controller();
+            });
+        }
+        else{
+            my $ppid = POSIX::getppid();
+            if( $ppid=~/^\d+$/ and $ppid == 1 or $ppid != $self->controller_pid ) {
+                $self->warn("检测到脱离Controller进程管理，程序即将终止");
+                $self->stop();
+            }
+        }
+    }
 }
 1;
