@@ -76,6 +76,7 @@ sub to_json_hash{
 
 sub is_at{
     my $self = shift;
+    return if not $self->content;
     my $object;
     my $displayname;
     if($self->class eq "recv"){
@@ -92,6 +93,7 @@ sub is_at{
             $displayname = $object->displayname;
         }
     }
+    return if not $displayname;
     return $self->content =~/\@\Q$displayname\E( |"\xe2\x80\x85"|)/;
 }
 
