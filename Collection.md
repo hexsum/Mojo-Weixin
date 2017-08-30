@@ -10,7 +10,7 @@
 
 ![作品预览](https://img3.doubanio.com/view/note/large/public/p38683520.jpg)
 
-* **支持发图的命令行版的微信聊天**
+* **支持发图的命令行版的微信聊天(已内部集成）**
 
 作者：csrgxtu
 
