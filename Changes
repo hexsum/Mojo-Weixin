@@ -1,3 +1,12 @@
+2017-08-30 Mojo::Weixin v1.3.6
+1）Openwx上报好友消息增加sender_category属性，用于区分发送者是好友还是公众号
+2）初始化好友信息时，如果好友中没有"文件传输助手"，则主动增加这样一个好友，方便做发送消息测试
+3）接收消息（synccheck）请求异常时，会延迟10s再次检查消息，这个时间太长影响消息正常接收，改为3s 感谢 @Yeso 反馈
+4）增加controller状态检查，当controller退出后，所有client也自动退出
+5）修复linux环境下无法通过/openwx/stop_client接口来终止程序的bug（升级后请手动清除模板文件） 感谢 @Aspirin 协助
+6）修复 /openwx/stop_client 返回结果不正确的问题
+7）controller增加max_clients 参数，默认允许创建的最大客户端数量100
+
 2017-07-03 Mojo::Weixin v1.3.5
 1）对于接收消息中无法识别的消息代码，打印日志中增加具体的代码值，同时，客户端会触发 unknown_retcode事件
 2）修复由于正则匹配不严谨导致在某些情况下，无法正确获取群成员id的bug
