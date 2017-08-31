@@ -1,3 +1,6 @@
+2017-08-31 Mojo::Weixin v1.3.7
+1）修复controller运行过程中报max_client异常的bug
+
 2017-08-30 Mojo::Weixin v1.3.6
 1）Openwx上报好友消息增加sender_category属性，用于区分发送者是好友还是公众号
 2）初始化好友信息时，如果好友中没有"文件传输助手"，则主动增加这样一个好友，方便做发送消息测试
