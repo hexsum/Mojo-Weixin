@@ -1,3 +1,7 @@
+2017-11-08 Mojo::Weixin v1.3.8
+1）新增主动撤回消息功能 感谢 @呸，管杀不管埋
+2）文档错误纠正 感谢 @新杰
+
 2017-08-31 Mojo::Weixin v1.3.7
 1）修复controller运行过程中报max_client异常的bug
 
