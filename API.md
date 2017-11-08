@@ -24,6 +24,7 @@
 |发送消息相关                  |        |                |
 |[/openwx/send_friend_message](API.md#发送好友消息)  |running |发送好友消息     |
 |[/openwx/send_group_message](API.md#发送群组消息)   |running |发送群组消息     |
+|[/openwx/revoke_message](API.md#撤销消息)   |running |撤销消息     |
 |[/openwx/upload_media](API.md#上传媒体文件)         |running |上传媒体文件，获取media_id, 用于稍后发送     |
 |[/openwx/consult](API.md#好友问答)              |running  |发送消息给好友并返回好友的回复<br>主要用途是转发微软小冰的智能回复|
 |事件（消息）获取相关 |                    |         |
@@ -343,6 +344,15 @@ API是通过加载`Openwx插件`的形式提供的，上述代码保存成 xxxx.
 如果不关心发送消息是否成功，可以采用异步发送的方式，调用接口马上返回:
 
 ```http://127.0.0.1:3000/openwx/send_group_message?id=xxxx&content=hello&async=1```
+
+### 撤销消息
+|   API  |撤销消息
+|--------|:------------------------------------------|
+|uri     |/openwx/revoke_message|
+|请求方法|GET\|POST|
+|请求参数|**id**: 消息的id|
+|数据格式|application/x-www-form-urlencoded|
+|调用示例|http://127.0.0.1:3000/openwx/revoke_message?id=xxxx|
 
 ### 查询事件消息
 

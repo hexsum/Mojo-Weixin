@@ -665,8 +665,8 @@ Mojo::Weixin - A Weixin Client Framework base on Mojolicious
 =head2 send_message 消息发送完成
 
     $client->on(send_message=>sub{
-        my($client,$msg,$status) = @_; #传给回调的参数是发送完毕的 消息对象 和 发送状态对象
-        if($status->is_success){
+        my($client,$msg) = @_; #传给回调的参数是发送完毕的 消息对象 和 发送状态对象
+        if($msg->is_success){
             print "消息" . $msg->id . "发送成功\n";
         }
         else{

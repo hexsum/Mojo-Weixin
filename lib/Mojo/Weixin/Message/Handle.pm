@@ -10,6 +10,7 @@ use Mojo::Weixin::Message::Remote::_upload_media;
 use Mojo::Weixin::Message::Remote::_get_media;
 use Mojo::Weixin::Message::Remote::_send_media_message;
 use Mojo::Weixin::Message::Remote::_send_text_message;
+use Mojo::Weixin::Message::Remote::_revoke_message;
 $Mojo::Weixin::Message::LAST_DISPATCH_TIME  = undef;
 $Mojo::Weixin::Message::SEND_INTERVAL  = 3;
 
@@ -606,6 +607,42 @@ sub reply_media_message {
         }
 
     }
+}
+sub revoke_message {
+    my $self = shift;
+    my ($msg_id, $receiver_id);
+    if(not $_[0]){
+        $self->error("撤回消息失败: 无效的msg对象或者msg_id");
+        return;
+    }
+    elsif(ref $_[0] eq "Mojo::Weixin::Message"){
+        if( not $_[0]->is_success){
+            $self->error("撤回消息失败: 无法撤回未成功发送的消息");
+            return;
+        }
+        $_[0]->dump;
+        $msg_id  = $_[0]->id;
+        $receiver_id = $_[0]->type eq 'group_message'?$_[0]->group_id:$_[0]->receiver_id;
+        if(not defined $msg_id or not defined $receiver_id){
+            $self->error("撤回消息失败: msg对象中包含无效的msg_id");
+            return;
+        }
+    }
+    else{
+        ($msg_id, $receiver_id)  = $_[0] =~ /^([^:]+):(.+)$/;
+        if(not defined $msg_id or not defined $receiver_id){
+            $self->error("撤回消息失败: 无效的msg_id");
+            return;
+        }
+    }
+    my $ret = $self->_revoke_message($msg_id,$receiver_id);
+    if($ret){
+        $self->debug("消息[$msg_id]撤回成功");
+    }
+    else{
+        $self->debug("消息[$msg_id]撤回失败");
+    }
+    return $ret;
 }
 
 

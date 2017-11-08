@@ -311,6 +311,22 @@ sub call{
             $c->safe_render(json=>{code=>100,status=>"object not found"});
         }
     };
+    any [qw(GET POST)] => 'openwx/revoke_message' => sub{
+        my $c = shift;
+        my $p = $c->params;
+        if(defined $p->{id}){
+            my $ret = $client->revoke_message($p->{id});
+            if($ret){
+                $c->safe_render(json=>{id=>$p->{id},code=>0,status=>'revoke success'});
+            }
+            else{
+                $c->safe_render(json=>{id=>$p->{id},code=>0,status=>'revoke failure'});
+            }
+        }
+        else{
+            $c->safe_render(json=>{id=>$p->{id},code=>-1,status=>'msg id not found'});
+        }
+    };
     any [qw(GET POST)] => '/openwx/send_friend_message'         => sub{
         my $c = shift;
         my $p = $c->params;

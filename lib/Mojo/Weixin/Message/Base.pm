@@ -9,7 +9,7 @@ sub client {
 }
 sub is_success{
     my $self = shift;
-    return $self->code == 0?1:0;
+    return (defined $self->code and $self->code == 0)?1:0;
 }
 sub send_status{
     my $self = shift;
@@ -20,6 +20,10 @@ sub _parse_send_status_data {
     my $self = shift;
     my $json = shift;
     if(defined $json){
+        if($json->{MsgID}){
+            my $id = $json->{MsgID} . ":" . ($self->type eq 'group_message'?$self->group_id : $self->receiver_id);
+            $self->{id} = $id;
+        }
         if($json->{BaseResponse}{Ret}!=0){
             $self->send_status(
                         code=>$json->{BaseResponse}{Ret},
