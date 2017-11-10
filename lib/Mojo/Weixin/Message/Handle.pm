@@ -306,7 +306,7 @@ sub _parse_sync_data {
             elsif($e->{MsgType} == 51){#会话、联系人信息同步
 				#修复Bug Modified By Cntlis
                 if($e->{StatusNotifyCode} == 4 or $e->{StatusNotifyCode} == 2){#联系人、群组信息需要同步
-                    my @id = split /,/,$msg->{StatusNotifyUserName};
+                    my @id = split /,/,$e->{StatusNotifyUserName};
                     my @group_ids;
                     my @friend_ids;
                     for (@id){
