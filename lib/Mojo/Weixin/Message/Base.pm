@@ -11,10 +11,11 @@ sub is_success{
     my $self = shift;
     return (defined $self->code and $self->code == 0)?1:0;
 }
+#返回的API，新增两个参数
 sub send_status{
     my $self = shift;
     my %opt = @_;
-    $self->code($opt{code})->msg($opt{msg})->info($opt{info});
+    $self->code($opt{code})->msg($opt{msg})->info($opt{info})->local_msgid($opt{local_msgid})->msg_id($opt{msg_id});
 }
 sub _parse_send_status_data {
     my $self = shift;
@@ -32,7 +33,8 @@ sub _parse_send_status_data {
                     );
         }
         else{
-            $self->send_status(code=>0,msg=>"发送成功",info=>"success");
+            #这里把local_msgid和msg_id对外开放 Modified By Cntlis
+			$self->send_status(code=>0,msg=>"发送成功",info=>"success",local_msgid=>($json->{LocalID}||"unknown"),msg_id=>($json->{MsgID}||"unknown"));
         }
     }
     else{

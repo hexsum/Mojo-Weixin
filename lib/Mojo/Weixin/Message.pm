@@ -11,7 +11,7 @@ has source => 'local';
 has 'cb';
 has from => 'none';
 has allow_plugin => 1;
-has [qw( sender_id receiver_id group_id content type id class format)];
+has [qw( sender_id receiver_id group_id content type id class format local_msgid msg_id)];	#对外开放client_msgid和msgid
 has [qw( media_id media_type media_code media_mime media_name media_size media_data media_mtime media_ext media_path)];
 has [qw( app_id app_title app_url app_name app_desc)];
 has [qw( card_id card_name card_province card_city card_account card_avatar card_sex)];

@@ -11,8 +11,10 @@ sub Mojo::Weixin::_send_media_message {
         my $json = shift;
         $msg->_parse_send_status_data($json);
         if(!$msg->is_success and $msg->ttl > 0){
-            $self->debug("消息[ " . $msg->id . " ]发送失败，尝试重新发送，当前TTL: " . $msg->ttl);
-            $self->message_queue->put($msg);
+            #$self->debug("消息[ " . $msg->id . " ]发送失败，尝试重新发送，当前TTL: " . $msg->ttl);
+            #$self->message_queue->put($msg);
+			#为了避免重复发送消息，已经增加了ClientMsgId，故这里的重新发送屏蔽	Modified By Cntlis
+			$self->debug("消息[ " . $msg->id . " ]疑似发送失败，停止发送，当前TTL: " . $msg->ttl);
             return;
         }
         else{
@@ -45,6 +47,13 @@ sub Mojo::Weixin::_send_media_message {
                 $self->pass_ticket?(pass_ticket => $self->url_escape($self->pass_ticket)):()
             );
             my $t = sub{my $r = sprintf "%.3f", rand();$r=~s/\.//g;return $self->now() . $r;}->();
+			#开放client_msgid	Modified By Cntlis
+			my $_clientmsgid;
+			if ($msg->local_msgid and $msg->local_msgid ne ""){
+				$_clientmsgid= $msg->local_msgid;
+			}else{
+				$_clientmsgid= $t;
+			}
             my $post = {
                 BaseRequest =>  {
                     DeviceID    => $self->deviceid,
@@ -53,10 +62,10 @@ sub Mojo::Weixin::_send_media_message {
                     Uin         => $self->wxuin, 
                 },
                 Msg             => {
-                    ClientMsgId     =>  $t,
+                    ClientMsgId     =>  $_clientmsgid,
                     FromUserName    =>  $msg->sender_id,
                     MediaId         =>  (split ":",$msg->media_id)[0],
-                    LocalID         =>  $t,
+                    LocalID         =>  $_clientmsgid,
                     ToUserName      =>  ($msg->type eq "group_message"?$msg->group_id:$msg->receiver_id),
                     #Type            =>  $Mojo::Weixin::Const::KEY_MAP_MEDIA_CODE{$msg->media_type} || 6,
                     Type            =>  $msg->media_code || $Mojo::Weixin::Const::KEY_MAP_MEDIA_CODE{$msg->media_type} || 6,

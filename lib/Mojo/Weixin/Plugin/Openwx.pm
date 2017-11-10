@@ -348,7 +348,7 @@ sub call{
         if(defined $object){
             if(defined $p->{content}){
                 if($p->{async}){
-                    $client->send_message($object,$p->{content},sub{$_[1]->from("api")}); 
+                    $client->send_message($object,$p->{content},sub{$_[1]->from("api")},$p->{local_msgid}); #新增一个LocalMsgId	Modified By Cntlis
                     $c->safe_render(json=>{code=>0,status=>"request already in execution"});
                 }
                 else{
@@ -357,15 +357,16 @@ sub call{
                         my $msg= $_[1];
                         $msg->cb(sub{
                             my($client,$msg)=@_;
-                            $c->safe_render(json=>{id=>$msg->id,code=>$msg->code,status=>$msg->info});
+							#新增返回LocalMsgId和MsgId	Modified By Cntlis
+                            $c->safe_render(json=>{id=>$msg->id,code=>$msg->code,local_msgid=>$msg->local_msgid,msg_id=>$msg->msg_id,status=>$msg->info});
                         });
                         $msg->from("api");
-                    });
+                    },$p->{local_msgid}); #新增一个LocalMsgId	Modified By Cntlis
                 }
             }
             if(defined $p->{media_data} or defined $p->{media_path} or defined $p->{media_id}){
                 if($p->{async}){
-                    $client->send_media($object,{map {/media_/?($_=>$p->{$_}):()} keys %$p},sub{$_[1]->from("api")});
+                    $client->send_media($object,{map {/media_/?($_=>$p->{$_}):()} keys %$p},sub{$_[1]->from("api")},$p->{local_msgid}); #新增一个LocalMsgId	Modified By Cntlis
                     $c->safe_render(json=>{code=>0,status=>"request already in execution"});
                 }
                 else{
@@ -374,10 +375,11 @@ sub call{
                         my $msg= $_[1];
                         $msg->cb(sub{
                             my($client,$msg)=@_;
-                            $c->safe_render(json=>{id=>$msg->id,media_id=>$msg->is_success?$msg->media_id:"",code=>$msg->code,status=>$msg->info});
+							#新增返回LocalMsgId和MsgId	Modified By Cntlis
+                            $c->safe_render(json=>{id=>$msg->id,media_id=>$msg->is_success?$msg->media_id:"",code=>$msg->code,local_msgid=>$msg->local_msgid,msg_id=>$msg->msg_id,status=>$msg->info});
                         });
                         $msg->from("api");
-                    });
+                    },$p->{local_msgid}); #新增一个LocalMsgId	Modified By Cntlis
                 }
             }
         }
