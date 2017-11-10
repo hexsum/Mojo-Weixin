@@ -176,6 +176,12 @@ sub load_cookie{
     else{
         $self->info("客户端加载cookie[ $cookie_path ]");
         $self->ua->cookie_jar($cookie_jar);
+		
+		#从Cookie中获取正确的Domain		//Modified By Cntlis 2017-11-10 22:32
+		if (defined($self->search_cookiedomain("wxuin"))){
+			$self->domain($self->search_cookiedomain("wxuin"));
+			$self->warn("从Cookie获取到Domain为：". $self->domain);
+		};
     }
 
 }
@@ -200,6 +206,21 @@ sub search_cookie{
     }
     my $c = first  { $_->name eq $cookie} @cookies;
     return defined $c?$c->value:undef;
+}
+#查找cookie的domain值	//Modified By Cntlis 2017-11-10 22:32
+sub search_cookiedomain{
+    my $self   = shift;
+    my $cookie = shift;
+    my @cookies;
+    my @tmp = $self->ua->cookie_jar->all;
+    if(@tmp == 1 and ref $tmp[0] eq "ARRAY"){ 
+        @cookies = @{$tmp[0]};
+    }
+    else{
+        @cookies = @tmp;
+    }
+    my $c = first  { $_->name eq $cookie} @cookies;
+    return defined $c?$c->domain:undef;
 }
 sub clear_cookie{
     my $self = shift;

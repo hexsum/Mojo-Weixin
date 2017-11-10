@@ -62,7 +62,8 @@ sub call{
                 $client->warn("插件[".__PACKAGE__ . "]事件[".$event."]上报失败:" . $client->encode("utf8",$tx->error->{message}));
             }
         }
-        elsif($event =~ /^new_group|lose_group|new_friend|lose_friend|new_group_member|lose_group_member$/){
+		#新增一个chat_friend事件，用于捕获在手机端点开聊天窗口  Modified By Cntlis
+        elsif($event =~ /^new_group|lose_group|new_friend|chat_friend|lose_friend|new_group_member|lose_group_member$/){
             my $post_json = {};
             $post_json->{post_type} = "event";
             $post_json->{event} = $event;

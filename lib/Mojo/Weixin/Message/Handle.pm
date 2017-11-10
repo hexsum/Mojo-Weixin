@@ -304,17 +304,35 @@ sub _parse_sync_data {
                 #$msg->{card_avatar} = '';
             }
             elsif($e->{MsgType} == 51){#会话、联系人信息同步
-                if($msg->{StatusNotifyCode} == 4 or $msg->{StatusNotifyCode} == 2){#联系人、群组信息需要同步
+				#修复Bug Modified By Cntlis
+                if($e->{StatusNotifyCode} == 4 or $e->{StatusNotifyCode} == 2){#联系人、群组信息需要同步
                     my @id = split /,/,$msg->{StatusNotifyUserName};
                     my @group_ids;
                     my @friend_ids;
                     for (@id){
                         next if $_ eq $self->user->id;
+						
                         if($self->is_group_id($_)){push @group_ids,$_ if not $self->search_group(id=>$_);}
-                        else{push @friend_ids,$_ if not $self->search_friend(id=>$_);}
+						#由于微信的getcontact接口屏蔽，所以这里完全开放，后续也可以关掉这里	 Modified By Cntlis
+                        #else{push @friend_ids,$_ if not $self->search_friend(id=>$_);}
+						else{
+							my @syncfriend= $self->search_friend(id=>$_);	#这里不确定是否要强制调用search_friend方法  Modified By Cntlis
+							push @friend_ids,$_;
+						}
                     } 
                     $self->update_group(@group_ids) if @group_ids;
                     $self->update_friend(@friend_ids) if @friend_ids;
+					#对于进入聊天窗口的，要单独发送通知chat_friend  Modified By Cntlis
+					if ($e->{StatusNotifyCode} == 2){
+						for (@id){
+							next if $_ eq $self->user->id;
+							if(not $self->is_group_id($_)){
+								#非群组
+								my @syncfriend= $self->search_friend(id=>$_);
+								$self->emit(chat_friend=>@syncfriend) if @syncfriend;
+							}
+						} 
+					}
                 }
                 next;
             }
