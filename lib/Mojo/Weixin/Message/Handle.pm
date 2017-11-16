@@ -293,6 +293,9 @@ sub _parse_sync_data {
                 $msg->{app_title} = $e->{FileName};
                 $msg->{app_url}   = $e->{Url};
             }
+            elsif($e->{MsgType} == 49 and $e->{AppMsgType} == 2000){#转账信息
+                $msg->{format} = "payment";
+            }
             elsif($e->{MsgType} == 42){#名片消息
                 $msg->{format} = "card";
                 $msg->{card_name} = $e->{RecommendInfo}{NickName};
@@ -437,6 +440,9 @@ sub _parse_sync_data {
                 };
                 $self->warn("app message xml parse fail: $@") if $@;
                 $msg->{content} = "[名片]昵称：@{[$msg->{card_name} || '未知']}\n[名片]性别：@{[$msg->{card_sex} || '未知']}\n[名片]位置：@{[$msg->{card_province} || '未知']} @{[$msg->{card_city} || '未知']}\n[名片]头像：@{[$msg->{card_avatar} || '未知']}";
+            }
+            elsif($msg->{format} eq "payment"){
+                $msg->{content} = "[转账消息](" . $msg->{content} . ")";
             }
             $self->message_queue->put(Mojo::Weixin::Message->new($msg)); 
         }
