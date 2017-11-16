@@ -457,8 +457,10 @@ sub send_message{
         $self->error("无效的发送消息对象");
         return;
     }
+    my $id = sub{my $r = sprintf "%.3f", rand();$r=~s/\.//g;my $t = $self->now() . $r;return $t}->();
     my $msg = Mojo::Weixin::Message->new(
-        id => $self->now(),
+        id => $id,
+        uid=> $id,
         content => $content,
         sender_id => $self->user->id,
         receiver_id => (ref $object eq "Mojo::Weixin::Friend"?$object->id : undef),
@@ -516,8 +518,10 @@ sub send_media {
                     :   "[文件]"
     ;
     
+    my $id = sub{my $r = sprintf "%.3f", rand();$r=~s/\.//g;my $t = $self->now() . $r;return $t}->();
     my $msg = Mojo::Weixin::Message->new(
-        id => $self->now(),
+        id => $id,
+        uid=> $id,
         media_id   => $media_info->{media_id},
         media_name => $media_info->{media_name},
         media_type => $media_info->{media_type},

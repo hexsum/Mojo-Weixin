@@ -11,7 +11,9 @@ has source => 'local';
 has 'cb';
 has from => 'none';
 has allow_plugin => 1;
-has [qw( sender_id receiver_id group_id content type id class format)];
+has 'id'; #发送消息成功后，服务端返回的id，可以用于撤回消息的标识
+has 'uid';#消息的本地唯一标识，客户端创建消息时生成，失败多次重试时，服务端对相同uid的消息会避免对方收到多条重复
+has [qw( sender_id receiver_id group_id content type class format)];
 has [qw( media_id media_type media_code media_mime media_name media_size media_data media_mtime media_ext media_path)];
 has [qw( app_id app_title app_url app_name app_desc)];
 has [qw( card_id card_name card_province card_city card_account card_avatar card_sex)];

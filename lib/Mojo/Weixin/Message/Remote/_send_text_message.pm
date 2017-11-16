@@ -4,9 +4,6 @@ sub Mojo::Weixin::_send_text_message {
     my $api = "https://".$self->domain . "/cgi-bin/mmwebwx-bin/webwxsendmsg";
     my @query_string =();
     push @query_string,(pass_ticket     => $self->url_escape($self->pass_ticket)) if $self->pass_ticket;
-    my $r = sprintf "%.3f", rand();
-    $r=~s/\.//g;
-    my $t = $self->now() . $r; 
     my $post = {
         BaseRequest =>  {
             DeviceID    => $self->deviceid,
@@ -15,10 +12,10 @@ sub Mojo::Weixin::_send_text_message {
             Uin         => $self->wxuin, 
         },
         Msg             => {
-            ClientMsgId     =>  $t,
+            ClientMsgId     =>  $msg->uid,
             Content         =>  $msg->content,
             FromUserName    =>  $msg->sender_id,
-            LocalID         =>  $t,
+            LocalID         =>  $msg->uid,
             ToUserName      =>  ($msg->type eq "group_message"?$msg->group_id:$msg->receiver_id),
             Type            =>  1,
         },

@@ -79,6 +79,7 @@ has qrcode_count            => 0;
 has qrcode_count_max        => 10;
 has media_size_max          => sub{20 * 1024 * 1024}; #运行上传的最大文件大小
 has media_chunk_size        => sub{512 * 1024};#chunk upload 每个分片的大小
+has http_agent              => 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/37.0.2062';
 has ua                      => sub {
     my $self = $_[0];
     #local $ENV{MOJO_USERAGENT_DEBUG} = $_[0]->ua_debug;
@@ -86,9 +87,7 @@ has ua                      => sub {
     require Mojo::UserAgent;
     require Mojo::UserAgent::Proxy;
     require Storable if $_[0]->keep_cookie;
-    my $transactor = Mojo::UserAgent::Transactor->new(
-        name =>  'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/37.0.2062'
-    );
+    my $transactor = Mojo::UserAgent::Transactor->new(name =>  $self->http_agent);
     my $default_form_generator = $transactor->generators->{form};
     $transactor->add_generator(form => sub{
         #my ($self, $tx, $form, %options) = @_;
