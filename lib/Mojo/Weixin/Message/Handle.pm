@@ -274,7 +274,7 @@ sub _parse_sync_data {
                 $self->emit("friend_request",$id,$displayname,$verify,$ticket);
                 next;
             }
-            elsif($e->{MsgType} == 10000){#群提示消息
+            elsif($e->{MsgType} == 10000){#群提示消息、红包消息
                 $msg->{format} = "text";
             }
             elsif($e->{MsgType} == 10002){#撤回消息
@@ -295,6 +295,7 @@ sub _parse_sync_data {
             }
             elsif($e->{MsgType} == 49 and $e->{AppMsgType} == 2000){#转账信息
                 $msg->{format} = "payment";
+                $msg->{}
             }
             elsif($e->{MsgType} == 42){#名片消息
                 $msg->{format} = "card";
