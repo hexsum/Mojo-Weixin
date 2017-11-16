@@ -176,6 +176,13 @@ sub load_cookie{
     else{
         $self->info("客户端加载cookie[ $cookie_path ]");
         $self->ua->cookie_jar($cookie_jar);
+
+        #更新账号主域名
+        my $domain = $self->search_cookie('wxuin','domain')  // $self->search_cookie('wxsid','domain');
+        if ($domain and $domain ne $self->domain){
+            $self->domain( $domain );
+            $self->debug("账号域名更新为：$domain");
+        }
     }
 
 }
@@ -190,6 +197,7 @@ sub save_cookie{
 sub search_cookie{
     my $self   = shift;
     my $cookie = shift;
+    my $type = shift // 'value'; #默认查询cookie对应的值
     my @cookies;
     my @tmp = $self->ua->cookie_jar->all;
     if(@tmp == 1 and ref $tmp[0] eq "ARRAY"){ 
@@ -199,7 +207,7 @@ sub search_cookie{
         @cookies = @tmp;
     }
     my $c = first  { $_->name eq $cookie} @cookies;
-    return defined $c?$c->value:undef;
+    return defined $c?$c->$type:undef;
 }
 sub clear_cookie{
     my $self = shift;
