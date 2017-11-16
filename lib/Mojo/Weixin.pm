@@ -22,6 +22,8 @@ has download_media      => 1;
 has disable_color       => 0;           #是否禁用终端打印颜色
 has send_interval       => 3;           #全局发送消息间隔
 
+has http_agent       => 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/37.0.2062';	#微信会封部分的agent，这里把接口直接开放	Modified By Cntlis
+
 has is_init_group_member => 0;
 has is_update_group_member => 1;
 has is_update_all_friend => 1;
@@ -87,7 +89,8 @@ has ua                      => sub {
     require Mojo::UserAgent::Proxy;
     require Storable if $_[0]->keep_cookie;
     my $transactor = Mojo::UserAgent::Transactor->new(
-        name =>  'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/37.0.2062'
+        #name =>  'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/37.0.2062'
+		name => $self->http_agent	#微信会封部分的agent，这里把接口直接开放	Modified By Cntlis
     );
     my $default_form_generator = $transactor->generators->{form};
     $transactor->add_generator(form => sub{

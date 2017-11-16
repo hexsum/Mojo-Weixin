@@ -10,7 +10,10 @@ sub Mojo::Weixin::_login {
             $self->login_state("success");
             return 1;
         }
-    }
+    }else{
+		#Modified By Cntlis
+		$self->info("Cookie已经失效，需要重新登陆");
+	}
     #else{
     #    $self->clear_cookie();
     #}
