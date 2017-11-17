@@ -51,7 +51,8 @@ sub call{
             }
 
             # 群组会话里面发送文件的二级命令解析 i.e. sendFile /tmp/dog.png
-            if ($content =~ m/^(?:sendFile |!!)([^\s]+)$/i) {
+            #if ($content =~ m/^(?:sendFile |!!)([^\s]+)$/i) {
+            if ($content =~ m/^(?:sendFile |!!)(?|"([^"]+)"|'([^']+)'|([^\s"']+))/i) {
                 my $media_path = $1;
                 if(-f $media_path or $media_path=~/^https?:\/\//){
                     $group->send_media($media_path);
@@ -101,7 +102,8 @@ sub call{
             my $friend = $client->search_friend(id=>$u->id);
             if(defined $friend){
                 # 好友会话里面发送文件二级命令解析 sendFile /tmp/dog.png
-                if ($content =~ m/^(?:sendFile |!!)([^\s]+)$/i) {
+                #if ($content =~ m/^(?:sendFile |!!)([^\s]+)$/i) {
+                if ($content =~ m/^(?:sendFile |!!)(?|"([^"]+)"|'([^']+)'|([^\s"']+))/i) {
                     my $media_path = $1;
                     if(-f $media_path or $media_path=~/^https?:\/\//){
                         $friend->send_media($media_path);
