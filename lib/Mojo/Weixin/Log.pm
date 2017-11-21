@@ -6,6 +6,7 @@ use Fcntl ':flock';
 use Encode;
 use POSIX qw();
 use Encode::Locale;
+use IO::Handle;
 BEGIN{
     eval{require Term::ANSIColor};
     $Mojo::Weixin::Log::is_support_color = 1 unless $@;
@@ -120,7 +121,7 @@ sub append {
                             .  $self->colored($_,$log->{content_color})
                             . "\n";
             }              
-            print STDOUT $color_msg;#or croak "Can't write to log: $!"
+            print STDERR $color_msg;#or croak "Can't write to log: $!"
         }
     }
     flock $handle, LOCK_UN;

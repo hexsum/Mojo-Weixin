@@ -1176,6 +1176,7 @@ CPAN文档可能比较旧或者表达的信息不够丰富，请参考github上A
         auth   => sub {my($param,$controller) = @_},    #可选，认证回调函数，用于进行请求鉴权
         post_api => 'http://xxxx',                      #可选，你自定义的接收消息上报接口
         post_event => 1,                                #可选，是否上报事件，为了向后兼容性，默认值为0
+        post_stdout => 0,                               #可选，上报数据是否打印到stdout，适合管道交互信息方式，默认0
         post_media_data => 1,                           #可选，是否上报经过base64编码的图片原始数据，默认值为1
         post_event_list => ['login','stop','state_change','input_qrcode'], #可选，上报事件列表
         #poll_api  => 'http://xxxx',                     #可选，从外网调用内网程序的api时需要使用到，默认不启用

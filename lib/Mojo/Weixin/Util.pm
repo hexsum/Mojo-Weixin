@@ -317,4 +317,12 @@ sub print {
     $self;
 }
 
+sub stdout_line {
+    my $self = shift;
+    my $data = $_[0];
+    $data=~s/[\r\n]+$//s;
+    print $data . "\n";
+    $self;
+}
+
 1;
