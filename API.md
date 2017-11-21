@@ -8,6 +8,7 @@
 |[/openwx/get_user_info](API.md#获取用户数据)      |running |获取登录用户数据 |
 |[/openwx/get_friend_info](API.md#获取好友数据)  |running |获取好友数据 |
 |[/openwx/get_group_info](API.md#获取群组数据)       |running |获取群组数据 |
+|[/openwx/get_group_basic_info](API.md#获取群组基本数据)       |running |获取群组基本数据 |
 |[/openwx/get_avatar](API.md#获取用户或群组头像)          |running |获取用户或群组头像|
 |数据搜索相关                  |        |                |
 |[/openwx/search_friend](API.md#搜索好友对象)        |running |搜索好友对象|
@@ -298,6 +299,16 @@ API是通过加载`Openwx插件`的形式提供的，上述代码保存成 xxxx.
     },
 ]
 ```
+
+### 获取群组基本数据
+|   API  |获取群组基本数据（不包含群成员）
+|--------|:------------------------------------------|
+|uri     |/openwx/get_group_basic_info|
+|请求方法|GET\|POST|
+|请求参数|无|
+|调用示例|http://127.0.0.1:3000/openwx/get_group_basic_info|
+
+
 ### 发送好友消息
 |   API  |发送好友消息
 |--------|:------------------------------------------|

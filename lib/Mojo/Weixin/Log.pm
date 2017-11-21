@@ -15,7 +15,7 @@ sub has { Mojo::Base::attr(__PACKAGE__, @_) };
 has format => sub { \&_format };
 has handle => sub {
   # STDERR
-  return \*STDOUT unless my $path = shift->path;
+  return \*STDERR unless my $path = shift->path;
   # File
   croak qq{Can't open log file "$path": $!} unless open my $file, '>>', $path;
   return $file;
