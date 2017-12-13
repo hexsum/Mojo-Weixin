@@ -101,9 +101,9 @@ wxclient:
 
 ```
 use Mojo::Weixin;
+$|=1;
 my $client = Mojo::Weixin->new(log_head=>"[$ENV{MOJO_WEIXIN_ACCOUNT}][$$]");
 $0 = "wxclient(" . $client->account . ")" if $^O ne "MSWin32";
-$SIG{INT} = 'IGNORE' if ($^O ne 'MSWin32' and !-t);
 $client->load(["ShowMsg","UploadQRcode"]);
 $client->load("Openwx",data=>{listen=>[{host=>"127.0.0.1",port=>$ENV{MOJO_WEIXIN_PLUGIN_OPENWX_PORT} }], post_api=>$ENV{MOJO_WEIXIN_PLUGIN_OPENWX_POST_API} || undef,post_event=>$ENV{MOJO_WEIXIN_PLUGIN_OPENWX_POST_EVENT} // 1,post_media_data=> $ENV{MOJO_WEIXIN_PLUGIN_OPENWX_POST_MEDIA_DATA} // 1, poll_api=>$ENV{MOJO_WEIXIN_PLUGIN_OPENWX_POLL_API} || undef, poll_interval => $ENV{MOJO_WEIXIN_PLUGIN_OPENWX_POLL_INTERVAL} },call_on_load=>1);
 $client->run();
