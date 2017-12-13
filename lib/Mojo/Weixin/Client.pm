@@ -110,6 +110,7 @@ sub ready {
     ){
         $self->call($_);
     }
+    $self->state('loading');
     $self->emit("after_load_plugin");
     $self->login() if $self->login_state ne 'success';
     #接收消息
