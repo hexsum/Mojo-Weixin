@@ -745,15 +745,13 @@ sub call{
     };
     any '/*whatever'  => sub{whatever=>'',$_[0]->safe_render(text=>"api not found",status=>403)};
     package Mojo::Weixin::Plugin::Openwx;
+    no utf8;
     $server = Mojo::Weixin::Server->new();   
     $server->app($server->build_app("Mojo::Weixin::Plugin::Openwx::App"));
     $server->app->secrets("hello world");
     $server->app->log($client->log);
-    if(ref $data eq "ARRAY"){#旧版本兼容性
-        $server->listen([ map { 'http://' . (defined $_->{host}?$_->{host}:"0.0.0.0") .":" . (defined $_->{port}?$_->{port}:5000)} @$data]);
-    }
-    elsif(ref $data eq "HASH" and ref $data->{listen} eq "ARRAY"){
-        my @listen;
+    my @listen;
+    if(ref $data eq "HASH" and ref $data->{listen} eq "ARRAY"){
         for my $listen (@{$data->{listen}}) {
             if($listen->{tls}){
                 my $listen_url = 'https://' . ($listen->{host} // "0.0.0.0") . ":" . ($listen->{port}//443);
@@ -769,11 +767,13 @@ sub call{
                 push @listen,$listen_url;
             }
             else{
-                push @listen,'http://' . ($listen->{host} // "0.0.0.0") . ":" . ($listen->{port}//5000) ;
+                push @listen,'http://' . ($listen->{host} // "0.0.0.0") . ":" . ($listen->{port}//3000) ;
             }
         }   
-        $server->listen(\@listen) ;
     }
+    else{ @listen = ( 'http://0.0.0.0:3000' ); }
+    $server->listen(\@listen) ;
+    $client->info("插件[Mojo::Weixin::Plugin::Openwx]监听地址: [ " . join(", ",@listen) . " ]");
     $server->start;
 }
 1;

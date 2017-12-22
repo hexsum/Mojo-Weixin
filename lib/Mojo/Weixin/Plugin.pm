@@ -62,7 +62,10 @@ sub call{
                 &{$self->plugins->{$_}{code}}($self,$self->plugins->{$_}{data},@_);   
             };
             if($@){
-                $self->error("插件[ $_ ]执行错误: $@");            
+                $self->error("插件[ $_ ]执行错误: $@");
+                if($@ =~ /Can't create listen socket: Address already in use/){
+                    $self->stop();
+                }
                 next;
             }
             $self->emit("plugin_call",$_);
