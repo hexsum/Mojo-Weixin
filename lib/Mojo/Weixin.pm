@@ -22,6 +22,9 @@ has download_media      => 1;
 has disable_color       => ($^O eq 'MSWin32' ? 1 : 0);           #是否禁用终端打印颜色
 has send_interval       => 3;           #全局发送消息间隔
 
+has notice_api => 'https://raw.githubusercontent.com/sjdy521/Mojo-Weixin/master/NOTICE';
+has is_fetch_notice => 1; #是否启动时获取公告
+
 has is_init_group_member => 0;
 has is_update_group_member => 1;
 has is_update_all_friend => 1;
@@ -269,6 +272,7 @@ sub new {
     });
     $Mojo::Weixin::Message::SEND_INTERVAL = $self->send_interval;
     $Mojo::Weixin::_CLIENT = $self;
+    $self->check_notice();
     $self;
 }
 

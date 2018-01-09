@@ -415,4 +415,17 @@ sub check_controller {
         }
     }
 }
+
+sub check_notice {
+    my $self = shift;
+    return if not $self->is_fetch_notice;
+    $self->info("获取最新公告信息...");
+    my $notice  = $self->http_get($self->notice_api);
+    if($notice){
+        $self->info("-" x 40);
+        $self->info({content_color=>'green'},$notice);
+        $self->info("-" x 40);
+    }
+}
+
 1;
