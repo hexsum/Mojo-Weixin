@@ -229,9 +229,9 @@ Mojo-Weixin v1.3.8 [![Build Status](https://travis-ci.org/sjdy521/Mojo-Weixin.sv
 
 ### 相关文档
 
-* [更新日志](https://github.com/sjdy521/Mojo-Weixin/blob/master/Changes)
-* [开发文档](https://metacpan.org/pod/distribution/Mojo-Weixin/doc/Weixin.pod)
-* [API](API.md)
+* [更新日志](Changes)
+* [开发&配置文档](https://metacpan.org/pod/distribution/Mojo-Weixin/doc/Webqq.pod)
+* [基于HTTP的API文档](API.md)
 * [FAQ](FAQ.md)
 
 ### 官方交流
