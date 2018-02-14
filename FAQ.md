@@ -81,4 +81,4 @@ $client->run();
 
 需要逐个检查缺少哪些模块，Linux下你可以直接执行如下命令来检查模块的安装情况,并根据提示进行操作
 
-curl -ks "https://raw.githubusercontent.com/sjdy521/Mojo-Weixin/master/script/check_dependencies.pl" |perl -
+`curl -ks "https://raw.githubusercontent.com/sjdy521/Mojo-Weixin/master/script/check_dependencies.pl" |perl -`
