@@ -74,3 +74,11 @@ $client->load("ShowMsg");
 $client->load("Openwx",data=>{listen=>[{host=>$host,port=>$port}], post_api=>$post_api});
 $client->run();
 ```
+
+#### 4. 碰到 Can't locate Mojo/Weixin.pm in @INC
+
+说明`Mojo::Weixin`模块没有安装成功，通常是在执行`cpanm Mojo::Weixin`安装的过程中，由于其他依赖模块安装失败导致最终`Mojo::Weixin`没有安装成功
+
+需要逐个检查缺少哪些模块，Linux下你可以直接执行如下命令来检查模块的安装情况,并根据提示进行操作
+
+curl -ks "https://raw.githubusercontent.com/sjdy521/Mojo-Weixin/master/script/check_dependencies.pl" |perl -
