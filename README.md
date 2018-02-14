@@ -162,7 +162,7 @@ Mojo-Weixin v1.3.8 [![Build Status](https://travis-ci.org/sjdy521/Mojo-Weixin.sv
     
     如果仍然有问题，Linux上可以尝试执行如下脚本进行依赖模块检查
     
-        $ curl -ks "https://raw.githubusercontent.com/sjdy521/Mojo-Weixin/master/script/check_dependencies.pl" |perl -
+        $ curl -ks "https://raw.githubusercontent.com/sjdy521/Mojo-Weixin/master/script/check_dependencies.pl"|perl -
         
 
 ### 如何使用
