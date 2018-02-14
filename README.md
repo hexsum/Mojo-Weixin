@@ -160,9 +160,9 @@ Mojo-Weixin v1.3.8 [![Build Status](https://travis-ci.org/sjdy521/Mojo-Weixin.sv
     
     搞定了编译和运行环境之后，再重新回到 步骤2 安装Mojo::Weixin即可
     
-    如果仍然有问题，可以尝试执行如下脚本进行依赖模块检查
+    如果仍然有问题，Linux上可以尝试执行如下脚本进行依赖模块检查
     
-         $ curl -ks "https://raw.githubusercontent.com/sjdy521/Mojo-Webqq/master/script/check_dependencies.pl" |perl -
+        $ curl -ks "https://raw.githubusercontent.com/sjdy521/Mojo-Weixin/master/script/check_dependencies.pl" |perl -
         
 
 ### 如何使用
