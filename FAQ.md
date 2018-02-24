@@ -82,3 +82,19 @@ $client->run();
 需要逐个检查缺少哪些模块，Linux下你可以直接执行如下命令来检查模块的安装情况,并根据提示进行操作
 
 `curl -ks "https://raw.githubusercontent.com/sjdy521/Mojo-Weixin/master/script/check_dependencies.pl" |perl -`
+
+#### 5. 非root账号安装后无法使用问题
+
+解决方法：
+
+方法1、切换到root账号下重新安装使用
+
+方法2、在非root账号下依次执行如下操作（**不要在任何命令前面加sudo**）
+
+1）安装local::lib模块，执行命令如下：
+
+         cpanm --local-lib=~/perl5 local::lib  && eval $(perl -I ~/perl5/lib/perl5/ -Mlocal::lib)
+
+2）把相关环境变量写入启动文件中，执行命令如下：
+
+         echo 'eval "$(perl -I$HOME/perl5/lib/perl5 -Mlocal::lib)"' >>~/.bashrc
