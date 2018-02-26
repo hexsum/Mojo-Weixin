@@ -160,11 +160,11 @@ sub call{
         $client->http_post($data->{post_api},json=>$post_json,sub{
             my($data,$ua,$tx) = @_;
             if($tx->success){
-                $client->debug("插件[".__PACKAGE__ ."]接收消息[".$msg->id."]上报成功");
+                $client->debug( $tx->res->body );
                 if($tx->res->headers->content_type =~m#text/json|application/json#){
                     #文本类的返回结果必须是json字符串
                     my $json;
-                    eval{$json = $client->from_json($tx->res->body)};
+                    eval{$json = $client->decode_json($tx->res->body);$client->reform($json)};
                     if($@){$client->warn($@);return}
                     if(defined $json){
                         #暂时先不启用format的属性
@@ -172,7 +172,6 @@ sub call{
                         #if((!defined $json->{format}) or (defined $json->{format} and $json->{format} eq "text")){
                         #    $msg->reply(Encode::encode("utf8",$json->{reply})) if defined $json->{reply};
                         #}
-
                         $msg->reply($json->{reply}) if defined $json->{reply};
                         $msg->reply_media($json->{media}) if defined $json->{media} and $json->{media} =~ /^https?:\/\//;
                     }
@@ -202,7 +201,7 @@ sub call{
                 if($tx->res->headers->content_type =~m#text/json|application/json#){
                     #文本类的返回结果必须是json字符串
                     my $json;
-                    eval{$json = $client->from_json($tx->res->body)};
+                    eval{$json = $client->decode_json($tx->res->body);$client->reform($json)};
                     if($@){$client->warn($@);return}
                     if(defined $json){
                         #{code=>0,reply=>"回复的消息",format=>"text"}
