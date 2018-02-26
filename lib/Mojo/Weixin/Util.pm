@@ -66,7 +66,9 @@ sub spurt {
 sub from_json{
     my $self = shift;
     my $r = eval{
-        Mojo::JSON::from_json(@_);
+        my $json  = Mojo::JSON::decode_json(@_);
+        $self->reform($json);
+        $json;
     };
     if($@){
         $self->warn($@);
