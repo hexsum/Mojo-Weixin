@@ -21,7 +21,7 @@
   | 环境变量                         | 作用              | 默认值                            |
   | ---------------------------------|:------------------| :---------------------------------|
   | MOJO_WEIXIN_LOG_LEVEL             | 日志级别          | info                              |
-  | MOJO_WEIXIN_LOG_PATH              | 日志保存路径      | STDOUT                            |
+  | MOJO_WEIXIN_LOG_PATH              | 日志保存路径      | STDERR                            |
   | MOJO_WEIXIN_LOG_ENCODING          | 日志编码          | utf8                              |
   | MOJO_WEIXIN_QRCODE_PATH           | 二维码保存路径    | /tmp/mojo_weixin_qrcode_default.png|
   | MOJO_WEIXIN_PLUGIN_OPENQQ_PORT    | Openwx插件监听端口| 3000                              |
