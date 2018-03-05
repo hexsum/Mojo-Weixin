@@ -211,6 +211,7 @@ sub search_cookie{
 }
 sub clear_cookie{
     my $self = shift;
+    $self->info("客户端清除cookie[ " . $self->cookie_path . "]");
     $self->ua->cookie_jar->empty;
     $self->save_cookie();
 }
