@@ -2,6 +2,8 @@ use strict;
 use File::Temp qw/:seekable/;
 use Mojo::Util ();
 use File::Basename ();
+use File::Spec ();
+use Encode ();
 sub Mojo::Weixin::_get_media {
     my $self = shift;
     my $msg = shift;
@@ -75,7 +77,7 @@ sub Mojo::Weixin::_get_media {
             if($msg->media_name =~ /^.+?\.([^\.]+)$/ ){
                 if($1){
                     $msg->media_ext($1);
-                    $msg->media_mime("application/octet-stream");
+                    #$msg->media_mime("application/octet-stream"); #txt文件这样设置mime不合理
                 }
             }
         }
@@ -95,21 +97,47 @@ sub Mojo::Weixin::_get_media {
             $self->error("无效的 media_dir: " . $self->media_dir);
             return;
         }
-        my @opt = (
-            TEMPLATE    => "mojo_weixin_media_XXXX",
-            SUFFIX      => "." . $msg->media_ext,
-            UNLINK      => 0,
-        );
-        defined $self->media_dir?(push @opt,(DIR=>$self->media_dir)):(push @opt,(TMPDIR=>1));
-        eval{
-            my $tmp = File::Temp->new(@opt);
-            binmode $tmp;
-            print $tmp $data;
-            close $tmp;
-            $msg->media_path($tmp->filename);
-            $callback->($tmp->filename,$data,$msg) if ref $callback eq "CODE";
-        };
-        $self->error("[ ". __PACKAGE__ . " ] $@") if $@;
+        if($msg->media_type eq 'file'){
+            my $media_name = $^O eq 'MSWin32'? Encode::encode("gbk",Encode::decode("utf8",$msg->media_name)) : $msg->media_name;
+            my $path = File::Spec->catfile($self->media_dir // $self->tmpdir, $msg->media_name);
+            my $i = 1;
+            while( -f $path){
+                if($i>100){#防止死循环
+                    my $time = int(time);
+                    $path =~ s/(\(\d\)|)(?=\.[^\.]+$|$)/($time)/;
+                    last;
+                }
+                $path =~ s/(\(\d\)|)(?=\.[^\.]+$|$)/($i)/;
+                $i++;
+            }
+            eval{
+                open(my $fh,">",$path) or die $!;
+                print $fh $data;
+                close $fh;
+                $msg->media_path($path);
+                $callback->($path,$data,$msg) if ref $callback eq "CODE";
+            };
+            $self->error("[ ". __PACKAGE__ . " ] $@") if $@;
+            
+        }
+        else{
+            my $t = POSIX::strftime('%Y%m%d%H%M%S',localtime());
+            my @opt = (
+                TEMPLATE    => "mojo_weixin_media_${t}_XXXX",
+                SUFFIX      => "." . $msg->media_ext,
+                UNLINK      => 0,
+            );
+            defined $self->media_dir?(push @opt,(DIR=>$self->media_dir)):(push @opt,(TMPDIR=>1));
+            eval{
+                my $tmp = File::Temp->new(@opt);
+                binmode $tmp;
+                print $tmp $data;
+                close $tmp;
+                $msg->media_path($tmp->filename);
+                $callback->($tmp->filename,$data,$msg) if ref $callback eq "CODE";
+            };
+            $self->error("[ ". __PACKAGE__ . " ] $@") if $@;
+        }
     });
 }
 1;
