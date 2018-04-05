@@ -98,8 +98,14 @@ sub Mojo::Weixin::_get_media {
             return;
         }
         if($msg->media_type eq 'file'){
-            my $media_name = $^O eq 'MSWin32'? Encode::encode("gbk",Encode::decode("utf8",$msg->media_name)) : $msg->media_name;
-            my $path = File::Spec->catfile($self->media_dir // $self->tmpdir, $msg->media_name);
+            my $media_name = $msg->media_name;
+            my $media_dir = $self->media_dir // $self->tmpdir;
+
+            if($^O eq 'MSWin32'){
+                $media_name = Encode::encode("gbk",Encode::decode("utf8",$media_name));
+                $media_dir = Encode::encode("gbk",Encode::decode("utf8",$media_dir));
+            }
+            my $path = File::Spec->catfile($media_dir,$media_name);
             my $i = 1;
             while( -f $path){
                 if($i>100){#防止死循环
@@ -114,7 +120,7 @@ sub Mojo::Weixin::_get_media {
                 open(my $fh,">",$path) or die $!;
                 print $fh $data;
                 close $fh;
-                $msg->media_path($path);
+                $msg->media_path($^O eq 'MSWin32'?Encode::encode("utf8",Encode::decode("gbk",$path)):$path);
                 $callback->($path,$data,$msg) if ref $callback eq "CODE";
             };
             $self->error("[ ". __PACKAGE__ . " ] $@") if $@;
