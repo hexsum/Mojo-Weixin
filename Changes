@@ -1,3 +1,9 @@
+2017-04-17 Mojo::Weixin v1.4.0
+1）Dockerfile更新，换用centos基础镜像，体积更小
+2）修复Beauty插件的bug
+3）下载的文件使用原始文件名称保存
+4）插件IRCShell使用sendFile指令增加media_dir参数
+
 2017-02-26 Mojo::Weixin v1.3.9
 1）开放HTTP的Agent自定义属性
 2）修复重复发消息的BUG，每个消息对象增加一个uid属性，作为消息唯一标识，再多次失败尝试过程中，服务端对相同uid不会重复
