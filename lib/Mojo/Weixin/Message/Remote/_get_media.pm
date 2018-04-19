@@ -118,6 +118,7 @@ sub Mojo::Weixin::_get_media {
             }
             eval{
                 open(my $fh,">",$path) or die $!;
+                chmod 0644, $fh;
                 print $fh $data;
                 close $fh;
                 $msg->media_path($^O eq 'MSWin32'?Encode::encode("utf8",Encode::decode("gbk",$path)):$path);
@@ -137,6 +138,7 @@ sub Mojo::Weixin::_get_media {
             eval{
                 my $tmp = File::Temp->new(@opt);
                 binmode $tmp;
+                chmod 0644, $tmp;
                 print $tmp $data;
                 close $tmp;
                 $msg->media_path($tmp->filename);
