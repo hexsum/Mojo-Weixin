@@ -12,7 +12,7 @@ sub call{
 
     $client->on(ready=>sub{
         #支持绑定的两个对象之间互相转发消息
-        my $xiaoice = $client->search_friend(account=>'xiaoice-ms');
+        my $xiaoice = $client->search_friend(name=>"小冰",category=>"公众号");
         if(not defined $xiaoice){
             $client->error("未能在通讯录中搜索到 微软小冰 帐号信息，请确认是否已经关注 微软小冰 公众号");
             return;
@@ -31,7 +31,7 @@ sub call{
             return if $msg->format !~ /^text|media$/;
             return if not $msg->allow_plugin;
             return if not $onoff_flag;
-            my $xiaoice = $client->search_friend(account=>'xiaoice-ms');
+            my $xiaoice = $client->search_friend(name=>"小冰",category=>"公众号");
             if(not defined $xiaoice){
                 $client->error("未能在通讯录中搜索到 微软小冰 帐号信息，请确认是否已经关注 微软小冰 公众号");
                 return;

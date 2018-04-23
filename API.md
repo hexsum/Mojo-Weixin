@@ -861,13 +861,13 @@ Content-Type: application/json
 |--------|:------------------------------------------|
 |uri     |/openwx/consult|
 |请求方法|GET\|POST|
-|请求参数|**id**: 好友的id<br>**account**: 好友的帐号<br>**displayname**: 好友显示名称<br>**markname**: 好友备注名称<br>**timeout**：等待回复的时间，默认30秒<br>**media_path**:媒体路径(可以是文件路径或url，需要做urlencode)|
+|请求参数|**id**: 好友的id<br>**displayname**: 好友显示名称<br>**markname**: 好友备注名称<br>**timeout**：等待回复的时间，默认30秒<br>**media_path**:媒体路径(可以是文件路径或url，需要做urlencode)|
 |数据格式|application/x-www-form-urlencoded|
-|调用示例|http://127.0.0.1:3000/openwx/consult?account=ms-xiaoice&content=haha<br>http://127.0.0.1:3000/openwx/consult?account=ms-xiaoice&media_path=%2ftmp%2fhello.jpg|
+|调用示例|http://127.0.0.1:3000/openwx/consult?displayname=小冰&content=haha<br>http://127.0.0.1:3000/openwx/consult?displayname=%e5%b0%8f%e5%86%b0&media_path=%2ftmp%2fhello.jpg|
 
-主要应用场景是把小冰(微信帐号ms-xiaoice)的智能回复封装成接口，给小冰发好友消息前，你需要先关注小冰的公众号
+主要应用场景是把小冰(中文名称做urlencode: %e5%b0%8f%e5%86%b0)的智能回复封装成接口，给小冰发好友消息前，你需要先关注小冰的公众号
 ```
-GET /openwx/consult?account=ms-xiaoice&content=haha HTTP/1.1
+GET /openwx/consult?displayname=%e5%b0%8f%e5%86%b0&content=haha HTTP/1.1
 User-Agent: curl/7.29.0
 Host: 127.0.0.1:3000
 Accept: */*
