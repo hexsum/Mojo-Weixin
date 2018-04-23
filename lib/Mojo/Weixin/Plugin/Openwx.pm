@@ -452,10 +452,13 @@ sub call{
                         $client->unsubscribe(receive_message=>$cb);
                         $c->safe_render(json=>{id=>$msg->id,code=>$msg->code,status=>$msg->info,reply_status=>"reply timeout",reply=>undef});
                     });
-                    $cb = $client->once(receive_message=>sub{
+                    $cb = $client->on(receive_message=>sub{
                         my($client,$msg) = @_;
                         Mojo::IOLoop->remove($timer);
-                        $c->safe_render(json=>{reply=>$msg->content,id=>$msg->id,code=>$msg->code,status=>$msg->info}); 
+                        if($msg->sender->id eq $object->id){
+                            $client->unsubscribe(receive_message=>$cb);
+                            $c->safe_render(json=>{reply=>$msg->content,id=>$msg->id,code=>$msg->code,status=>$msg->info});
+                        }
                     });
                 });
                 $msg->from("api");
