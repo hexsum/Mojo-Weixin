@@ -12,6 +12,10 @@ has http_debug          => sub{$ENV{MOJO_WEIXIN_HTTP_DEBUG} || 0 } ;
 has ua_debug            => sub{$_[0]->http_debug};
 has ua_debug_req_body   => sub{$_[0]->ua_debug};
 has ua_debug_res_body   => sub{$_[0]->ua_debug};
+has ua_retry_times          => 5;
+has ua_connect_timeout      => 10;
+has ua_request_timeout      => 35;
+has ua_inactivity_timeout   => 35;
 has log_level           => 'info';     #debug|info|msg|warn|error|fatal
 has log_path            => undef;
 has log_encoding        => undef;      #utf8|gbk|...
@@ -71,10 +75,6 @@ has log     => sub{
 
 has is_ready                => 0;
 has is_stop                 => 0;
-has ua_retry_times          => 5;
-has ua_connect_timeout      => 10;
-has ua_request_timeout      => 35;
-has ua_inactivity_timeout   => 35;
 has is_first_login          => -1;
 has login_state             => 'init';
 has qrcode_upload_url       => undef;
@@ -111,9 +111,9 @@ has ua                      => sub {
     Mojo::UserAgent->new(
         proxy              => sub{ my $proxy = Mojo::UserAgent::Proxy->new;$proxy->detect;$proxy}->(),
         max_redirects      => 7,
-        connect_timeout    => $_[0]->ua_connect_timeout,
-        request_timeout    => $_[0]->ua_request_timeout,
-        inactivity_timeout => $_[0]->ua_inactivity_timeout,
+        connect_timeout    => $self->ua_connect_timeout,
+        request_timeout    => $self->ua_request_timeout,
+        inactivity_timeout => $self->ua_inactivity_timeout,
         transactor         => $transactor,
     );
 };
