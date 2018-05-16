@@ -24,7 +24,7 @@
   | MOJO_WEIXIN_LOG_PATH              | 日志保存路径      | STDERR                            |
   | MOJO_WEIXIN_LOG_ENCODING          | 日志编码          | utf8                              |
   | MOJO_WEIXIN_QRCODE_PATH           | 二维码保存路径    | /tmp/mojo_weixin_qrcode_default.png|
-  | MOJO_WEIXIN_PLUGIN_OPENQQ_PORT    | Openwx插件监听端口| 3000                              |
-  | MOJO_WEIXIN_PLUGIN_OPENQQ_POST_API| Openwx插件上报地址| 无                                |
+  | MOJO_WEIXIN_PLUGIN_OPENWX_PORT    | Openwx插件监听端口| 3000                              |
+  | MOJO_WEIXIN_PLUGIN_OPENWX_POST_API| Openwx插件上报地址| 无                                |
 
   更多环境变量自定义参数参见[开发文档](https://metacpan.org/pod/distribution/Mojo-Weixin/lib/Mojo/Weixin.pm#new)
