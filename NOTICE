@@ -1,7 +1,6 @@
 以下是最新公告：
 
-    2017-04-17 Mojo::Weixin v1.4.0
-    1）Dockerfile更新，换用centos基础镜像，体积更小
-    2）修复Beauty插件的bug
-    3）下载的文件使用原始文件名称保存
-    4）插件IRCShell使用sendFile指令增加media_dir参数
+    2018-06-29 Mojo::Weixin v1.4.1
+    1）XiaoiceReplay 插件完善
+    2）dockfile更新 解决docker镜像无法制作问题
+    3）更新依赖关系，解决 IO::Socket::SSL 2.009+ required for TLS support 问题

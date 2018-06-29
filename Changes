@@ -1,3 +1,12 @@
+2018-06-29 Mojo::Weixin v1.4.1
+1）保存的媒体文件权限设置为0644，修复保持文件时，修改权限调用chmod windows跨平台不兼容问题
+2）小冰公众号原本的account： xiaoice-ms 已经失效了，现在只能使用名称来找到 
+   修复了因此造成的 XiaoiceReplay 插件 以及 /openwx/consult 接口存在的问题
+3）修复/openwx/consult接口返回的消息错乱问题
+4）Openwx插件跨域支持完善
+5）dockfile更新 解决docker镜像无法制作问题
+6）更新依赖关系，解决 IO::Socket::SSL 2.009+ required for TLS support 问题
+
 2017-04-17 Mojo::Weixin v1.4.0
 1）Dockerfile更新，换用centos基础镜像，体积更小
 2）修复Beauty插件的bug
