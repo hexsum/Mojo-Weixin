@@ -17,7 +17,7 @@ WriteMakefile(
         "Digest::MD5"           => 0,
         "Encode::Locale"        => 0,
         "IO::Socket::SSL"       => '1.94',
-        "Mojolicious"           => '6.11',
+        "Mojolicious"           => '7.69',
     }, # e.g., Module::Name => 1.1
     dist              => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
     clean               => { FILES => 'Mojo-Weixin-* MANIFEST' },
