@@ -218,6 +218,7 @@ sub call{
     $client->on(receive_message=>sub{
         my($client,$msg) = @_;
         if($msg->type eq "friend_message"){
+            return if $data->{is_ban_official} and $msg->sender->category eq '公众号';
             my $friend = $msg->sender;
             my $user = $ircd->search_user(id=>$friend->id,virtual=>1) || $ircd->search_user(nick=>$friend->displayname,virtual=>0);
             my $channel = $ircd->search_channel(name=>'#我的好友') || $ircd->new_channel(name=>'#我的好友',mode=>"Pivs");
