@@ -1,3 +1,7 @@
+2018-10-09 Mojo::Weixin v1.4.2
+1）IO::Socket::SSL依赖模块版本最低2.009
+2）Mojolicious依赖模块版本最低7.83
+
 2018-06-29 Mojo::Weixin v1.4.1
 1）保存的媒体文件权限设置为0644，修复保持文件时，修改权限调用chmod windows跨平台不兼容问题
 2）小冰公众号原本的account： xiaoice-ms 已经失效了，现在只能使用名称来找到 
