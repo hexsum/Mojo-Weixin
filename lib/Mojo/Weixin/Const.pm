@@ -26,7 +26,7 @@ our %KEY_MAP_USER = qw(
     sex         Sex
     display     DisplayName
     markname    RemarkName
-    _avatar      HeadImgUrl
+    _avatar     HeadImgUrl
 );
 our %KEY_MAP_FRIEND = qw(
     id          UserName
@@ -39,7 +39,7 @@ our %KEY_MAP_FRIEND = qw(
     sex         Sex
     display     DisplayName
     markname    RemarkName
-    _avatar      HeadImgUrl
+    _avatar     HeadImgUrl
     _verifyflag VerifyFlag
 
 );
