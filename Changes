@@ -1,3 +1,7 @@
+2018-11-22 Mojo::Weixin v1.4.3
+1）修复Mojo::Transaction::success is DEPRECATED的问题
+2）Mojolicious最低依赖版本提升至v8.02
+
 2018-10-09 Mojo::Weixin v1.4.2
 1）IO::Socket::SSL依赖模块版本最低2.009
 2）Mojolicious依赖模块版本最低7.83

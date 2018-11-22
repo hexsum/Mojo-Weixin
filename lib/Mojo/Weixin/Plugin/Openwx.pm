@@ -38,7 +38,7 @@ sub call{
             $client->stdout_line($client->to_json($post_json)) if $data->{post_stdout};
             if(defined $data->{post_api}){
                 my($data,$ua,$tx) = $client->http_post($data->{post_api},{ua_connect_timeout=>5,ua_request_timeout=>5,ua_inactivity_timeout=>5,ua_retry_times=>1},json=>$post_json);
-                if($tx->success){
+                if($tx->result->is_success){
                     $client->debug("插件[".__PACKAGE__ ."]事件[".$event . "](@args)上报成功");
                 }
                 else{
@@ -61,7 +61,7 @@ sub call{
             $client->stdout_line($client->to_json($post_json)) if $data->{post_stdout};
             if(defined $data->{post_api}){
                 my($data,$ua,$tx) = $client->http_post($data->{post_api},json=>$post_json);
-                if($tx->success){
+                if($tx->result->is_success){
                     $client->debug("插件[".__PACKAGE__ ."]事件[".$event . "]上报成功");
                 }
                 else{
@@ -83,7 +83,7 @@ sub call{
             $client->stdout_line($client->to_json($post_json)) if $data->{post_stdout};
             $client->http_post($data->{post_api},json=>$post_json,sub{
                 my($data,$ua,$tx) = @_;
-                if($tx->success){
+                if($tx->result->is_success){
                     $client->debug("插件[".__PACKAGE__ ."]事件[".$event."]上报成功");
                 }
                 else{
@@ -102,7 +102,7 @@ sub call{
             $client->stdout_line($client->to_json($post_json)) if $data->{post_stdout};
             $client->http_post($data->{post_api},json=>$post_json,sub{
                 my($data,$ua,$tx) = @_;
-                if($tx->success){
+                if($tx->result->is_success){
                     $client->debug("插件[".__PACKAGE__ ."]事件[".$event."]上报成功");
                 }
                 else{
@@ -122,7 +122,7 @@ sub call{
             $client->stdout_line($client->to_json($post_json)) if $data->{post_stdout};
             $client->http_post($data->{post_api},json=>$post_json,sub{
                 my($data,$ua,$tx) = @_;
-                if($tx->success){
+                if($tx->result->is_success){
                     $client->debug("插件[".__PACKAGE__ ."]事件[".$event."]上报成功");
                 }
                 else{
@@ -140,7 +140,7 @@ sub call{
             $client->stdout_line($client->to_json($post_json)) if $data->{post_stdout};
             $client->http_post($data->{post_api},json=>$post_json,sub{
                 my($data,$ua,$tx) = @_;
-                if($tx->success){
+                if($tx->result->is_success){
                     $client->debug("插件[".__PACKAGE__ ."]事件[".$event."]上报成功");
                 }
                 else{
@@ -159,7 +159,7 @@ sub call{
         $client->stdout_line($client->to_json($post_json)) if $data->{post_stdout};
         $client->http_post($data->{post_api},json=>$post_json,sub{
             my($data,$ua,$tx) = @_;
-            if($tx->success){
+            if($tx->result->is_success){
                 $client->debug( $tx->res->body );
                 if($tx->res->headers->content_type =~m#text/json|application/json#){
                     #文本类的返回结果必须是json字符串
@@ -196,7 +196,7 @@ sub call{
         $client->stdout_line($client->to_json($post_json)) if $data->{post_stdout};
         $client->http_post($data->{post_api},json=>$post_json,sub{
             my($data,$ua,$tx) = @_;
-            if($tx->success){
+            if($tx->result->is_success){
                 $client->debug("插件[".__PACKAGE__ ."]发送消息[".$msg->id."]上报成功");
                 if($tx->res->headers->content_type =~m#text/json|application/json#){
                     #文本类的返回结果必须是json字符串
