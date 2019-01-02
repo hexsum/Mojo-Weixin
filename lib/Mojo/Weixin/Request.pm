@@ -110,11 +110,17 @@ sub _http_request{
             my($ua,$tx) = @_;
             _ua_debug($self,$ua,$tx,\%opt,0) if $opt{ua_debug};
             $self->save_cookie();
-            if(defined $tx and $tx->result->is_success){
-                my $r = $opt{json}?$self->from_json($tx->res->body):$tx->res->body;
-                $cb->($r,$ua,$tx);
-            }
-            elsif(defined $tx){
+            eval {
+                if(defined $tx and $tx->result->is_success){
+                    my $r = $opt{json}?$self->from_json($tx->res->body):$tx->res->body;
+                    $cb->($r,$ua,$tx);
+                }
+                elsif(defined $tx){
+                    $self->warn($tx->req->url->to_abs . " 请求失败: " . ($tx->error->{code}||"-") . " " . $self->encode_utf8($tx->error->{message}));
+                    $cb->(undef,$ua,$tx);
+                }
+            };
+            if ($@) {
                 $self->warn($tx->req->url->to_abs . " 请求失败: " . ($tx->error->{code}||"-") . " " . $self->encode_utf8($tx->error->{message}));
                 $cb->(undef,$ua,$tx);
             }
