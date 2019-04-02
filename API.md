@@ -319,11 +319,11 @@ API是通过加载`Openwx插件`的形式提供的，上述代码保存成 xxxx.
 |调用示例|http://127.0.0.1:3000/openwx/send_friend_message?id=xxxx&content=hello<br>http://127.0.0.1:3000/openwx/send_friend_message?markname=xxx&content=%e4%bd%a0%e5%a5%bd<br>http://127.0.0.1:3000/openwx/send_friend_message?id=xxx&media_path=https%3a%2f%2fss0.bdstatic.com%2flogo.png<br>http://127.0.0.1:3000/openwx/send_friend_message?id=xxx&media_id=%40crypt_1eb0ba44_cb3de736e6ccd5ae8%3a3|
 特殊处理：id=@all 表示群发消息给所有的好友
 
-####文本消息返回JSON数据格式:
+#### 文本消息返回JSON数据格式:
 ```
 {"status":"发送成功","msg_id":23910327,"code":0} #code为 0 表示发送成功
 ```
-####媒体消息返回的JSON数据格式：
+#### 媒体消息返回的JSON数据格式：
 ```
 {"status":"发送成功","msg_id":23910327,"media_id":"@crypt_1eb0ba44_cb3de736e6ccd5ae8:3","code":0} #code为 0 表示发送成功
 ```
@@ -342,11 +342,11 @@ API是通过加载`Openwx插件`的形式提供的，上述代码保存成 xxxx.
 |数据格式|application/x-www-form-urlencoded|
 |调用示例|http://127.0.0.1:3000/openwx/send_group_message?id=xxxx&content=hello<br>http://127.0.0.1:3000/openwx/send_group_message?displayname=xxx&content=%e4%bd%a0%e5%a5%bd<br>http://127.0.0.1:3000/openwx/send_group_message?id=xxx&media_path=https%3a%2f%2fss0.bdstatic.com%2flogo.png<br>http://127.0.0.1:3000/openwx/send_group_message?displayname=xxx&media_path=https%3a%2f%2fss0.bdstatic.com%2flogo.png<br>http://127.0.0.1:3000/openwx/send_group_message?id=xxx&media_id=%40crypt_1eb0ba44_cb3de736e6ccd5ae8%3a3|
 
-####文本消息返回JSON数据格式:
+#### 文本消息返回JSON数据格式:
 ```
 {"status":"发送成功","msg_id":23910327,"code":0} #code为 0 表示发送成功
 ```
-####媒体消息返回的JSON数据格式：
+#### 媒体消息返回的JSON数据格式：
 ```
 {"status":"发送成功","msg_id":23910327,"media_id":"@crypt_1eb0ba44_cb3de736e6ccd5ae8:3","code":0} #code为 0 表示发送成功
 ```
