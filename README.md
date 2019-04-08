@@ -253,6 +253,9 @@ Mojo-Weixin v1.4.3 [![Build Status](https://travis-ci.org/sjdy521/Mojo-Weixin.sv
 * [WeixinBot](https://github.com/Urinx/WeixinBot) 网页版微信API，包含终端版微信及微信机器人
 * [ItChat](https://github.com/littlecodersh/ItChat) 微信个人号接口、微信机器人及命令行微信。三十行即可自定义个人号机器人
 
+*Java*
+* [wechat-client](https://github.com/dadiyang/wechat-client) Mojo-Weixin HTTP 接口 的 Java 客户端，非常感谢 @dadiyang 贡献
+
 ### 赞助奖励
 
 可以通过扫描支付宝付款二维码进行赞助，感谢您的支持和鼓励
