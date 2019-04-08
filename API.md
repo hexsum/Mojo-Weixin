@@ -490,6 +490,16 @@ $client->load("Openwx",data=>{
 
 当接收到消息时，会把消息通过JSON格式数据POST到该接口
 
+可以在Openwx插件中，通过 post_message_filter 参数来过滤上报的消息内容, 支持对消息中的任意多个属性进行过滤
+
+```
+$client->load("Openwx",data=>{
+    listen => [{host=>xxx,port=>xxx}],           #可选，发送消息api监听端口
+    post_api=> 'http://127.0.0.1:3000/post_api', #可选，接收消息或事件的上报地址
+    post_message_filter => {class => "recv", "type" => "friend_message",format=>"app",sender_name=>"微信支付"},#仅上报微信支付消息
+});
+```
+
 普通好友消息或群消息上报
 
 ```
