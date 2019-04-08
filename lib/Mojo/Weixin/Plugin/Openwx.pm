@@ -155,6 +155,13 @@ sub call{
         my $post_json = $msg->to_json_hash;
         delete $post_json->{media_data} if ($post_json->{format} eq "media" and ! $data->{post_media_data});
         $post_json->{post_type} = "receive_message";
+
+        if(defined $data->{post_message_filter} and ref $data->{post_message_filter} eq 'HASH'){
+            for my $key (keys %{$data->{post_message_filter}}){
+                return if exists $post_json->{$key} and $post_json->{$key} ne $data->{post_message_filter}{$key};
+            }
+        }
+
         $check_event_list->append($post_json);
         $client->stdout_line($client->to_json($post_json)) if $data->{post_stdout};
         $client->http_post($data->{post_api},json=>$post_json,sub{
@@ -192,6 +199,13 @@ sub call{
         my $post_json = $msg->to_json_hash;
         delete $post_json->{media_data} if ($post_json->{format} eq "media" and ! $data->{post_media_data});
         $post_json->{post_type} = "send_message";
+
+        if(defined $data->{post_message_filter} and ref $data->{post_message_filter} eq 'HASH'){
+            for my $key (keys %{$data->{post_message_filter}}){
+                return if exists $post_json->{$key} and $post_json->{$key} ne $data->{post_message_filter}{$key};
+            }
+        }
+
         $check_event_list->append($post_json);
         $client->stdout_line($client->to_json($post_json)) if $data->{post_stdout};
         $client->http_post($data->{post_api},json=>$post_json,sub{
