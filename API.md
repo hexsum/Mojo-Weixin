@@ -462,6 +462,7 @@ $client->load("Openwx",data=>{
     post_stdout => 0,                            #可选，上报数据是否打印到stdout，适合管道交互信息方式，默认0
     post_media_data => 1,                        #可选，是否上报经过base64编码的图片原始数据，默认值为1
     post_event_list => ['login','stop','state_change','input_qrcode'], #可选，上报事件列表
+    #post_message_filter => {class => "recv", "type" => "friend_message",format=>"app",sender_name=>"微信支付"},#可选，消息过滤
 });
 ```
 
