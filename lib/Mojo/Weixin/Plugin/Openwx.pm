@@ -168,11 +168,11 @@ sub call{
             my($data,$ua,$tx) = @_;
             if($tx->result->is_success){
                 $client->debug( $tx->res->body );
-                if($tx->res->headers->content_type =~m#text/json|application/json#){
+                if($tx->res->headers->content_type =~m#(text|application)/json#){
                     #文本类的返回结果必须是json字符串
                     my $json;
                     eval{$json = $client->decode_json($tx->res->body);$client->reform($json)};
-                    if($@){$client->warn($@);return}
+                    if($@){$client->warn("post_api返回的json内容无法正常解析: " . $@);return}
                     if(defined $json){
                         #暂时先不启用format的属性
                         #{code=>0,reply=>"回复的消息",format=>"text"}
