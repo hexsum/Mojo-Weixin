@@ -20,6 +20,7 @@ sub call{
 
     if(defined $data->{poll_api}){
         $client->on('_mojo_weixin_plugin_openwx_poll_over' => sub{
+            $client->debug("发起poll_api[$data->{poll_api}]心跳请求...");
             $client->http_get($data->{poll_api},sub{
                 $client->timer($data->{poll_interval} || 5,sub {$client->emit('_mojo_weixin_plugin_openwx_poll_over');});
             });
