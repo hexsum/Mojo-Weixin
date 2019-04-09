@@ -105,6 +105,7 @@ sub _http_request{
         $opt{ua_inactivity_timeout} = delete $_[1]->{ua_inactivity_timeout} if defined $_[1]->{ua_inactivity_timeout};
     }
     if(ref $_[-1] eq "CODE" and !$opt{blocking}){
+        $self->debug("issue request[$method] to [$_[0]]");
         my $cb = pop;
         return $self->ua->$method(@_,sub{
             my($ua,$tx) = @_;
@@ -125,6 +126,7 @@ sub _http_request{
         my $cb = pop if ref $_[-1] eq "CODE";
         for(my $i=0;$i<=$opt{ua_retry_times};$i++){
 
+            $self->debug("issue request[$method] to [$_[0]]");
             #fix bug Mojo::IOLoop already running Mojo/UserAgent.pm
             #https://github.com/kraih/mojo/issues/1029
             $self->ua->ioloop->stop if $self->ua->ioloop->is_running;
