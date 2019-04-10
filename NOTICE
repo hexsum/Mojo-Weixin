@@ -1,6 +1,4 @@
 以下是最新公告：
 
-    2018-06-29 Mojo::Weixin v1.4.1
-    1）XiaoiceReplay 插件完善
-    2）dockfile更新 解决docker镜像无法制作问题
-    3）更新依赖关系，解决 IO::Socket::SSL 2.009+ required for TLS support 问题
+    2019-04-10 Mojo::Weixin v1.4.5
+    修复微信遇到"对方正在输入"时，接收消息接口响应异常（"Bad response start-line"）引起程序终止问题
