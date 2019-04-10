@@ -1,3 +1,10 @@
+2019-04-10 Mojo::Weixin v1.4.5
+1）修复微信聊天过程中遇到"对方正在输入"提示时，接收消息接口响应异常（"Bad response start-line"），引起程序终止的严重bug
+2）增加http请求发生前的debug日志，使得请求建连失败的也可以知道是什么请求
+3）增加Openwx插件poll_api心跳请求debug日志
+4）post_api接口返回json格式无效时给出原因提示
+5）增加Anti 996ICU License
+
 2019-04-08 Mojo::Weixin v1.4.4
 1)Openwx插件增加post_message_filter参数来过滤上报的消息内容
 2）文档细节完善

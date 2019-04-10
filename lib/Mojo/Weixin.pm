@@ -1,5 +1,5 @@
 package Mojo::Weixin;
-our $VERSION = '1.4.4';
+our $VERSION = '1.4.5';
 use Mojo::Weixin::Base 'Mojo::EventEmitter';
 use Mojo::IOLoop;
 use Mojo::Weixin::Log;
