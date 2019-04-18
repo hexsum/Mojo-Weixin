@@ -1,10 +1,11 @@
-FROM centos:7.0.1406
+FROM centos:7.2.1511
 MAINTAINER sjdy521 <sjdy521@163.com>
 WORKDIR /root
 USER root
 ENV TZ=Asia/Shanghai
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 RUN yum -y --nogpgcheck install \
+    gcc \
     make \
     unzip \ 
     wget \ 
