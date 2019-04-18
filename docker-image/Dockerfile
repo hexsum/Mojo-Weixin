@@ -13,17 +13,14 @@ RUN yum -y --nogpgcheck install \
     perl \ 
     perl-App-cpanminus \
     perl-Compress-Raw-Zlib \
-    perl-IO-Compress-Gzip \
     perl-Digest-MD5 \
     perl-Digest-SHA \
     perl-Time-Piece \
-    perl-Time-Seconds \
     perl-Time-HiRes \
     perl-IO-Socket-SSL \
-    perl-Encode-Locale \
-    perl-Term-ANSIColor && \
+    perl-Encode-Locale && \
     yum clean all
-RUN cpanm -vn Test::More IO::Socket::SSL Mojolicious
+RUN cpanm -vn Test::More IO::Compress::Gzip Time::Seconds Term::ANSIColor IO::Socket::SSL Mojolicious
 RUN wget -q https://github.com/sjdy521/Mojo-Weixin/archive/master.zip -OMojo-Weixin.zip \
     && unzip -qo Mojo-Weixin.zip \
     && cd Mojo-Weixin-master \
