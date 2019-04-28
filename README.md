@@ -269,4 +269,4 @@ Mojo-Weixin v1.4.5 [![Build Status](https://travis-ci.org/sjdy521/Mojo-Weixin.sv
 
 Copyright (C) 2014 by sjdy521
 
-This library is free software; you can redistribute it and/or modify it under [BSD 2-clause "Simplified" license](LICENSE)
+This library is free software; you can redistribute it and/or modify it under [MIT License](LICENSE) and [Anti 996 License](LICENSE.996ICU)
