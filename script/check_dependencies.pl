@@ -1,4 +1,5 @@
 my %dependent_modules = (
+    'App::cpanminus'            => undef,
     'Compress::Raw::Zlib'       => undef,
     'IO::Compress::Gzip'        => undef,
     'Time::HiRes'               => undef,
