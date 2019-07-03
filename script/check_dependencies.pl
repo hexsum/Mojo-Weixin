@@ -1,6 +1,4 @@
 my %dependent_modules = (
-    'Crypt::OpenSSL::RSA'       => undef,
-    'Crypt::OpenSSL::Bignum'    => undef,
     'Compress::Raw::Zlib'       => undef,
     'IO::Compress::Gzip'        => undef,
     'Time::HiRes'               => undef,
