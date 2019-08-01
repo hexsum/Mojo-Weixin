@@ -113,7 +113,7 @@ Mojo-Weixin v1.4.5 [![Build Status](https://travis-ci.org/sjdy521/Mojo-Weixin.sv
 
 2. *安装cpanm工具*（如果系统已经安装了cpanm可以忽略此步骤）
 
-    方法a： 通过cpan安装cpanm
+    方法a： 通过cpan安装cpanm（只适用于root用户）
 
         $ cpan -i App::cpanminus
     
