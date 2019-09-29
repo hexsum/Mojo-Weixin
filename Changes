@@ -1,3 +1,6 @@
+2019-09-29 Mojo::Weixin v1.4.6
+1)修复Openwx插件错误Can't locate object method "context" via package "Mojo::Weixin::Log"
+
 2019-04-10 Mojo::Weixin v1.4.5
 1）修复微信聊天过程中遇到"对方正在输入"提示时，接收消息接口响应异常（"Bad response start-line"），引起程序终止的严重bug
 2）增加http请求发生前的debug日志，使得请求建连失败的也可以知道是什么请求

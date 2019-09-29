@@ -1,6 +1,5 @@
 package Mojo::Weixin::Log;
-use Mojo::Base;
-use base qw(Mojo::Base Mojo::EventEmitter);
+use base qw(Mojo::Base Mojo::EventEmitter Mojo::Log);
 use Carp 'croak';
 use Fcntl ':flock';
 use Encode;
