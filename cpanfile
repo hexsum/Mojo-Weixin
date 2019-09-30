@@ -9,4 +9,4 @@ requires 'Encode::Locale';
 requires 'IO::Socket::SSL', '>= 2.009';
 requires 'Mojolicious','>= 8.02';
 recommends 'Term::ANSIColor';
-conflicts 'Mojolicious','< 8.02';
+conflicts 'Mojolicious','>= 8.24';
