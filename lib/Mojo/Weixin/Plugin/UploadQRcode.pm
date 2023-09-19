@@ -7,7 +7,8 @@ sub call{
     $client->on(input_qrcode=>sub{
         my($client,$qrcode_path,$qrcode_data) = @_;
         #需要产生随机的云存储路径，防止好像干扰
-        my $json = $client->http_post('https://sm.ms/api/upload',{json=>1},form=>{
+        #更新图床上传地址 2023-09-19 by heipidage
+        my $json = $client->http_post('https://sm.ms/api/v2/upload',{json=>1},form=>{
             format=>'json',
             smfile=>{filename=>$qrcode_path,content=>$qrcode_data},
         });
